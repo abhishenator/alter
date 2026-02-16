@@ -1,0 +1,39 @@
+{% for goal in goals %}
+<div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+            {% if goal.domain == 'health' %}bg-green-100 text-green-800
+            {% elif goal.domain == 'wealth' %}bg-yellow-100 text-yellow-800
+            {% elif goal.domain == 'relationships' %}bg-pink-100 text-pink-800
+            {% elif goal.domain == 'emotions' %}bg-purple-100 text-purple-800
+            {% else %}bg-blue-100 text-blue-800{% endif %}">
+            {{ goal.domain }}
+        </span>
+        <div>
+            <p class="font-medium text-gray-900">{{ goal.description }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">{{ goal.time_horizon }} &middot; {{ goal.status }}</p>
+        </div>
+    </div>
+    {% if goal.status == 'active' %}
+    <button hx-post="/api/v1/users/{{ user_id }}/goals/{{ goal.id }}/complete"
+            hx-headers='{"Content-Type": "application/json"}'
+            hx-vals='{"outcome": "success", "notes": ""}'
+            hx-target="#goal-list"
+            hx-swap="innerHTML"
+            hx-confirm="Mark this goal as complete?"
+            class="px-3 py-1.5 text-sm text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+        Complete
+    </button>
+    {% else %}
+    <span class="px-3 py-1.5 text-sm rounded-lg
+        {% if goal.status == 'completed' %}text-green-700 bg-green-50
+        {% else %}text-gray-500 bg-gray-50{% endif %}">
+        {{ goal.status }}
+    </span>
+    {% endif %}
+</div>
+{% else %}
+<div class="bg-white rounded-xl p-12 shadow-sm border border-gray-100 text-center">
+    <p class="text-gray-500">No goals yet. Add your first goal to get started!</p>
+</div>
+{% endfor %}

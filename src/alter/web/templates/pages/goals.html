@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}ALTER - Goals{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900">Goals</h2>
+            <p class="mt-1 text-gray-500">{{ total }} total goals</p>
+        </div>
+        <button @click="$refs.goalModal.showModal()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+            + Add Goal
+        </button>
+    </div>
+
+    <!-- Goal List -->
+    <div id="goal-list" class="space-y-3">
+        {% if goals %}
+            {% for goal in goals %}
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                        {% if goal.domain == 'health' %}bg-green-100 text-green-800
+                        {% elif goal.domain == 'wealth' %}bg-yellow-100 text-yellow-800
+                        {% elif goal.domain == 'relationships' %}bg-pink-100 text-pink-800
+                        {% elif goal.domain == 'emotions' %}bg-purple-100 text-purple-800
+                        {% else %}bg-blue-100 text-blue-800{% endif %}">
+                        {{ goal.domain }}
+                    </span>
+                    <div>
+                        <p class="font-medium text-gray-900">{{ goal.description }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ goal.time_horizon }} &middot; {{ goal.status }}</p>
+                    </div>
+                </div>
+                {% if goal.status == 'active' %}
+                <button hx-post="/api/v1/users/{{ user_id }}/goals/{{ goal.id }}/complete"
+                        hx-headers='{"Content-Type": "application/json"}'
+                        hx-vals='{"outcome": "success", "notes": ""}'
+                        hx-target="#goal-list"
+                        hx-swap="innerHTML"
+                        hx-confirm="Mark this goal as complete?"
+                        class="px-3 py-1.5 text-sm text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    Complete
+                </button>
+                {% else %}
+                <span class="px-3 py-1.5 text-sm rounded-lg
+                    {% if goal.status == 'completed' %}text-green-700 bg-green-50
+                    {% else %}text-gray-500 bg-gray-50{% endif %}">
+                    {{ goal.status }}
+                </span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="bg-white rounded-xl p-12 shadow-sm border border-gray-100 text-center">
+                <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p class="text-gray-500">No goals yet. Add your first goal to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Goal Modal -->
+<dialog x-ref="goalModal" class="rounded-2xl shadow-2xl p-0 w-full max-w-md backdrop:bg-black/50">
+    <div class="p-6" x-data="goalForm()">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Goal</h3>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <input type="text" x-model="description"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                       placeholder="What do you want to achieve?">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
+                <select x-model="domain"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="health">Health & Wellness</option>
+                    <option value="wealth">Wealth & Career</option>
+                    <option value="relationships">Relationships</option>
+                    <option value="emotions">Emotional Well-being</option>
+                    <option value="growth">Personal Growth</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Time Horizon</label>
+                <select x-model="timeHorizon"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="quarter" selected>Quarter</option>
+                    <option value="1_year">1 Year</option>
+                    <option value="5_year">5 Years</option>
+                    <option value="life">Lifetime</option>
+                </select>
+            </div>
+        </div>
+
+        <div x-show="error" class="mt-3 p-2 bg-red-50 text-red-700 rounded text-sm" x-text="error"></div>
+
+        <div class="flex gap-3 mt-6">
+            <button @click="$refs.goalModal.close()"
+                    class="flex-1 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                Cancel
+            </button>
+            <button @click="submit()" :disabled="!description || loading"
+                    class="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                <span x-show="!loading">Add Goal</span>
+                <span x-show="loading">Adding...</span>
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<script>
+function goalForm() {
+    return {
+        description: '',
+        domain: 'growth',
+        timeHorizon: 'quarter',
+        loading: false,
+        error: '',
+
+        async submit() {
+            this.loading = true;
+            this.error = '';
+            try {
+                const response = await fetch('/api/v1/users/{{ user_id }}/goals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        description: this.description,
+                        domain: this.domain,
+                        time_horizon: this.timeHorizon
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to add goal');
+                window.location.reload();
+            } catch (e) {
+                this.error = e.message;
+            } finally {
+                this.loading = false;
+            }
+        }
+    };
+}
+</script>
+{% endblock %}

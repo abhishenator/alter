@@ -1,0 +1,22 @@
+<div class="bg-green-50 rounded-xl p-5 border border-green-200">
+    <div class="flex items-center space-x-3 mb-3">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <h4 class="font-semibold text-green-800">Cycle Complete</h4>
+    </div>
+    <div class="grid grid-cols-3 gap-4 text-sm">
+        <div>
+            <p class="text-green-600">Phases</p>
+            <p class="font-bold text-green-900">{{ result.phases_executed }}</p>
+        </div>
+        <div>
+            <p class="text-green-600">Strategies</p>
+            <p class="font-bold text-green-900">{{ result.strategies_count }}</p>
+        </div>
+        <div>
+            <p class="text-green-600">Tasks</p>
+            <p class="font-bold text-green-900">{{ result.tasks_count }}</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}ALTER - Constitution{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-900">Constitution</h2>
+        <p class="mt-1 text-gray-500">v{{ constitution.version }} &middot; {{ constitution.constitution_type }}</p>
+    </div>
+
+    <!-- Core Principles -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">Core Principles</h3>
+        <div class="space-y-3">
+            {% for p in constitution.principles %}
+            <details class="bg-white rounded-xl shadow-sm border border-gray-100 group">
+                <summary class="flex items-center justify-between p-5 cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold">{{ loop.index }}</span>
+                        <div>
+                            <p class="font-medium text-gray-900">{{ p.name }}</p>
+                            <p class="text-sm text-gray-500">{{ p.description }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-medium text-gray-400">Weight: {{ p.weight }}</span>
+                        <svg class="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 border-t border-gray-100 pt-4">
+                    {% if p.rules %}
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Rules</h4>
+                    <ul class="space-y-1.5">
+                        {% for rule in p.rules %}
+                        <li class="flex items-start space-x-2 text-sm text-gray-600">
+                            <span class="text-indigo-400 mt-0.5">&#8226;</span>
+                            <span>{{ rule }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Life Domains -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">Life Domains</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for d in constitution.domains %}
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <h4 class="font-medium text-gray-900">{{ d.name }}</h4>
+                <p class="text-sm text-gray-500 mt-1">{{ d.description }}</p>
+
+                {% if d.metrics %}
+                <div class="mt-3">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Metrics</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for m in d.metrics %}
+                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full">{{ m }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if d.minimum_standards %}
+                <div class="mt-3">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Minimum Standards</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        {% for key, val in d.minimum_standards.items() %}
+                        <li class="flex items-center space-x-2">
+                            <span class="text-green-400">&#10003;</span>
+                            <span>{{ key }}: {{ val }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

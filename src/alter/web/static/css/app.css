@@ -1,0 +1,43 @@
+/* ALTER - Custom Styles */
+
+/* Smooth transitions for HTMX swaps */
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+/* Toast slide-in animation */
+@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in {
+    animation: slide-in 300ms ease-out;
+}
+
+/* Range input styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4f46e5;
+    cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4f46e5;
+    cursor: pointer;
+    border: none;
+}

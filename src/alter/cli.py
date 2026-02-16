@@ -569,6 +569,54 @@ def constitution_validate(
         raise typer.Exit(1)
 
 
+@app.command()
+def serve(
+    host: str = typer.Option("0.0.0.0", help="Host to bind to"),
+    port: int = typer.Option(8000, help="Port to bind to"),
+    reload: bool = typer.Option(False, help="Auto-reload on code changes"),
+    consciousness: bool = typer.Option(False, "--consciousness", "-c", help="Enable consciousness engine"),
+    user_id: str = typer.Option("default", "--user-id", "-u", help="User ID for consciousness"),
+    provider: str = typer.Option("anthropic", "--provider", help="LLM provider (anthropic, openai)"),
+    model: Optional[str] = typer.Option(None, "--model", help="LLM model name"),
+):
+    """Start the ALTER web server with optional consciousness engine."""
+    import os
+    import uvicorn
+
+    # Configure consciousness via environment variables (read by app lifespan)
+    if consciousness:
+        os.environ["ALTER_CONSCIOUSNESS"] = "1"
+        os.environ["ALTER_USER_ID"] = user_id
+        os.environ["ALTER_LLM_PROVIDER"] = provider
+        if model:
+            os.environ["ALTER_LLM_MODEL"] = model
+
+    consciousness_info = ""
+    if consciousness:
+        consciousness_info = (
+            f"\n[bold green]Consciousness: ON[/bold green]\n"
+            f"User: [cyan]{user_id}[/cyan] | Provider: [cyan]{provider}[/cyan]"
+            f"{f' | Model: [cyan]{model}[/cyan]' if model else ''}"
+        )
+    else:
+        consciousness_info = "\nConsciousness: [dim]OFF (use --consciousness to enable)[/dim]"
+
+    console.print(Panel(
+        f"[bold]ALTER Web Server[/bold]\n"
+        f"Running at [cyan]http://localhost:{port}[/cyan]\n"
+        f"API docs at [cyan]http://localhost:{port}/docs[/cyan]"
+        f"{consciousness_info}",
+        title="ALTER",
+        border_style="green"
+    ))
+    uvicorn.run(
+        "alter.api.app:app",
+        host=host,
+        port=port,
+        reload=reload,
+    )
+
+
 # Entry point
 if __name__ == "__main__":
     app()

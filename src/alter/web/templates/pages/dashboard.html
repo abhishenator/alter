@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}ALTER - Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div>
+        <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
+        <p class="mt-1 text-gray-500">Your life at a glance</p>
+    </div>
+
+    <!-- Purpose Card -->
+    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <p class="text-sm font-medium text-indigo-100">Life Purpose</p>
+        <p class="mt-2 text-xl font-semibold">
+            {% if status.purpose %}
+                {{ status.purpose }}
+            {% else %}
+                <span class="text-indigo-200 italic">Not defined yet.
+                    <a href="/settings" class="underline hover:text-white">Set your purpose</a>
+                </span>
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Active Goals</p>
+            <p class="mt-1 text-3xl font-bold text-gray-900">{{ status.active_goals_count }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Total Goals</p>
+            <p class="mt-1 text-3xl font-bold text-gray-900">{{ status.total_goals }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Cycles Completed</p>
+            <p class="mt-1 text-3xl font-bold text-gray-900">{{ status.cycle_count }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500">Last Cycle</p>
+            <p class="mt-1 text-lg font-bold text-gray-900">
+                {% if status.last_execution %}
+                    {{ status.last_execution[:10] }}
+                {% else %}
+                    Never
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Run Cycle Button -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Meta-Loop Cycle</h3>
+                <p class="text-sm text-gray-500">Run a complete Reflect → Reason → Plan → Execute → Evolve cycle</p>
+            </div>
+            <button
+                hx-post="/api/v1/users/{{ user_id }}/cycle"
+                hx-target="#cycle-result"
+                hx-indicator="#cycle-spinner"
+                class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                Run Cycle
+            </button>
+        </div>
+        <div id="cycle-spinner" class="htmx-indicator mt-4">
+            <div class="flex items-center text-indigo-600">
+                <svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Running cycle...
+            </div>
+        </div>
+        <div id="cycle-result" class="mt-4"></div>
+    </div>
+
+    <!-- Active Goals -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Active Goals</h3>
+            <a href="/goals" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View All</a>
+        </div>
+        {% if goals %}
+        <div class="space-y-3">
+            {% for goal in goals[:5] %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        {% if goal.domain == 'health' %}bg-green-100 text-green-800
+                        {% elif goal.domain == 'wealth' %}bg-yellow-100 text-yellow-800
+                        {% elif goal.domain == 'relationships' %}bg-pink-100 text-pink-800
+                        {% elif goal.domain == 'emotions' %}bg-purple-100 text-purple-800
+                        {% else %}bg-blue-100 text-blue-800{% endif %}">
+                        {{ goal.domain }}
+                    </span>
+                    <span class="text-sm text-gray-900">{{ goal.description }}</span>
+                </div>
+                <span class="text-xs text-gray-500">{{ goal.time_horizon }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-sm">No active goals.
+            <a href="/goals" class="text-indigo-600 hover:underline">Add your first goal</a>
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Life Domains -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Life Domains</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for domain in status.life_domains %}
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-900">{{ domain.name }}</h4>
+                <p class="text-xs text-gray-500 mt-1">{{ domain.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

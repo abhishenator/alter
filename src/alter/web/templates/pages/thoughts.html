@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Thoughts - ALTER{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Thought Stream</h1>
+            <p class="text-gray-500 mt-1">ALTER's consciousness activity</p>
+        </div>
+        {% if consciousness_active %}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+            Active
+        </span>
+        {% else %}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-500">
+            <span class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+            Inactive
+        </span>
+        {% endif %}
+    </div>
+
+    {% if not consciousness_active %}
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+        <p class="text-yellow-800 font-medium">Consciousness engine is not active.</p>
+        <p class="text-yellow-600 text-sm mt-2">
+            Start the server with <code class="bg-yellow-100 px-2 py-0.5 rounded">alter serve --consciousness</code> to enable.
+        </p>
+    </div>
+    {% else %}
+
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg shadow-sm border p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Provider</p>
+            <p class="text-lg font-semibold text-gray-900 mt-1">{{ status.get('provider', 'N/A') }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Tokens Today</p>
+            <p class="text-lg font-semibold text-gray-900 mt-1">~{{ status.get('daily_token_usage', 0) }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Notifications</p>
+            <p class="text-lg font-semibold text-gray-900 mt-1">{{ status.get('pending_notifications', 0) }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Open Questions</p>
+            <p class="text-lg font-semibold text-gray-900 mt-1">{{ status.get('dormant_questions', 0) }}</p>
+        </div>
+    </div>
+
+    <!-- Narrative -->
+    {% if status.get('narrative') %}
+    <div class="bg-white rounded-lg shadow-sm border p-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Current Narrative</h2>
+        <p class="text-gray-800 leading-relaxed">{{ status.get('narrative', '') }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Manual Controls -->
+    <div class="bg-white rounded-lg shadow-sm border p-4 flex items-center gap-4">
+        <span class="text-sm text-gray-500">Manual:</span>
+        <button hx-post="/api/v1/consciousness/observe"
+                hx-target="#thought-stream"
+                hx-swap="innerHTML"
+                hx-indicator="#loading"
+                class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition-colors">
+            Run Observe
+        </button>
+        <button hx-post="/api/v1/consciousness/tick"
+                hx-vals='{"tick_type": "daily_review"}'
+                hx-headers='{"Content-Type": "application/json"}'
+                hx-target="#thought-stream"
+                hx-swap="innerHTML"
+                hx-indicator="#loading"
+                class="px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm rounded-lg transition-colors">
+            Run Daily Tick
+        </button>
+        <span id="loading" class="htmx-indicator text-sm text-gray-400">Thinking...</span>
+    </div>
+
+    <!-- Notifications -->
+    {% if notifications %}
+    <div class="bg-white rounded-lg shadow-sm border p-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Pending Notifications</h2>
+        <div class="space-y-3">
+            {% for notif in notifications %}
+            <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+                <p class="text-gray-800">{{ notif.get('message', '') }}</p>
+                <p class="text-xs text-gray-400 mt-2">{{ notif.get('timestamp', '') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Activity Feed (polled via HTMX) -->
+    <div id="thought-stream"
+         hx-get="/partials/thought-stream"
+         hx-trigger="every 10s"
+         hx-swap="innerHTML">
+        {% include "partials/thought_stream.html" %}
+    </div>
+
+    {% endif %}
+</div>
+{% endblock %}

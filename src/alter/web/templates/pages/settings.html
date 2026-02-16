@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}ALTER - Settings{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="settingsPage()">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-900">Settings</h2>
+        <p class="mt-1 text-gray-500">Manage your ALTER profile</p>
+    </div>
+
+    <!-- Purpose -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Life Purpose</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose Statement</label>
+                <textarea x-model="purpose" rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                          placeholder="What is your life purpose?"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+                <input type="text" x-model="purposeNotes"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                       placeholder="Why this change?">
+            </div>
+            <div x-show="purposeSaved" class="p-2 bg-green-50 text-green-700 rounded text-sm">Purpose updated!</div>
+            <button @click="savePurpose()" :disabled="!purpose || savingPurpose"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
+                <span x-show="!savingPurpose">Update Purpose</span>
+                <span x-show="savingPurpose">Saving...</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Personality Traits -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Personality Traits</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for key, val in status.personality_traits.items() %}
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 capitalize">{{ key | replace('_', ' ') }}</span>
+                    <span class="text-sm font-bold text-indigo-600">{{ val }}</span>
+                </div>
+                <div class="mt-1 w-full bg-gray-200 rounded-full h-1.5">
+                    <div class="bg-indigo-500 h-1.5 rounded-full" style="width: {{ (val / 10 * 100) | int }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Strengths & Growth Areas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Strengths</h3>
+            {% if status.strengths %}
+            <div class="space-y-2">
+                {% for s in status.strengths %}
+                <div class="flex items-center space-x-2 text-sm text-gray-700">
+                    <span class="text-green-500">&#10003;</span>
+                    <span>{{ s }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm text-gray-400 italic">Discovered through cycles. Run more cycles to detect strengths.</p>
+            {% endif %}
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Growth Areas</h3>
+            {% if status.growth_areas %}
+            <div class="space-y-2">
+                {% for g in status.growth_areas %}
+                <div class="flex items-center space-x-2 text-sm text-gray-700">
+                    <span class="text-amber-500">&#9650;</span>
+                    <span>{{ g }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm text-gray-400 italic">Discovered through cycles. Run more cycles to detect growth areas.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Account Info -->
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Account</h3>
+        <div class="space-y-3 text-sm">
+            <div class="flex justify-between py-2 border-b border-gray-100">
+                <span class="text-gray-500">User ID</span>
+                <span class="font-medium text-gray-900">{{ user_id }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+                <span class="text-gray-500">Total Goals</span>
+                <span class="font-medium text-gray-900">{{ status.total_goals }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+                <span class="text-gray-500">Cycles Completed</span>
+                <span class="font-medium text-gray-900">{{ status.cycle_count }}</span>
+            </div>
+            <div class="flex justify-between py-2">
+                <span class="text-gray-500">Version</span>
+                <span class="font-medium text-gray-900">ALTER v0.1.0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function settingsPage() {
+    return {
+        purpose: '{{ status.purpose or "" }}',
+        purposeNotes: '',
+        savingPurpose: false,
+        purposeSaved: false,
+
+        async savePurpose() {
+            this.savingPurpose = true;
+            this.purposeSaved = false;
+            try {
+                const response = await fetch('/api/v1/users/{{ user_id }}/purpose', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        purpose: this.purpose,
+                        notes: this.purposeNotes
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to update purpose');
+                this.purposeSaved = true;
+                this.purposeNotes = '';
+                setTimeout(() => this.purposeSaved = false, 3000);
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                this.savingPurpose = false;
+            }
+        }
+    };
+}
+</script>
+{% endblock %}
