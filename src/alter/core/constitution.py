@@ -80,6 +80,8 @@ class OverrideResult:
     reason: str = ""
     expires_at: Optional[datetime] = None
     override_applied: bool = False
+    activated: Optional[bool] = None  # For contextual overrides
+    suspended_rules: Optional[List[str]] = None  # For contextual overrides
 
 
 @dataclass
@@ -411,7 +413,9 @@ class Constitution:
             override_id=override_id,
             reason=f"Context '{context_name}' activated",
             expires_at=datetime.now() + timedelta(days=duration_days),
-            override_applied=True
+            override_applied=True,
+            activated=True,
+            suspended_rules=suspended_rules
         )
 
     def suggest_amendments(self) -> List[Amendment]:
@@ -562,7 +566,7 @@ class Constitution:
                         intervention_id=str(uuid.uuid4()),
                         urgency=trigger_type,
                         condition=condition,
-                        message=action,
+                        message=f"Sleep deprivation detected. {action}",
                         recommended_action=action
                     ))
 
