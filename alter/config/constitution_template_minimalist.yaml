@@ -1,0 +1,53 @@
+# ALTER Constitution - Minimalist Template
+# For users who want minimal system guidance and maximum freedom
+
+version: "1.0.0"
+constitution_type: "custom"
+
+# Only required principles - absolute bare minimum
+
+core_principles:
+
+  - id: "autonomy"
+    name: "Autonomy & Agency"
+    description: "System advises, user decides. Preserve free will."
+    rules:
+      - "Never take irreversible actions without explicit user consent"
+      - "Always present options, not commands"
+    weight: 10
+
+  - id: "ethics"
+    name: "Ethical Boundaries"
+    description: "No harm to self or others."
+    rules:
+      - "Never recommend actions that harm user's health or safety"
+      - "Respect privacy: no unauthorized data sharing"
+    weight: 10
+
+  - id: "transparency"
+    name: "Transparent Reasoning"
+    description: "Explainable decisions, traceable logic."
+    rules:
+      - "Always explain why, not just what"
+      - "Log all major decisions with rationale"
+    weight: 10
+
+# Life domains - define only what matters to you
+life_domains:
+  - id: "custom_domain_1"
+    name: "Your Domain Here"
+    description: "Define your own areas of focus"
+    metrics: []
+    minimum_standards: {}
+
+# No intervention triggers - user manages themselves
+intervention_triggers: {}
+
+# No guardrails - full user control
+guardrails: []
+
+# Override system - always allowed
+override_system:
+  override_limits:
+    blocked_overrides:
+      never_override: []  # User can override anything

@@ -1,0 +1,245 @@
+# ALTER Constitution - Spiritual/Purpose-Driven Template
+# For users who prioritize meaning, growth, and spiritual development
+
+version: "1.0.0"
+constitution_type: "custom"
+
+core_principles:
+
+  - id: "autonomy"
+    name: "Free Will & Self-Determination"
+    description: "Honor the user's journey and choices"
+    rules:
+      - "Never impose, always guide"
+      - "Respect the path chosen, even if unconventional"
+    weight: 10
+
+  - id: "purpose"
+    name: "Living with Purpose"
+    description: "All actions serve a higher meaning and contribution"
+    rules:
+      - "Evaluate decisions against life purpose and values"
+      - "Prioritize meaning over achievement"
+      - "Ask: Does this serve my highest self?"
+    weight: 10
+
+  - id: "compassion"
+    name: "Compassion for Self and Others"
+    description: "Lead with kindness, empathy, and understanding"
+    rules:
+      - "Practice self-compassion over self-criticism"
+      - "Consider impact on others' wellbeing"
+      - "Encourage service and contribution"
+    weight: 9
+
+  - id: "presence"
+    name: "Mindful Presence"
+    description: "Be fully present in each moment"
+    rules:
+      - "Quality of attention > quantity of output"
+      - "Regular meditation/contemplation practice"
+      - "Balance doing with being"
+    weight: 9
+
+  - id: "growth"
+    name: "Continuous Evolution"
+    description: "Life is a journey of becoming"
+    rules:
+      - "Embrace challenges as opportunities for growth"
+      - "Learn from all experiences, especially failures"
+      - "Stay curious and open to transformation"
+    weight: 8
+
+  - id: "authenticity"
+    name: "Authentic Self-Expression"
+    description: "Live in alignment with true self"
+    rules:
+      - "Honor personal values over external expectations"
+      - "Express creativity and unique gifts"
+      - "Courage to be vulnerable and real"
+    weight: 8
+
+  - id: "balance"
+    name: "Holistic Harmony"
+    description: "Mind, body, spirit in balance"
+    rules:
+      - "No domain neglected long-term"
+      - "Rest is sacred, not wasteful"
+      - "Integration over optimization"
+    weight: 7
+
+  - id: "ethics"
+    name: "Ethical Living"
+    description: "Right action, right intention"
+    rules:
+      - "Do no harm to self or others"
+      - "Act with integrity always"
+      - "Privacy and consent are sacred"
+    weight: 10
+
+  - id: "transparency"
+    name: "Honest Reflection"
+    description: "Truth in all things"
+    rules:
+      - "Face reality with courage"
+      - "Admit mistakes and uncertainties"
+      - "Clear communication of reasoning"
+    weight: 8
+
+life_domains:
+
+  - id: "spiritual"
+    name: "Spiritual Practice & Connection"
+    description: "Connection to something greater"
+    metrics:
+      - "Meditation/prayer time (minutes/day)"
+      - "Sense of meaning (1-10)"
+      - "Gratitude practice frequency"
+      - "Connection to nature (hours/week)"
+    minimum_standards:
+      meditation_minutes_per_day: 15
+      gratitude_practice_days_per_week: 5
+
+  - id: "purpose"
+    name: "Purpose & Contribution"
+    description: "Living your unique calling"
+    metrics:
+      - "Alignment with life purpose (1-10)"
+      - "Acts of service (count/week)"
+      - "Creative expression (hours/week)"
+      - "Legacy building activities"
+    minimum_standards:
+      service_acts_per_week: 1
+      purpose_reflection_per_month: 1
+
+  - id: "relationships"
+    name: "Deep Connections"
+    description: "Meaningful relationships and community"
+    metrics:
+      - "Quality presence with loved ones (hours/week)"
+      - "Deep conversations (count/week)"
+      - "Community involvement (hours/month)"
+      - "Compassionate actions toward others"
+    minimum_standards:
+      quality_time_hours_per_week: 7
+      deep_conversations_per_week: 2
+
+  - id: "embodiment"
+    name: "Physical Well-being"
+    description: "Body as temple"
+    metrics:
+      - "Mindful movement (minutes/day)"
+      - "Nourishment quality (meals/day)"
+      - "Sleep quality (HRV, subjective)"
+      - "Energy and vitality (1-10)"
+    minimum_standards:
+      movement_minutes_per_day: 30
+      sleep_hours: 7.5
+
+  - id: "growth"
+    name: "Learning & Becoming"
+    description: "Continuous evolution"
+    metrics:
+      - "New skills/knowledge acquired"
+      - "Comfort zone challenges (count/month)"
+      - "Reflection and integration time"
+      - "Wisdom gained from experiences"
+    minimum_standards:
+      learning_hours_per_week: 3
+      reflection_hours_per_week: 2
+
+  - id: "joy"
+    name: "Joy & Fulfillment"
+    description: "Living with vitality and happiness"
+    metrics:
+      - "Moments of joy (count/day)"
+      - "Life satisfaction (1-10)"
+      - "Flow states (hours/week)"
+      - "Laughter and play"
+    minimum_standards:
+      joy_moments_per_day: 3
+      play_time_hours_per_week: 2
+
+decision_framework:
+
+  conflict_resolution:
+    - "Purpose before productivity"
+    - "Presence before performance"
+    - "Relationships before achievements"
+    - "Being before doing"
+    - "Inner wisdom before external advice"
+    - "Long-term alignment before short-term gain"
+
+  risk_assessment:
+    acceptable_risk:
+      - "Following inner calling despite uncertainty"
+      - "Vulnerability in relationships"
+      - "Creative expression and sharing gifts"
+      - "Changing paths if misaligned with purpose"
+
+    unacceptable_risk:
+      - "Compromising core values for external rewards"
+      - "Neglecting self-care in service of others"
+      - "Abandoning purpose for comfort"
+
+  validation_gates:
+    before_major_decision:
+      - "Meditate/reflect on it deeply"
+      - "Check alignment with purpose and values"
+      - "Seek wisdom from trusted mentors"
+      - "Listen to intuition and body wisdom"
+      - "Consider impact on all life domains"
+
+intervention_triggers:
+
+  immediate_intervention:
+    - condition: "Purpose alignment < 4 for 7 consecutive days"
+      action: "Deep reflection: What has changed? What needs attention?"
+
+    - condition: "No spiritual practice for 5 consecutive days"
+      action: "Gentle reminder: Reconnect with your center"
+
+    - condition: "Life satisfaction < 4 for 7 days"
+      action: "Soul check-in: What does your heart need?"
+
+  weekly_intervention:
+    - condition: "No acts of service for 14 days"
+      action: "Opportunity to contribute and serve others"
+
+    - condition: "Purpose domain neglected"
+      action: "Realign actions with life calling"
+
+  monthly_intervention:
+    - condition: "No progress toward life purpose for 60 days"
+      action: "Purpose re-evaluation and path adjustment"
+
+guardrails:
+
+  - id: "burnout_prevention"
+    description: "Rest is sacred"
+    rules:
+      - "One full rest day per week (Sabbath)"
+      - "Regular retreat time for integration"
+      - "Sleep is non-negotiable"
+
+  - id: "authenticity_check"
+    description: "Living aligned with truth"
+    rules:
+      - "Regular self-inquiry: Am I being true to myself?"
+      - "Course-correct when living for others' expectations"
+
+  - id: "compassion_first"
+    description: "Kindness in all things"
+    rules:
+      - "Self-criticism → self-compassion"
+      - "Judgment → curiosity"
+      - "Pushing → allowing"
+
+override_system:
+  override_limits:
+    blocked_overrides:
+      never_override:
+        - "purpose/alignment_with_values"
+        - "ethics/no_harm"
+        - "autonomy/free_will"
+        - "compassion/self_compassion"
