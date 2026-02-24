@@ -1,0 +1,18 @@
+{% if notifications %}
+<div class="space-y-2 animate-fade-in">
+  {% for n in notifications %}
+  <div class="glass-sm p-4 severity-{{ n.urgency }}">
+    <p class="text-sm" style="color: rgba(255,255,255,0.80);">{{ n.message }}</p>
+    {% if n.timestamp %}
+    <p class="text-[10px] mt-1.5" style="color: rgba(255,255,255,0.25);">{{ n.timestamp }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-4">
+  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+    No insights yet. Trigger a consciousness tick to generate observations.
+  </p>
+</div>
+{% endif %}

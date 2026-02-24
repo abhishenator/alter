@@ -5,7 +5,8 @@ from alter.api.service import AlterService
 from alter.api.deps import get_service
 from alter.api.models.user import (
     UserInitRequest, UserInitResponse, PurposeUpdateRequest,
-    PurposeResponse, UserStatusResponse
+    PurposeResponse, UserStatusResponse,
+    ProfileUpdateRequest, ImportRequest, ImportResponse,
 )
 
 router = APIRouter()
@@ -43,3 +44,35 @@ def get_purpose(user_id: str, service: AlterService = Depends(get_service)):
     if not service.user_exists(user_id):
         raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
     return service.get_purpose(user_id)
+
+
+@router.put("/users/{user_id}/profile")
+def update_profile(user_id: str, body: ProfileUpdateRequest,
+                   service: AlterService = Depends(get_service)):
+    """Update personality traits, strengths, and growth areas."""
+    if not service.user_exists(user_id):
+        raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
+    return service.update_profile(
+        user_id,
+        personality_traits=body.personality_traits,
+        strengths=body.strengths,
+        growth_areas=body.growth_areas,
+    )
+
+
+@router.post("/users/{user_id}/import", response_model=ImportResponse)
+def import_context(user_id: str, body: ImportRequest,
+                   service: AlterService = Depends(get_service)):
+    """Import context from external sources (ChatGPT, Claude, Gemini, plain text)."""
+    if not service.user_exists(user_id):
+        raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
+    return service.import_context(user_id, body.source, body.content)
+
+
+@router.get("/users/{user_id}/memories")
+def get_memories(user_id: str, service: AlterService = Depends(get_service)):
+    """Get parsed memories from imported context."""
+    if not service.user_exists(user_id):
+        raise HTTPException(status_code=404, detail=f"User '{user_id}' not found")
+    memories = service.get_parsed_memories(user_id)
+    return {"memories": memories, "total": len(memories)}

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from alter.consciousness.config import TickType, TOKEN_BUDGETS
@@ -205,6 +206,66 @@ def format_principles(principles: List[Dict[str, Any]], summary_only: bool = Fal
     return "\n".join(lines)
 
 
+def format_imported_context(memories: List[Dict[str, Any]], max_items: int = 30) -> str:
+    """Format imported memories/context for tick prompts.
+
+    Groups by category and presents as background knowledge about the user.
+    """
+    if not memories:
+        return "No imported context available."
+
+    # Group by category
+    by_cat: Dict[str, List[str]] = {}
+    for m in memories[:max_items]:
+        cat = m.get("category", "general")
+        by_cat.setdefault(cat, []).append(m.get("text", ""))
+
+    lines = ["The following is background context imported from the user's history:\n"]
+    for cat, items in by_cat.items():
+        lines.append(f"### {cat.title()}")
+        for item in items:
+            lines.append(f"- {item}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def format_user_engagement(
+    habits: List[Dict[str, Any]],
+    pinned_notes: List[Dict[str, Any]],
+    dismissed_titles: List[str],
+) -> str:
+    """Format what the user is actively tracking and what they dismissed.
+
+    This closes the consciousness loop — the LLM sees how the user
+    responded to previous output, producing more relevant future output.
+    """
+    lines = []
+
+    if habits:
+        lines.append("### Habits Being Tracked")
+        for h in habits:
+            streak = h.get("streak", 0)
+            name = h.get("name", "?")
+            if streak > 0:
+                lines.append(f"- {name}: {streak}-day streak")
+            else:
+                lines.append(f"- {name}: no active streak")
+
+    if pinned_notes:
+        lines.append("\n### Pinned (User Valued These)")
+        for n in pinned_notes:
+            domain = f" ({n['domain']})" if n.get("domain") else ""
+            lines.append(f"- {n.get('text', '?')}{domain}")
+
+    if dismissed_titles:
+        lines.append("\n### Recently Dismissed (User Did NOT Value These)")
+        for title in dismissed_titles[:5]:
+            lines.append(f"- {title}")
+
+    return "\n".join(lines) if lines else ""
+
+
 def format_personality(traits: Dict[str, int], preferences: Dict[str, Any]) -> str:
     """Format personality traits and preferences."""
     lines = []
@@ -289,10 +350,12 @@ class ContextAssembler:
         consciousness_state: ConsciousnessState,
         user_model: Optional[Any] = None,
         constitution: Optional[Any] = None,
+        data_dir: str = "data/user_data",
     ):
         self.cs = consciousness_state
         self.user_model = user_model
         self.constitution = constitution
+        self.data_dir = Path(data_dir)
 
     def assemble(self, tick_type: str, trigger_domain: Optional[str] = None) -> AssembledContext:
         """
@@ -313,6 +376,10 @@ class ContextAssembler:
             sections = self._monthly_sections()
         elif tick_type == TickType.URGENT.value:
             sections = self._urgent_sections(trigger_domain)
+        elif tick_type == TickType.GOAL_ANALYSIS.value:
+            sections = self._goal_analysis_sections()
+        elif tick_type == TickType.DISCOVERY.value:
+            sections = self._discovery_sections()
         else:
             sections = []
 
@@ -369,7 +436,22 @@ class ContextAssembler:
             priority=5,
         ))
 
-        # Priority 6: Questions ready for resolution (high urgency)
+        # Priority 6: Imported user context (memories, chat history)
+        imported = self._get_imported_memories()
+        if imported:
+            sections.append(ContextSection(
+                name="imported_context",
+                header="## Background Context (User History)",
+                content=format_imported_context(imported, max_items=25),
+                priority=6,
+            ))
+
+        # Priority 7: User engagement (habits, pinned notes, dismissed items)
+        engagement = self._get_engagement_section(priority=7)
+        if engagement:
+            sections.append(engagement)
+
+        # Priority 8: Questions ready for resolution (high urgency)
         ready_questions = self.cs.get_ready_questions()
         if ready_questions:
             sections.append(ContextSection(
@@ -379,7 +461,7 @@ class ContextAssembler:
                 priority=3,  # Same priority as elevated errors — these are actionable
             ))
 
-        # Priority 7: Top dormant questions (still marinating)
+        # Priority 9: Top dormant questions (still marinating)
         questions = [
             q for q in self.cs.get_unresolved_questions(limit=5)
             if not q.is_ready()  # Exclude ready ones — already shown above
@@ -388,17 +470,17 @@ class ContextAssembler:
             name="dormant_questions",
             header="## Unresolved Questions",
             content=format_dormant_questions(questions),
-            priority=7,
+            priority=9,
         ))
 
-        # Priority 8: Today's daily data (raw)
+        # Priority 10: Today's daily data (raw)
         today_data = self._get_today_daily_data()
         if today_data:
             sections.append(ContextSection(
                 name="daily_data",
                 header="## Today's Data",
                 content=json.dumps(today_data, indent=2),
-                priority=8,
+                priority=10,
             ))
 
         return sections
@@ -452,7 +534,12 @@ class ContextAssembler:
                 priority=3,  # High priority — actionable this week
             ))
 
-        # Priority 5: All dormant questions (excluding ready ones)
+        # Priority 5: User engagement (habits, pinned notes, feedback)
+        engagement = self._get_engagement_section(priority=5)
+        if engagement:
+            sections.append(engagement)
+
+        # Priority 6: All dormant questions (excluding ready ones)
         questions = [
             q for q in self.cs.get_unresolved_questions()
             if not q.is_ready()
@@ -461,26 +548,36 @@ class ContextAssembler:
             name="dormant_questions",
             header="## Unresolved Questions",
             content=format_dormant_questions(questions),
-            priority=5,
+            priority=6,
         ))
 
-        # Priority 6: Constitution principles summary
+        # Priority 7: Constitution principles summary
         principles = self._get_principles_dicts()
         sections.append(ContextSection(
             name="constitution",
             header="## Constitution Principles",
             content=format_principles(principles, summary_only=True),
-            priority=6,
+            priority=7,
         ))
 
-        # Priority 7: Elevated errors this week
+        # Priority 8: Imported user context
+        imported = self._get_imported_memories()
+        if imported:
+            sections.append(ContextSection(
+                name="imported_context",
+                header="## Background Context (User History)",
+                content=format_imported_context(imported, max_items=20),
+                priority=8,
+            ))
+
+        # Priority 9: Elevated errors this week
         elevated = self.cs.get_elevated_observations_since(now - timedelta(days=7))
         if elevated:
             sections.append(ContextSection(
                 name="elevated_errors",
                 header="## Notable Prediction Errors This Week",
                 content=format_observations(elevated),
-                priority=7,
+                priority=9,
             ))
 
         return sections
@@ -559,7 +656,17 @@ class ContextAssembler:
             priority=8,
         ))
 
-        # Priority 9: Questions ready for resolution
+        # Priority 9: Imported user context (full for monthly deep review)
+        imported = self._get_imported_memories()
+        if imported:
+            sections.append(ContextSection(
+                name="imported_context",
+                header="## Background Context (User History)",
+                content=format_imported_context(imported, max_items=40),
+                priority=9,
+            ))
+
+        # Priority 10: Questions ready for resolution
         ready_questions = self.cs.get_ready_questions()
         if ready_questions:
             sections.append(ContextSection(
@@ -569,7 +676,7 @@ class ContextAssembler:
                 priority=5,  # High priority for monthly review
             ))
 
-        # Priority 9: All dormant questions (excluding ready ones)
+        # Priority 10: All dormant questions (excluding ready ones)
         questions = [
             q for q in self.cs.get_unresolved_questions()
             if not q.is_ready()
@@ -578,8 +685,149 @@ class ContextAssembler:
             name="dormant_questions",
             header="## Unresolved Questions",
             content=format_dormant_questions(questions),
-            priority=9,
+            priority=10,
         ))
+
+        return sections
+
+    def _goal_analysis_sections(self) -> List[ContextSection]:
+        """Build sections for goal analysis tick — deep-dive per goal."""
+        now = datetime.now()
+        sections = []
+
+        # Priority 1: Goals (the focus of this tick)
+        goals = self._get_goals_dicts(active_only=True)
+        sections.append(ContextSection(
+            name="goals",
+            header="## Active Goals",
+            content=format_goals(goals, active_only=True),
+            priority=1,
+        ))
+
+        # Priority 2: Narrative (current state of life)
+        sections.append(ContextSection(
+            name="narrative",
+            header="## Current Narrative",
+            content=format_narrative(self.cs.narrative),
+            priority=2,
+        ))
+
+        # Priority 3: World model (what I know about myself)
+        sections.append(ContextSection(
+            name="world_model",
+            header="## Current Understanding (World Model)",
+            content=format_world_model(self.cs.world_model),
+            priority=3,
+        ))
+
+        # Priority 4: Recent observations (for evidence)
+        all_obs = self.cs.get_observations_since(now - timedelta(days=7))
+        if all_obs:
+            sections.append(ContextSection(
+                name="observations",
+                header="## Recent Observations (Last 7 Days)",
+                content=format_observations(all_obs[:20]),
+                priority=4,
+            ))
+
+        # Priority 5: Today's data
+        today_data = self._get_today_daily_data()
+        if today_data:
+            sections.append(ContextSection(
+                name="daily_data",
+                header="## Today's Data",
+                content=json.dumps(today_data, indent=2),
+                priority=5,
+            ))
+
+        # Priority 6: Imported context (background for deeper analysis)
+        imported = self._get_imported_memories()
+        if imported:
+            sections.append(ContextSection(
+                name="imported_context",
+                header="## Background Context (User History)",
+                content=format_imported_context(imported, max_items=30),
+                priority=6,
+            ))
+
+        # Priority 7: Daily summaries (recent trends)
+        daily_summaries = self.cs.get_summaries("daily", limit=7)
+        if daily_summaries:
+            sections.append(ContextSection(
+                name="daily_summaries",
+                header="## Recent Daily Summaries",
+                content=format_summaries(daily_summaries),
+                priority=7,
+            ))
+
+        return sections
+
+    def _discovery_sections(self) -> List[ContextSection]:
+        """Build sections for discovery tick — broad exploration beyond goals."""
+        sections = []
+
+        # Priority 1: Imported context (the richest source of signal)
+        imported = self._get_imported_memories()
+        if imported:
+            sections.append(ContextSection(
+                name="imported_context",
+                header="## Background Context (User History)",
+                content=format_imported_context(imported, max_items=40),
+                priority=1,
+            ))
+
+        # Priority 2: Narrative (who I am right now)
+        sections.append(ContextSection(
+            name="narrative",
+            header="## Current Narrative",
+            content=format_narrative(self.cs.narrative),
+            priority=2,
+        ))
+
+        # Priority 3: Goals (to think beyond them)
+        goals = self._get_goals_dicts(active_only=True)
+        sections.append(ContextSection(
+            name="goals",
+            header="## Current Goals (Think Beyond These)",
+            content=format_goals(goals, active_only=True),
+            priority=3,
+        ))
+
+        # Priority 4: World model (full picture)
+        sections.append(ContextSection(
+            name="world_model",
+            header="## Current Understanding (World Model)",
+            content=format_world_model(self.cs.world_model),
+            priority=4,
+        ))
+
+        # Priority 5: Purpose and personality
+        purpose, history = self._get_purpose_data()
+        sections.append(ContextSection(
+            name="purpose",
+            header="## Life Purpose",
+            content=format_purpose_history(purpose, history),
+            priority=5,
+        ))
+
+        traits, prefs = self._get_personality_data()
+        if traits or prefs:
+            sections.append(ContextSection(
+                name="personality",
+                header="## Personality & Preferences",
+                content=format_personality(traits, prefs),
+                priority=6,
+            ))
+
+        # Priority 7: Weekly summaries (trends to spot patterns)
+        weekly_summaries = self.cs.get_summaries("weekly", limit=4)
+        if weekly_summaries:
+            sections.append(ContextSection(
+                name="weekly_summaries",
+                header="## Recent Weekly Summaries",
+                content=format_summaries(weekly_summaries),
+                priority=7,
+            ))
 
         return sections
 
@@ -674,6 +922,51 @@ class ContextAssembler:
         if not self.user_model:
             return {}, {}
         return self.user_model.personality_traits, self.user_model.preferences
+
+    def _get_engagement_section(self, priority: int) -> Optional[ContextSection]:
+        """Build user engagement section from habits, pinned notes, dismissed inbox."""
+        habits_data = []
+        pinned_data = []
+        dismissed_titles = []
+
+        if self.user_model:
+            for h in self.user_model.get_active_habits():
+                habits_data.append(h.to_dict())
+            for n in self.user_model.get_active_pinned_notes()[:10]:
+                pinned_data.append(n.to_dict())
+
+        # Get dismissed inbox items from consciousness state
+        for item in self.cs.get_recent_dismissed(limit=5):
+            dismissed_titles.append(item.title)
+
+        content = format_user_engagement(habits_data, pinned_data, dismissed_titles)
+        if not content:
+            return None
+
+        return ContextSection(
+            name="user_engagement",
+            header="## User Engagement (What They're Tracking & Feedback)",
+            content=content,
+            priority=priority,
+        )
+
+    def _get_imported_memories(self) -> List[Dict[str, Any]]:
+        """Load parsed memories from user imports directory."""
+        if not self.user_model:
+            return []
+
+        user_id = getattr(self.user_model, "user_id", None)
+        if not user_id:
+            return []
+
+        imports_dir = self.data_dir / user_id / "imports"
+        if not imports_dir.exists():
+            return []
+
+        # Re-use the parsing logic from service layer
+        from alter.api.service import AlterService
+        svc = AlterService(data_dir=str(self.data_dir))
+        return svc.get_parsed_memories(user_id)
 
     # --- Budget Enforcement ---
 

@@ -1,0 +1,52 @@
+<section class="glass p-5">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2">
+      <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: rgba(255,255,255,0.30);">My Day</h3>
+      <span class="text-[10px]" style="color: rgba(255,255,255,0.18);">{{ today_label }}</span>
+    </div>
+    <button onclick="document.getElementById('add-habit-form').classList.toggle('hidden')"
+      class="text-xs px-2 py-0.5 rounded hover:bg-white/5 transition-all"
+      style="color: rgba(255,255,255,0.30);">+ Add</button>
+  </div>
+
+  <!-- Add habit form (hidden by default) -->
+  <div id="add-habit-form" class="hidden mb-3">
+    <div class="flex gap-2">
+      <input type="text" id="new-habit-name" placeholder="New habit..."
+        class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm"
+        onkeydown="if(event.key==='Enter')addNewHabit()">
+      <button onclick="addNewHabit()"
+        class="px-3 py-1.5 rounded-lg text-xs font-medium bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25">
+        Add
+      </button>
+    </div>
+  </div>
+
+  {% if habits %}
+  <div class="space-y-1.5">
+    {% for habit in habits %}
+    <div class="flex items-center gap-3 py-1.5 px-2 rounded-lg hover:bg-white/3 transition-all">
+      <button onclick="toggleHabit('{{ habit.id }}')"
+        class="w-5 h-5 rounded-md flex items-center justify-center transition-all flex-shrink-0
+               {% if habit.done_today %}bg-pulse/30 border-pulse/50{% else %}bg-white/5 border-white/15{% endif %} border">
+        {% if habit.done_today %}
+        <svg class="w-3 h-3 text-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        {% endif %}
+      </button>
+      <span class="text-sm flex-1 {% if habit.done_today %}line-through{% endif %}"
+        style="color: {% if habit.done_today %}rgba(255,255,255,0.30){% else %}rgba(255,255,255,0.70){% endif %};">
+        {{ habit.name }}
+      </span>
+      {% if habit.streak > 0 %}
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-pulse/10"
+        style="color: rgba(129,140,248,0.6);">{{ habit.streak }}d</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-xs" style="color: rgba(255,255,255,0.25);">No habits yet. Add one to start tracking.</p>
+  {% endif %}
+</section>

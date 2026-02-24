@@ -49,6 +49,54 @@ from alter.consciousness.config import (
 
 
 @dataclass
+class InboxItem:
+    """
+    A staged item from consciousness output waiting for user curation.
+
+    Consciousness ticks produce insights, discoveries, goal suggestions, etc.
+    Instead of silently logging them, high-signal items land here for the user
+    to review and act on: pin as a note, convert to a goal/habit, or dismiss.
+
+    User reactions (pin, dismiss, convert) feed back into the next tick's
+    context, closing the consciousness loop.
+    """
+    id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    item_type: str = ""             # "insight"|"discovery"|"goal_suggestion"|"decision"|"notification"
+    title: str = ""                 # compact 1-line display
+    body: str = ""                  # full detail (expandable)
+    domain: str = ""
+    source_tick: str = ""           # which tick generated this
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    status: str = "pending"         # "pending"|"pinned"|"dismissed"|"converted"
+    resolved_at: Optional[str] = None
+    actionable: str = ""            # what you could do about it
+    suggested_goal: Optional[Dict[str, Any]] = None  # for goal_suggestion type
+    user_reaction: Optional[str] = None    # feedback signal for consciousness
+    linked_goal_id: Optional[str] = None   # which goal this thought relates to
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "item_type": self.item_type,
+            "title": self.title,
+            "body": self.body,
+            "domain": self.domain,
+            "source_tick": self.source_tick,
+            "created_at": self.created_at,
+            "status": self.status,
+            "resolved_at": self.resolved_at,
+            "actionable": self.actionable,
+            "suggested_goal": self.suggested_goal,
+            "user_reaction": self.user_reaction,
+            "linked_goal_id": self.linked_goal_id,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> InboxItem:
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
 class Expectation:
     """
     A prediction about one aspect of the user's life.
@@ -349,6 +397,7 @@ class ConsciousnessState:
         watch_events: Optional[List[Dict[str, Any]]] = None,
         token_usage: Optional[Dict[str, int]] = None,
         summaries: Optional[Dict[str, List[Summary]]] = None,
+        inbox: Optional[List[InboxItem]] = None,
     ):
         self.user_id = user_id
         self.world_model = world_model or WorldModel()
@@ -361,6 +410,8 @@ class ConsciousnessState:
         self.token_usage: Dict[str, int] = token_usage or {}
         # Hierarchical summaries: {"daily": [...], "weekly": [...], "monthly": [...]}
         self.summaries: Dict[str, List[Summary]] = summaries or {}
+        # Inbox: staged consciousness output for user curation
+        self.inbox: List[InboxItem] = inbox or []
 
     # --- Observations ---
 
@@ -491,6 +542,63 @@ class ConsciousnessState:
             "tick_result": tick_result,
             "timestamp": datetime.now().isoformat(),
         })
+
+    # --- Inbox ---
+
+    def add_inbox_item(self, item: InboxItem) -> None:
+        """Add an item to the inbox."""
+        self.inbox.append(item)
+
+    def get_pending_inbox(self) -> List[InboxItem]:
+        """Get all pending inbox items, newest first."""
+        return sorted(
+            [i for i in self.inbox if i.status == "pending"],
+            key=lambda i: i.created_at,
+            reverse=True,
+        )
+
+    def get_inbox_item(self, item_id: str) -> Optional[InboxItem]:
+        """Get a specific inbox item by ID."""
+        for item in self.inbox:
+            if item.id == item_id:
+                return item
+        return None
+
+    def resolve_inbox_item(
+        self, item_id: str, status: str, user_reaction: Optional[str] = None
+    ) -> Optional[InboxItem]:
+        """
+        Resolve an inbox item (pin, dismiss, convert).
+
+        The user_reaction is stored as feedback signal for the next tick's
+        context assembly, so consciousness learns what the user values.
+        """
+        item = self.get_inbox_item(item_id)
+        if item and item.status == "pending":
+            item.status = status
+            item.resolved_at = datetime.now().isoformat()
+            if user_reaction:
+                item.user_reaction = user_reaction
+            return item
+        return None
+
+    def get_recent_dismissed(self, limit: int = 10) -> List[InboxItem]:
+        """Get recently dismissed items (for consciousness feedback)."""
+        dismissed = sorted(
+            [i for i in self.inbox if i.status == "dismissed"],
+            key=lambda i: i.resolved_at or "",
+            reverse=True,
+        )
+        return dismissed[:limit]
+
+    def get_recent_pinned(self, limit: int = 10) -> List[InboxItem]:
+        """Get recently pinned/converted items (for consciousness feedback)."""
+        acted = sorted(
+            [i for i in self.inbox if i.status in ("pinned", "converted")],
+            key=lambda i: i.resolved_at or "",
+            reverse=True,
+        )
+        return acted[:limit]
 
     # --- Narrative ---
 
@@ -730,6 +838,15 @@ class ConsciousnessState:
         ]
         pruned["dormant_questions"] = before - len(self.dormant_questions)
 
+        # 5. Prune resolved inbox items older than 14 days
+        inbox_cutoff = (now - timedelta(days=14)).isoformat()
+        before = len(self.inbox)
+        self.inbox = [
+            i for i in self.inbox
+            if i.status == "pending" or (i.resolved_at or "") >= inbox_cutoff
+        ]
+        pruned["inbox"] = before - len(self.inbox)
+
         return pruned
 
     # --- Token Tracking ---
@@ -765,6 +882,7 @@ class ConsciousnessState:
                 period_type: [s.to_dict() for s in summaries]
                 for period_type, summaries in self.summaries.items()
             },
+            "inbox": [i.to_dict() for i in self.inbox],
         }
 
     @classmethod
@@ -784,6 +902,7 @@ class ConsciousnessState:
             watch_events=data.get("watch_events", []),
             token_usage=data.get("token_usage", {}),
             summaries=summaries,
+            inbox=[InboxItem.from_dict(i) for i in data.get("inbox", [])],
         )
 
     def save(self, path: Optional[Path] = None) -> None:

@@ -1,0 +1,32 @@
+{% if questions %}
+<div class="space-y-2 animate-fade-in">
+  {% for q in questions %}
+  <div class="glass-sm p-4">
+    <div class="flex items-start gap-3">
+      <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 dot-{{ q.domain }}"></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm" style="color: rgba(255,255,255,0.80);">{{ q.question }}</p>
+        <div class="flex items-center gap-3 mt-2">
+          <span class="text-[10px] uppercase tracking-wider" style="color: rgba(255,255,255,0.30);">{{ q.domain }}</span>
+          <div class="flex-1 readiness-bar">
+            <div class="readiness-bar-fill {% if q.ready %}bg-emerald-400{% endif %}"
+              style="width: {{ (q.readiness * 100)|int }}%;"></div>
+          </div>
+          {% if q.ready %}
+          <span class="text-[10px] text-emerald-400 font-medium">Ready</span>
+          {% else %}
+          <span class="text-[10px]" style="color: rgba(255,255,255,0.25);">{{ (q.readiness * 100)|int }}%</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-4">
+  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+    No dormant questions yet. ALTER will surface questions as it observes patterns.
+  </p>
+</div>
+{% endif %}

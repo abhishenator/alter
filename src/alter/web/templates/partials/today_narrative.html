@@ -1,0 +1,11 @@
+{% if narrative %}
+<div class="glass p-5 halo">
+  <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.75);">{{ narrative }}</p>
+</div>
+{% else %}
+<div class="glass p-5">
+  <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.30);">
+    Your daily summary will appear here after your first review.
+  </p>
+</div>
+{% endif %}

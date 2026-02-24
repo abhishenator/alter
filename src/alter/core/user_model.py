@@ -20,6 +20,78 @@ from pathlib import Path
 
 
 @dataclass
+class Habit:
+    """A trackable daily habit, optionally linked to a goal or inbox item."""
+    id: str
+    name: str
+    domain: str = "general"
+    linked_goal_id: Optional[str] = None
+    source_inbox_id: Optional[str] = None
+    completions: Dict[str, bool] = field(default_factory=dict)  # date → done
+    streak: int = 0
+    active: bool = True
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    def toggle(self, date_str: Optional[str] = None) -> bool:
+        """Toggle completion for a date. Returns new done state."""
+        date_str = date_str or datetime.now().date().isoformat()
+        done = not self.completions.get(date_str, False)
+        self.completions[date_str] = done
+        self._recalc_streak()
+        return done
+
+    def _recalc_streak(self) -> None:
+        """Recalculate streak from completions."""
+        today = datetime.now().date()
+        streak = 0
+        d = today
+        while True:
+            if self.completions.get(d.isoformat(), False):
+                streak += 1
+                d -= timedelta(days=1)
+            else:
+                break
+        self.streak = streak
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id, "name": self.name, "domain": self.domain,
+            "linked_goal_id": self.linked_goal_id,
+            "source_inbox_id": self.source_inbox_id,
+            "completions": self.completions, "streak": self.streak,
+            "active": self.active, "created_at": self.created_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> Habit:
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class PinnedNote:
+    """A pinned insight or note, optionally linked to a goal or inbox item."""
+    id: str
+    text: str
+    domain: str = ""
+    source_inbox_id: Optional[str] = None
+    linked_goal_id: Optional[str] = None
+    pinned_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    archived: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id, "text": self.text, "domain": self.domain,
+            "source_inbox_id": self.source_inbox_id,
+            "linked_goal_id": self.linked_goal_id,
+            "pinned_at": self.pinned_at, "archived": self.archived,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> PinnedNote:
+        return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
 class PurposeHistory:
     """Record of purpose statement at a point in time."""
     statement: str
@@ -67,6 +139,8 @@ class UserModel:
         purpose_statement: Optional[str] = None,
         purpose_history: Optional[List[PurposeHistory]] = None,
         goals: Optional[List[Goal]] = None,
+        habits: Optional[List[Habit]] = None,
+        pinned_notes: Optional[List[PinnedNote]] = None,
         personality_traits: Optional[Dict[str, int]] = None,
         preferences: Optional[Dict[str, Any]] = None,
         strengths: Optional[List[str]] = None,
@@ -78,6 +152,8 @@ class UserModel:
         self.purpose_statement = purpose_statement
         self.purpose_history = purpose_history or []
         self.goals = goals or []
+        self.habits: List[Habit] = habits or []
+        self.pinned_notes: List[PinnedNote] = pinned_notes or []
         self.personality_traits = personality_traits or {}
         self.preferences = preferences or {}
         self.strengths = strengths or []
@@ -148,6 +224,53 @@ class UserModel:
             goal.status = "abandoned"
             goal.completion_notes = reason
             goal.completed_at = datetime.now()
+
+    # Habit Management
+
+    def add_habit(self, habit: Habit) -> None:
+        """Add a habit."""
+        self.habits.append(habit)
+
+    def get_habit(self, habit_id: str) -> Optional[Habit]:
+        """Get a habit by ID."""
+        for h in self.habits:
+            if h.id == habit_id:
+                return h
+        return None
+
+    def get_active_habits(self) -> List[Habit]:
+        """Get all active habits."""
+        return [h for h in self.habits if h.active]
+
+    def remove_habit(self, habit_id: str) -> bool:
+        """Deactivate a habit. Returns True if found."""
+        h = self.get_habit(habit_id)
+        if h:
+            h.active = False
+            return True
+        return False
+
+    # Pinned Notes Management
+
+    def add_pinned_note(self, note: PinnedNote) -> None:
+        """Add a pinned note."""
+        self.pinned_notes.append(note)
+
+    def get_active_pinned_notes(self) -> List[PinnedNote]:
+        """Get non-archived pinned notes, newest first."""
+        return sorted(
+            [n for n in self.pinned_notes if not n.archived],
+            key=lambda n: n.pinned_at,
+            reverse=True,
+        )
+
+    def archive_pinned_note(self, note_id: str) -> bool:
+        """Archive a pinned note. Returns True if found."""
+        for n in self.pinned_notes:
+            if n.id == note_id:
+                n.archived = True
+                return True
+        return False
 
     # Personality & Preferences
 
@@ -321,6 +444,8 @@ class UserModel:
                 }
                 for g in self.goals
             ],
+            "habits": [h.to_dict() for h in self.habits],
+            "pinned_notes": [n.to_dict() for n in self.pinned_notes],
             "personality_traits": self.personality_traits,
             "preferences": self.preferences,
             "strengths": self.strengths,
@@ -360,11 +485,17 @@ class UserModel:
             for g in data.get("goals", [])
         ]
 
+        # Parse habits and pinned notes
+        habits = [Habit.from_dict(h) for h in data.get("habits", [])]
+        pinned_notes = [PinnedNote.from_dict(n) for n in data.get("pinned_notes", [])]
+
         return cls(
             user_id=data["user_id"],
             purpose_statement=data.get("purpose_statement"),
             purpose_history=purpose_history,
             goals=goals,
+            habits=habits,
+            pinned_notes=pinned_notes,
             personality_traits=data.get("personality_traits", {}),
             preferences=data.get("preferences", {}),
             strengths=data.get("strengths", []),

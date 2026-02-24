@@ -1,0 +1,37 @@
+{% if skills %}
+<div class="space-y-2 animate-fade-in">
+  {% for skill in skills %}
+  <div class="glass-sm p-4">
+    <div class="flex items-start justify-between">
+      <div>
+        <h4 class="text-sm font-medium">{{ skill.name }}</h4>
+        <p class="text-xs mt-1" style="color: rgba(255,255,255,0.45);">{{ skill.description }}</p>
+      </div>
+      <button onclick="collectSkill('{{ skill.name }}')"
+        class="flex-shrink-0 px-2 py-1 rounded-lg text-[10px] transition-all
+               bg-white/5 border border-white/10 hover:bg-white/10"
+        style="color: rgba(255,255,255,0.40);">
+        Collect
+      </button>
+    </div>
+    <div class="flex items-center gap-2 mt-2 flex-wrap">
+      {% for domain in skill.domains %}
+      <span class="flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full dot-{{ domain }}"></span>
+        <span class="text-[10px]" style="color: rgba(255,255,255,0.30);">{{ domain }}</span>
+      </span>
+      {% endfor %}
+      {% if skill.metrics %}
+      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.20);">{{ skill.metrics|length }} metrics</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-4">
+  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+    No skills registered. Start with <code class="text-pulse">--consciousness</code> to load default skills.
+  </p>
+</div>
+{% endif %}

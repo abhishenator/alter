@@ -16,6 +16,8 @@ class TickType(str, Enum):
     WEEKLY_REFLECT = "weekly_reflect"  # LLM — cross-domain synthesis
     MONTHLY_DEEP = "monthly_deep"      # LLM — existential / purpose review
     URGENT = "urgent"                  # LLM — immediate reasoning (triggered by watch event or user)
+    GOAL_ANALYSIS = "goal_analysis"    # LLM — structured deep-dive per goal
+    DISCOVERY = "discovery"            # LLM — proactive insights beyond current goals
 
 
 class Severity(str, Enum):
@@ -110,6 +112,8 @@ TOKEN_BUDGETS = {
     TickType.WEEKLY_REFLECT.value: 5300,
     TickType.MONTHLY_DEEP.value: 7900,
     TickType.URGENT.value: 1300,
+    TickType.GOAL_ANALYSIS.value: 5300,
+    TickType.DISCOVERY.value: 4200,
 }
 
 

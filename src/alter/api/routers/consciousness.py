@@ -67,7 +67,8 @@ def consciousness_world_model(request: Request):
 async def consciousness_tick(request: Request, body: TickRequest):
     """Manually trigger a consciousness tick."""
     adapter = _get_adapter(request)
-    valid_types = ["daily_review", "weekly_reflect", "monthly_deep", "urgent"]
+    valid_types = ["daily_review", "weekly_reflect", "monthly_deep", "urgent",
+                    "goal_analysis", "discovery"]
     if body.tick_type not in valid_types:
         raise HTTPException(
             status_code=400,
@@ -82,6 +83,8 @@ async def consciousness_tick(request: Request, body: TickRequest):
         "insights": len(result.insights),
         "decisions": len(result.decisions),
         "notifications": len(result.notifications),
+        "goal_analyses": len(result.goal_analyses),
+        "discoveries": len(result.discoveries),
     }
 
 
@@ -101,6 +104,61 @@ async def consciousness_observe(request: Request):
                 "prediction_error": o.prediction_error,
             }
             for o in observations
+        ],
+    }
+
+
+@router.get("/questions")
+def consciousness_questions(request: Request):
+    """Get dormant questions with full detail and readiness."""
+    adapter = _get_adapter(request)
+    state = adapter.consciousness_state
+    unresolved = state.get_unresolved_questions()
+    ready = state.get_ready_questions()
+    return {
+        "total_unresolved": len(unresolved),
+        "ready_count": len(ready),
+        "questions": [
+            {
+                "id": q.id,
+                "question": q.question,
+                "domain": q.domain,
+                "context": q.context,
+                "readiness": round(q.readiness, 2),
+                "threshold": q.threshold,
+                "ready": q.is_ready(),
+                "resolution_signals": q.resolution_signals,
+                "created_at": q.created_at,
+            }
+            for q in unresolved
+        ],
+    }
+
+
+@router.get("/observations")
+def consciousness_observations(request: Request, limit: int = 20):
+    """Get recent observations with prediction errors."""
+    adapter = _get_adapter(request)
+    state = adapter.consciousness_state
+    from datetime import datetime, timedelta
+    since = datetime.now() - timedelta(hours=48)
+    observations = state.get_observations_since(since)
+    obs_list = sorted(observations, key=lambda o: o.timestamp, reverse=True)[:limit]
+    return {
+        "observation_count": len(obs_list),
+        "observations": [
+            {
+                "id": o.id,
+                "domain": o.domain,
+                "aspect": o.aspect,
+                "expected": o.expected,
+                "observed": o.observed,
+                "prediction_error": o.prediction_error,
+                "severity": o.severity,
+                "summary": o.summary,
+                "timestamp": o.timestamp,
+            }
+            for o in obs_list
         ],
     }
 
@@ -134,3 +192,29 @@ async def consciousness_skill_collect(request: Request, skill_name: str):
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Skill not found: {skill_name}")
     return {"skill": skill_name, "data": data}
+
+
+# ------------------------------------------------------------------
+# Thought Loop Configuration
+# ------------------------------------------------------------------
+
+
+@router.get("/loops")
+def list_thought_loops(request: Request):
+    """Get all thought loop configurations."""
+    adapter = _get_adapter(request)
+    return {"loops": adapter.get_thought_loops()}
+
+
+class LoopUpdate(BaseModel):
+    enabled: bool
+
+
+@router.put("/loops/{loop_id}")
+def update_thought_loop(request: Request, loop_id: str, body: LoopUpdate):
+    """Enable or disable a thought loop."""
+    adapter = _get_adapter(request)
+    result = adapter.update_thought_loop(loop_id, enabled=body.enabled)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Loop not found: {loop_id}")
+    return {"loop_id": loop_id, **result}

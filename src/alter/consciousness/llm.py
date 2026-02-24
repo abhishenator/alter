@@ -93,6 +93,7 @@ def _create_anthropic_fn(model: Optional[str] = None, **kwargs: Any) -> ThinkFn:
         )
 
     model = model or "claude-sonnet-4-20250514"
+    kwargs.setdefault("max_tokens", 4096)
     llm = ChatAnthropic(model=model, **kwargs)
 
     def anthropic_think(prompt: str) -> str:
@@ -113,6 +114,7 @@ def _create_openai_fn(model: Optional[str] = None, **kwargs: Any) -> ThinkFn:
         )
 
     model = model or "gpt-4o"
+    kwargs.setdefault("max_tokens", 4096)
     llm = ChatOpenAI(model=model, **kwargs)
 
     def openai_think(prompt: str) -> str:

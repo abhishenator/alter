@@ -1,0 +1,200 @@
+{% if narrative or insights or observations or questions or goal_suggestions or goal_analyses or discoveries %}
+<div class="space-y-6 animate-fade-in">
+
+  {# ═══ 1. WHERE I STAND — the executive summary ═══ #}
+  {% if narrative %}
+  <div class="px-5">
+    <p class="text-[13px] leading-[1.8]" style="color: rgba(255,255,255,0.72);">{{ narrative }}</p>
+    {% if last_tick_time %}
+    <p class="text-[10px] mt-3" style="color: rgba(255,255,255,0.15);">Updated {{ last_tick_time[11:16] if last_tick_time|length > 16 else last_tick_time }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ═══ 2. DISCOVERIES — proactive insights (high impact, stands out) ═══ #}
+  {% if discoveries %}
+  <div class="px-5">
+    <p class="text-[10px] uppercase tracking-widest mb-3 font-semibold" style="color: rgba(251,191,36,0.55);">Discoveries</p>
+    <div class="space-y-3">
+      {% for disc in discoveries %}
+      <div class="px-4 py-3 rounded-lg border border-amber-400/15" style="background: linear-gradient(135deg, rgba(251,191,36,0.04), transparent);">
+        <p class="text-[13px] font-medium leading-[1.6]" style="color: rgba(255,255,255,0.88);">{{ disc.get('summary', '') }}</p>
+        {% if disc.get('insight') %}
+        <p class="text-[12px] mt-2 leading-[1.7]" style="color: rgba(255,255,255,0.55);">{{ disc.insight }}</p>
+        {% endif %}
+        {% if disc.get('actionable') %}
+        <p class="text-[11px] mt-2 leading-[1.6]" style="color: rgba(251,191,36,0.60);">{{ disc.actionable }}</p>
+        {% endif %}
+        <div class="flex items-center gap-2 mt-2">
+          {% if disc.get('domain') %}
+          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-400/8 text-amber-400/40">{{ disc.domain }}</span>
+          {% endif %}
+          {% if disc.get('confidence') %}
+          <div class="flex items-center gap-0.5" title="{{ (disc.confidence * 100)|int }}% confidence">
+            {% for i in range(5) %}
+            <div class="w-1 h-1 rounded-full {% if i < (disc.confidence * 5)|int %}bg-amber-400/50{% else %}bg-white/8{% endif %}"></div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══ 3. KEY INSIGHT — the one pattern that matters most ═══ #}
+  {% if insights %}
+  <div class="px-5 py-4 border-l-2 border-pulse/30 rounded-r-lg mx-3" style="background: linear-gradient(135deg, rgba(129,140,248,0.05), transparent);">
+    <p class="text-[13px] leading-[1.8] font-medium" style="color: rgba(255,255,255,0.85);">{{ insights[0].get('summary', '') }}</p>
+    {% if insights[0].get('confidence') %}
+    <div class="flex items-center gap-1 mt-2" title="{{ (insights[0].confidence * 100)|int }}% confidence">
+      {% for i in range(5) %}
+      <div class="w-1 h-1 rounded-full {% if i < (insights[0].confidence * 5)|int %}bg-pulse/60{% else %}bg-white/8{% endif %}"></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ═══ 4. GOAL DEEP-DIVES — structured thought units per goal ═══ #}
+  {% if goal_analyses %}
+  <div class="px-5">
+    <p class="text-[10px] uppercase tracking-widest mb-3 font-semibold" style="color: rgba(129,140,248,0.45);">Goal Analysis</p>
+    <div class="space-y-3">
+      {% for ga in goal_analyses %}
+      <details class="group rounded-lg border border-white/6 overflow-hidden" style="background: rgba(255,255,255,0.02);">
+        <summary class="flex items-center justify-between cursor-pointer px-4 py-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-2 h-2 rounded-full flex-shrink-0
+              {% if ga.get('confidence', 0.5) >= 0.7 %}bg-emerald-400/50{% elif ga.get('confidence', 0.5) >= 0.4 %}bg-amber-400/50{% else %}bg-red-400/50{% endif %}"></div>
+            <span class="text-[13px] font-medium" style="color: rgba(255,255,255,0.80);">{{ ga.get('summary', '') }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            {% if ga.get('domain') %}
+            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pulse/8 text-pulse/50">{{ ga.domain }}</span>
+            {% endif %}
+            <svg class="w-3 h-3 transition-transform group-open:rotate-90" style="color: rgba(255,255,255,0.20);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </summary>
+        <div class="px-4 pb-4 space-y-3 border-t border-white/5 pt-3">
+          {% if ga.get('current_state') %}
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-semibold mb-1" style="color: rgba(255,255,255,0.25);">Where I am</p>
+            <p class="text-[12px] leading-[1.7]" style="color: rgba(255,255,255,0.60);">{{ ga.current_state }}</p>
+          </div>
+          {% endif %}
+          {% if ga.get('whats_stopping_me') %}
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-semibold mb-1" style="color: rgba(239,68,68,0.45);">What's stopping me</p>
+            <p class="text-[12px] leading-[1.7]" style="color: rgba(255,255,255,0.55);">{{ ga.whats_stopping_me }}</p>
+          </div>
+          {% endif %}
+          {% if ga.get('whats_inefficient') %}
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-semibold mb-1" style="color: rgba(251,191,36,0.45);">What's inefficient</p>
+            <p class="text-[12px] leading-[1.7]" style="color: rgba(255,255,255,0.55);">{{ ga.whats_inefficient }}</p>
+          </div>
+          {% endif %}
+          {% if ga.get('possibilities') %}
+          <div>
+            <p class="text-[10px] uppercase tracking-wider font-semibold mb-1" style="color: rgba(129,140,248,0.50);">Possibilities</p>
+            <p class="text-[12px] leading-[1.7]" style="color: rgba(255,255,255,0.60);">{{ ga.possibilities }}</p>
+          </div>
+          {% endif %}
+          {% if ga.get('next_action') %}
+          <div class="px-3 py-2 rounded-lg" style="background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.12);">
+            <p class="text-[10px] uppercase tracking-wider font-semibold mb-1" style="color: rgba(52,211,153,0.55);">Next move</p>
+            <p class="text-[12px] leading-[1.6] font-medium" style="color: rgba(255,255,255,0.75);">{{ ga.next_action }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══ 5. NEXT STEPS — goals + actions (the actionable part) ═══ #}
+  {% if goal_suggestions %}
+  <div class="px-5">
+    <p class="text-[10px] uppercase tracking-widest mb-3 font-semibold" style="color: rgba(52,211,153,0.55);">Next steps</p>
+    <div class="space-y-2">
+      {% for item in goal_suggestions %}
+      <div class="flex items-start gap-3">
+        <div class="w-5 h-5 rounded-full border border-emerald-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/40"></div>
+        </div>
+        <div class="flex-1">
+          <p class="text-[13px] leading-[1.6]" style="color: rgba(255,255,255,0.80);">{{ item.get('summary', '') }}</p>
+          {% if item.get('reasoning') %}
+          <p class="text-xs mt-1 leading-relaxed" style="color: rgba(255,255,255,0.30);">{{ item.reasoning }}</p>
+          {% endif %}
+        </div>
+        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/8 text-emerald-400/50 flex-shrink-0">{{ item.get('time_horizon', '') }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══ 6. WHAT I'M NOTICING — observations (lighter weight) ═══ #}
+  {% if observations %}
+  <div class="px-5">
+    <p class="text-[10px] uppercase tracking-widest mb-2 font-semibold" style="color: rgba(255,255,255,0.20);">Noticing</p>
+    <div class="space-y-1.5">
+      {% for item in observations %}
+      <div class="flex items-start gap-2.5">
+        <div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0
+          {% if item.get('significance') == 'critical' %}bg-red-400/60{% elif item.get('significance') == 'signal' %}bg-amber-400/40{% else %}bg-white/15{% endif %}"></div>
+        <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.55);">{{ item.get('summary', '') }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══ 7. MORE INSIGHTS (if >1) ═══ #}
+  {% if insights|length > 1 %}
+  <div class="px-5">
+    <p class="text-[10px] uppercase tracking-widest mb-2 font-semibold" style="color: rgba(129,140,248,0.35);">Also seeing</p>
+    <div class="space-y-1.5">
+      {% for item in insights[1:] %}
+      <div class="flex items-start gap-2.5">
+        <div class="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 bg-pulse/30"></div>
+        <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.60);">{{ item.get('summary', '') }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ═══ 8. OPEN QUESTIONS (collapsed — lowest priority) ═══ #}
+  {% if questions %}
+  <details class="px-5 group">
+    <summary class="flex items-center gap-2 cursor-pointer py-1" style="color: rgba(255,255,255,0.20);">
+      <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+      <span class="text-[10px] uppercase tracking-widest font-semibold">Questions I'm holding</span>
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-400/8 text-amber-400/30">{{ questions|length }}</span>
+    </summary>
+    <div class="mt-2 space-y-1.5 pl-5">
+      {% for q in questions %}
+      <p class="text-[13px] leading-[1.7] italic" style="color: rgba(255,255,255,0.40);">{{ q.question }}</p>
+      {% endfor %}
+    </div>
+  </details>
+  {% endif %}
+
+</div>
+{% else %}
+<div class="text-center py-16 px-5">
+  <p class="text-sm" style="color: rgba(255,255,255,0.25);">My mind is quiet.</p>
+  <p class="text-xs mt-2 max-w-xs mx-auto leading-relaxed" style="color: rgba(255,255,255,0.15);">
+    Hit "Think Now" above to start a thinking session, or it will run automatically tonight at 10pm.
+  </p>
+</div>
+{% endif %}

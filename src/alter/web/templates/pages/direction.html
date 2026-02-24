@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}ALTER — Direction{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in space-y-6">
+
+  <!-- Header -->
+  <div>
+    <h1 class="text-lg font-semibold">Direction</h1>
+    <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">My purpose, goals, habits & plans</p>
+  </div>
+
+  <!-- Purpose / North Star -->
+  <section x-data="purposeEditor('{{ status.get('purpose', '')|e }}')" class="glass p-6 halo">
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">North Star</h3>
+    <template x-if="!editing">
+      <div @click="editing = true" class="cursor-pointer group">
+        <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.80);"
+           x-show="purpose" x-text="purpose"></p>
+        <p class="text-sm italic" style="color: rgba(255,255,255,0.30);"
+           x-show="!purpose">Click to set your purpose...</p>
+        <span class="text-[10px] mt-2 inline-block opacity-0 group-hover:opacity-100 transition-opacity"
+              style="color: rgba(255,255,255,0.25);">Click to edit</span>
+      </div>
+    </template>
+    <template x-if="editing">
+      <div class="space-y-3">
+        <textarea x-model="purpose" rows="3"
+          class="w-full text-sm resize-none"
+          placeholder="What drives you? What matters most?"></textarea>
+        <div class="flex gap-2 justify-end">
+          <button @click="editing = false"
+            class="px-3 py-1.5 rounded-lg text-xs bg-white/5 border border-white/10 hover:bg-white/10"
+            style="color: rgba(255,255,255,0.50);">Cancel</button>
+          <button @click="save()" :disabled="saving"
+            class="px-3 py-1.5 rounded-lg text-xs bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+                   disabled:opacity-40">Save</button>
+        </div>
+      </div>
+    </template>
+  </section>
+
+  <!-- Pending Actions -->
+  <section>
+    <div id="direction-actions"
+      hx-get="/partials/stream-actions" hx-trigger="load, every 10s"
+      hx-swap="innerHTML transition:true">
+    </div>
+  </section>
+
+  <!-- Habits Tracker -->
+  <section x-data="habitsTracker()" class="glass p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: rgba(255,255,255,0.30);">Daily Habits</h3>
+      <span class="text-[10px]" style="color: rgba(255,255,255,0.20);" x-text="todayLabel"></span>
+    </div>
+    <div class="space-y-3">
+      <template x-for="habit in habits" :key="habit.id">
+        <div class="flex items-center gap-3 group">
+          <button @click="toggleHabit(habit)"
+            class="w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 transition-all"
+            :class="habit.done ? 'border-emerald-400/50 bg-emerald-400/15' : 'border-white/15 hover:border-white/30'">
+            <svg x-show="habit.done" class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+          </button>
+          <span class="text-sm flex-1 transition-all"
+            :style="habit.done ? 'color: rgba(255,255,255,0.35); text-decoration: line-through;' : 'color: rgba(255,255,255,0.70);'"
+            x-text="habit.name"></span>
+          <div class="flex gap-0.5" :title="habit.streak + ' day streak'">
+            <template x-for="d in 7">
+              <div class="w-1.5 h-1.5 rounded-full"
+                :class="d <= habit.streak ? 'bg-pulse/50' : 'bg-white/8'"></div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+    <!-- Add habit -->
+    <div class="mt-4 pt-3 border-t border-white/5" x-show="adding" x-cloak>
+      <div class="flex gap-2">
+        <input x-model="newHabit" type="text" placeholder="New habit..."
+          class="flex-1 text-sm" @keydown.enter="addHabit()">
+        <button @click="addHabit()" class="px-3 py-1 rounded-lg text-xs bg-pulse/15 border border-pulse/25 text-pulse">Add</button>
+        <button @click="adding = false" class="px-2 py-1 rounded-lg text-xs bg-white/5 border border-white/10" style="color: rgba(255,255,255,0.40);">Cancel</button>
+      </div>
+    </div>
+    <button x-show="!adding" @click="adding = true"
+      class="mt-3 text-[11px] transition-all hover:text-white/50"
+      style="color: rgba(255,255,255,0.20);">+ Add habit</button>
+  </section>
+
+  <!-- Goals -->
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: rgba(255,255,255,0.30);">Goals</h3>
+    </div>
+
+    <!-- Horizon Tabs -->
+    <div class="flex gap-2 mb-4 flex-wrap" x-data="{ horizon: 'all' }">
+      {% for h in ['all', 'day', 'week', 'month', 'quarter', 'year', 'life'] %}
+      <button
+        @click="horizon = '{{ h }}'; htmx.ajax('GET', '/partials/direction-goals?horizon={{ h }}', '#goals-list')"
+        :class="horizon === '{{ h }}' ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/8'"
+        class="px-3 py-1 rounded-full text-xs border transition-all hover:bg-white/10"
+        style="color: rgba(255,255,255,0.60);">
+        {{ h|capitalize }}
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- Goal List -->
+    <div id="goals-list"
+      hx-get="/partials/direction-goals" hx-trigger="load, refresh"
+      hx-swap="innerHTML transition:true">
+      <div class="glass-sm p-4">
+        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading goals...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Goal -->
+  <section x-data="goalForm()" class="glass p-5">
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">New Goal</h3>
+    <div class="space-y-3">
+      <input type="text" x-model="description" placeholder="What do you want to achieve?"
+        class="w-full text-sm" @keydown.enter="submit()">
+      <div class="flex gap-3 items-center">
+        <select x-model="domain" class="text-xs py-1.5 px-3">
+          {% for d in ['health', 'emotions', 'career', 'relationships', 'growth'] %}
+          <option value="{{ d }}">{{ d|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <select x-model="horizon" class="text-xs py-1.5 px-3">
+          {% for h in ['day', 'week', 'month', 'quarter', 'year', 'life'] %}
+          <option value="{{ h }}" {% if h == 'month' %}selected{% endif %}>{{ h|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <button @click="submit()" :disabled="saving || !description.trim()"
+          class="ml-auto px-4 py-1.5 rounded-lg text-xs font-medium transition-all
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+                 disabled:opacity-30 disabled:cursor-not-allowed">
+          <span x-show="!saving">Add</span>
+          <span x-show="saving" x-cloak>...</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

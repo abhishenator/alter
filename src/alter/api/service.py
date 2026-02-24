@@ -28,7 +28,11 @@ class AlterService:
     def _load(self, user_id: str) -> tuple:
         """Load user, state, and create meta-loop."""
         user = UserModel.load(user_id)
-        state = SystemState.load(user_id)
+        try:
+            state = SystemState.load(user_id)
+        except FileNotFoundError:
+            state = SystemState.create(user_model=user)
+            state.save()
         constitution = Constitution.load()
         meta_loop = MetaLoop(state=state, constitution=constitution)
         return user, state, meta_loop, constitution
@@ -257,6 +261,192 @@ class AlterService:
                 for d in domains
             ]
         }
+
+    # Profile Operations
+
+    def update_profile(self, user_id: str, personality_traits: dict = None,
+                       strengths: list = None, growth_areas: list = None) -> dict:
+        """Update user personality, strengths, and growth areas."""
+        user, state, _, _ = self._load(user_id)
+        if personality_traits:
+            user.set_personality_traits(personality_traits)
+        if strengths:
+            for s in strengths:
+                user.add_strength(s)
+        if growth_areas:
+            for g in growth_areas:
+                user.add_growth_area(g)
+        self._save(user, state)
+        return {
+            "personality_traits": user.personality_traits,
+            "strengths": user.strengths,
+            "growth_areas": user.growth_areas,
+        }
+
+    # Import Operations
+
+    def import_context(self, user_id: str, source: str, content: str) -> dict:
+        """Store imported context (chat history, memories, notes) for consciousness processing."""
+        import json as _json
+        from datetime import datetime as _dt
+
+        imports_dir = self.data_dir / user_id / "imports"
+        imports_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = _dt.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{source}_{timestamp}.json"
+        filepath = imports_dir / filename
+
+        payload = {
+            "source": source,
+            "imported_at": _dt.now().isoformat(),
+            "content": content,
+        }
+        with open(filepath, "w") as f:
+            _json.dump(payload, f, indent=2)
+
+        return {
+            "source": source,
+            "stored_at": str(filepath),
+            "size_bytes": filepath.stat().st_size,
+        }
+
+    # Import Retrieval
+
+    def get_imports(self, user_id: str) -> list:
+        """Load all imported context for a user."""
+        import json as _json
+
+        imports_dir = self.data_dir / user_id / "imports"
+        if not imports_dir.exists():
+            return []
+
+        imports = []
+        for filepath in sorted(imports_dir.glob("*.json"), reverse=True):
+            try:
+                with open(filepath) as f:
+                    data = _json.load(f)
+                imports.append({
+                    "source": data.get("source", "unknown"),
+                    "imported_at": data.get("imported_at", ""),
+                    "content": data.get("content", ""),
+                    "filename": filepath.name,
+                })
+            except Exception:
+                continue
+        return imports
+
+    def get_parsed_memories(self, user_id: str) -> list:
+        """Parse imported context into individual memory items for display."""
+        imports = self.get_imports(user_id)
+        memories = []
+
+        for imp in imports:
+            content = imp.get("content", "")
+            source = imp.get("source", "text")
+
+            if source == "chatgpt":
+                # ChatGPT memories export — parse conversation JSON or text memories
+                memories.extend(self._parse_chatgpt_memories(content))
+            elif source in ("claude", "gemini"):
+                memories.extend(self._parse_text_memories(content))
+            else:
+                # Plain text — split into meaningful chunks
+                memories.extend(self._parse_text_memories(content))
+
+        return memories
+
+    def _parse_text_memories(self, text: str) -> list:
+        """Parse free-form text into individual memory items."""
+        memories = []
+        # Split on sentences that start with common patterns
+        lines = [line.strip() for line in text.split("\n") if line.strip()]
+
+        for line in lines:
+            # Skip very short or UI-artifact lines
+            if len(line) < 15:
+                continue
+            # Skip UI labels like "Default", "Manage", "Search memories" etc.
+            skip_patterns = [
+                "default", "manage", "search memories", "custom instructions",
+                "let chatgpt", "reference saved", "reference chat",
+                "reference record", "choose additional", "set the style",
+                "what should chatgpt", "nickname", "more about you",
+                "what\u2019s on the agenda", "additional behavior",
+                "chatgpt may use", "learn more", "i value",
+                "occupation",
+            ]
+            if line.lower().strip().rstrip(".") in skip_patterns or any(
+                line.lower().startswith(p) for p in skip_patterns
+            ):
+                continue
+
+            # Categorize the memory
+            category = self._categorize_memory(line)
+            memories.append({"text": line, "category": category})
+
+        return memories
+
+    def _parse_chatgpt_memories(self, content: str) -> list:
+        """Parse ChatGPT export content (could be JSON or text)."""
+        import json as _json
+
+        # Try parsing as JSON first
+        try:
+            data = _json.loads(content)
+            if isinstance(data, list):
+                # Array of conversation objects
+                memories = []
+                for conv in data[:50]:  # Limit
+                    title = conv.get("title", "")
+                    if title:
+                        memories.append({"text": title, "category": "conversation"})
+                return memories
+        except (ValueError, TypeError):
+            pass
+
+        # Fall back to text parsing
+        return self._parse_text_memories(content)
+
+    @staticmethod
+    def _categorize_memory(text: str) -> str:
+        """Categorize a memory item by domain."""
+        t = text.lower()
+        health_kw = ["sleep", "exercise", "workout", "health", "cholesterol",
+                      "heart", "pain", "gym", "walking", "yoga", "hiit",
+                      "supplement", "liver", "enzyme", "fissure", "stenosis",
+                      "inflammation", "rowing", "strength training", "brain health"]
+        career_kw = ["work", "engineer", "project", "job", "career", "staff",
+                      "distributed systems", "grpc", "kafka", "golang", "pr ",
+                      "proxy", "tech lead", "architect", "coding interview",
+                      "ai-focused", "llm", "company"]
+        growth_kw = ["learn", "study", "course", "book", "algorithm", "pattern",
+                      "stanford", "ai course", "reading", "interested in"]
+        emotions_kw = ["anxiety", "stress", "pain", "neuroplastic", "rewire",
+                        "brain", "restorative", "breathwork"]
+        relationships_kw = ["baby", "family", "cofounder", "friend"]
+        wealth_kw = ["income", "tax", "trust", "fund", "crypto", "token",
+                      "investor", "blockchain", "filing"]
+
+        for kw in health_kw:
+            if kw in t:
+                return "health"
+        for kw in emotions_kw:
+            if kw in t:
+                return "emotions"
+        for kw in career_kw:
+            if kw in t:
+                return "career"
+        for kw in wealth_kw:
+            if kw in t:
+                return "wealth"
+        for kw in relationships_kw:
+            if kw in t:
+                return "relationships"
+        for kw in growth_kw:
+            if kw in t:
+                return "growth"
+        return "general"
 
     # Helpers
 

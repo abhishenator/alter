@@ -1,0 +1,247 @@
+{% if items %}
+{% set loop_labels = {
+  'daily_review': 'Daily',
+  'weekly_reflect': 'Weekly',
+  'monthly_deep': 'Monthly',
+  'goal_analysis': 'Goals',
+  'discovery': 'Discovery',
+  'urgent': 'Urgent',
+} %}
+{# Map raw domain → grouped category for filtering #}
+{% set domain_to_group = {
+  'health': 'health',
+  'career': 'wealth_career',
+  'wealth': 'wealth_career',
+  'relationships': 'relationships',
+  'emotions': 'emotions',
+  'growth': 'growth',
+  'calendar': 'growth',
+  'general': 'general',
+} %}
+{% set domain_groups = {
+  'health':         {'label': 'Health & Wellness',      'active': 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'},
+  'wealth_career':  {'label': 'Wealth & Career',        'active': 'bg-amber-500/15 border-amber-500/30 text-amber-300'},
+  'relationships':  {'label': 'Relationships & Social',  'active': 'bg-rose-500/15 border-rose-500/30 text-rose-300'},
+  'emotions':       {'label': 'Emotional Well-being',   'active': 'bg-purple-500/15 border-purple-500/30 text-purple-300'},
+  'growth':         {'label': 'Personal Growth',        'active': 'bg-sky-500/15 border-sky-500/30 text-sky-300'},
+  'general':        {'label': 'General',                'active': 'bg-white/10 border-white/20 text-white/70'},
+} %}
+{% set type_map = {
+  'insight':         {'label': 'Patterns',   'active': 'bg-purple-500/15 border-purple-500/30 text-purple-300'},
+  'discovery':       {'label': 'Findings',   'active': 'bg-amber-500/15 border-amber-500/30 text-amber-300'},
+  'goal_suggestion': {'label': 'Goal Ideas', 'active': 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'},
+  'decision':        {'label': 'Suggestions','active': 'bg-blue-500/15 border-blue-500/30 text-blue-300'},
+  'notification':    {'label': 'Alerts',     'active': 'bg-rose-500/15 border-rose-500/30 text-rose-300'},
+} %}
+
+{# Count items per dimension #}
+{% set loops = {} %}
+{% set domains = {} %}
+{% set types = {} %}
+{% for item in items %}
+  {% if item.source_tick %}
+    {% if loops.update({item.source_tick: (loops.get(item.source_tick, 0) + 1)}) %}{% endif %}
+  {% endif %}
+  {% if item.domain %}
+    {% set grp = domain_to_group.get(item.domain, item.domain) %}
+    {% if domains.update({grp: (domains.get(grp, 0) + 1)}) %}{% endif %}
+  {% endif %}
+  {% if item.item_type %}
+    {% if types.update({item.item_type: (types.get(item.item_type, 0) + 1)}) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+<section x-data="{ loop: 'all', domain: 'all', type: 'all' }" class="space-y-3">
+
+  <!-- Header -->
+  <div class="px-1">
+    <div class="flex items-center gap-2">
+      <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: rgba(255,255,255,0.30);">
+        Thought Stream
+      </h3>
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pulse/15 text-pulse">{{ items | length }}</span>
+    </div>
+    <p class="text-[11px] mt-1" style="color: rgba(255,255,255,0.20);">
+      Save what resonates, extract into goals or habits, skip the rest.
+    </p>
+  </div>
+
+  <!-- Filter: Review Loop -->
+  {% if loops | length > 1 %}
+  <div class="flex flex-wrap items-center gap-1.5 px-1">
+    <span class="text-[10px] uppercase tracking-wider font-semibold w-14 flex-shrink-0" style="color: rgba(255,255,255,0.18);">Review</span>
+    <button @click="loop = 'all'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="loop === 'all' ? 'bg-white/10 border-white/20 text-white/70' : 'border-white/5 text-white/25 hover:text-white/40'">
+      All
+    </button>
+    {% for tick, count in loops.items() | sort %}
+    <button @click="loop = '{{ tick }}'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="loop === '{{ tick }}' ? 'bg-white/10 border-white/20 text-white/70' : 'border-white/5 text-white/25 hover:text-white/40'">
+      {{ loop_labels.get(tick, tick) }} <span class="text-[10px] opacity-60">{{ count }}</span>
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Filter: Life Domain -->
+  {% if domains | length > 1 %}
+  <div class="flex flex-wrap items-center gap-1.5 px-1">
+    <span class="text-[10px] uppercase tracking-wider font-semibold w-14 flex-shrink-0" style="color: rgba(255,255,255,0.18);">Domain</span>
+    <button @click="domain = 'all'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="domain === 'all' ? 'bg-white/10 border-white/20 text-white/70' : 'border-white/5 text-white/25 hover:text-white/40'">
+      All
+    </button>
+    {% for grp, count in domains.items() | sort %}
+    {% set ginfo = domain_groups.get(grp, {'label': grp, 'active': 'bg-white/10 border-white/20 text-white/70'}) %}
+    <button @click="domain = '{{ grp }}'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="domain === '{{ grp }}' ? '{{ ginfo.active }}' : 'border-white/5 text-white/25 hover:text-white/40'">
+      {{ ginfo.label }} <span class="text-[10px] opacity-60">{{ count }}</span>
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Filter: Thought Type -->
+  {% if types | length > 1 %}
+  <div class="flex flex-wrap items-center gap-1.5 px-1">
+    <span class="text-[10px] uppercase tracking-wider font-semibold w-14 flex-shrink-0" style="color: rgba(255,255,255,0.18);">Type</span>
+    <button @click="type = 'all'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="type === 'all' ? 'bg-white/10 border-white/20 text-white/70' : 'border-white/5 text-white/25 hover:text-white/40'">
+      All
+    </button>
+    {% for itype, count in types.items() | sort %}
+    {% set tinfo = type_map.get(itype, {'label': itype, 'active': 'bg-white/10 border-white/20 text-white/70'}) %}
+    <button @click="type = '{{ itype }}'"
+      class="px-2.5 py-1 rounded-full text-[11px] transition-all border"
+      :class="type === '{{ itype }}' ? '{{ tinfo.active }}' : 'border-white/5 text-white/25 hover:text-white/40'">
+      {{ tinfo.label }} <span class="text-[10px] opacity-60">{{ count }}</span>
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Stream items -->
+  {% for item in items %}
+  <div class="glass-sm p-4 space-y-2 animate-slide-up" id="inbox-{{ item.id }}"
+       x-show="(loop === 'all' || loop === '{{ item.source_tick }}') && (domain === 'all' || domain === '{{ domain_to_group.get(item.domain, item.domain) }}') && (type === 'all' || type === '{{ item.item_type }}')"
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 transform translate-y-1"
+       x-transition:enter-end="opacity-100 transform translate-y-0"
+       style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+
+    <!-- Type badge + domain dot + title -->
+    <div class="flex items-start gap-2">
+      {% if item.item_type == 'insight' %}
+      <span class="text-xs px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 flex-shrink-0">pattern</span>
+      {% elif item.item_type == 'discovery' %}
+      <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 flex-shrink-0">finding</span>
+      {% elif item.item_type == 'goal_suggestion' %}
+      <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 flex-shrink-0">goal idea</span>
+      {% elif item.item_type == 'decision' %}
+      <span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 flex-shrink-0">suggestion</span>
+      {% elif item.item_type == 'notification' %}
+      <span class="text-xs px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 flex-shrink-0">alert</span>
+      {% endif %}
+      {% if item.domain %}
+      <span class="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 dot-{{ item.domain | default('default') }}"></span>
+      {% endif %}
+      <p class="text-sm leading-snug" style="color: rgba(255,255,255,0.80);">{{ item.title }}</p>
+    </div>
+
+    {% if item.body and item.body != item.title %}
+    <p class="text-xs leading-relaxed pl-0.5" style="color: rgba(255,255,255,0.40);">{{ item.body }}</p>
+    {% endif %}
+
+    {% if item.actionable and item.actionable != item.body %}
+    <p class="text-xs pl-0.5" style="color: rgba(255,255,255,0.30);">
+      <span style="color: rgba(129,140,248,0.6);">You could:</span> {{ item.actionable }}
+    </p>
+    {% endif %}
+
+    {% if item.linked_goal_id and goal_names.get(item.linked_goal_id) %}
+    <p class="text-[10px] pl-0.5 flex items-center gap-1" style="color: rgba(255,255,255,0.20);">
+      <svg class="w-2.5 h-2.5 inline flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+      </svg>
+      <span>{{ goal_names[item.linked_goal_id][:60] }}</span>
+    </p>
+    {% endif %}
+
+    <!-- Meta: which review + domain -->
+    <div class="flex items-center gap-2 pt-0.5">
+      {% if item.source_tick %}
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5" style="color: rgba(255,255,255,0.20);">{{ loop_labels.get(item.source_tick, item.source_tick) }}</span>
+      {% endif %}
+      {% if item.domain %}
+      {% set grp = domain_to_group.get(item.domain, item.domain) %}
+      <span class="text-[10px]" style="color: rgba(255,255,255,0.15);">{{ domain_groups.get(grp, {}).get('label', item.domain) }}</span>
+      {% endif %}
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-2 pt-1">
+      <button onclick="pinInboxItem('{{ item.id }}')"
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-all
+               bg-white/5 border border-white/10 hover:bg-white/10"
+        style="color: rgba(255,255,255,0.50);">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+        </svg>
+        Save
+      </button>
+
+      {% if item.item_type == 'goal_suggestion' %}
+      <button onclick="convertInboxItem('{{ item.id }}', 'goal')"
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-all
+               bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20"
+        style="color: rgba(52,211,153,0.7);">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+        </svg>
+        Add as Goal
+      </button>
+      {% else %}
+      <button onclick="convertInboxItem('{{ item.id }}', 'goal')"
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-all
+               bg-white/5 border border-white/10 hover:bg-white/10"
+        style="color: rgba(255,255,255,0.35);">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+        </svg>
+        Goal
+      </button>
+      {% endif %}
+
+      <button onclick="convertInboxItem('{{ item.id }}', 'habit')"
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-all
+               bg-white/5 border border-white/10 hover:bg-white/10"
+        style="color: rgba(255,255,255,0.35);">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Habit
+      </button>
+
+      <button onclick="dismissInboxItem('{{ item.id }}')"
+        class="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] transition-all hover:bg-white/5 ml-auto"
+        style="color: rgba(255,255,255,0.20);">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}
+<section class="glass-sm p-5 text-center">
+  <p class="text-xs" style="color: rgba(255,255,255,0.25);">
+    Your thought stream is empty. Run a review to generate insights.
+  </p>
+</section>
+{% endif %}

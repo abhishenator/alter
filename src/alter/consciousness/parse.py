@@ -90,6 +90,36 @@ class TickSummary(BaseModel):
     prediction_errors_summary: str = ""
 
 
+class GoalSuggestion(BaseModel):
+    """A suggested goal or sub-goal from the thinking loop."""
+    description: str = ""
+    domain: str = ""
+    time_horizon: str = "week"  # day | week | month | quarter | year
+    parent_goal_description: str = ""  # links to existing goal
+    reasoning: str = ""
+
+
+class GoalAnalysis(BaseModel):
+    """Structured thought unit analyzing one goal aspect."""
+    goal: str = ""
+    domain: str = ""
+    current_state: str = ""
+    whats_stopping_me: str = ""
+    whats_inefficient: str = ""
+    possibilities: str = ""
+    next_action: str = ""
+    confidence: float = 0.7
+
+
+class Discovery(BaseModel):
+    """Proactive insight beyond current goals — things the user might not have considered."""
+    title: str = ""
+    insight: str = ""
+    domain: str = ""
+    actionable: str = ""
+    confidence: float = 0.5
+
+
 class TickResult(BaseModel):
     """
     The complete structured output from an LLM tick.
@@ -104,6 +134,9 @@ class TickResult(BaseModel):
     narrative: str = ""
     notifications: List[TickNotification] = Field(default_factory=list)
     dormant_questions: DormantQuestionChanges = Field(default_factory=DormantQuestionChanges)
+    goal_suggestions: List[GoalSuggestion] = Field(default_factory=list)
+    goal_analyses: List[GoalAnalysis] = Field(default_factory=list)
+    discoveries: List[Discovery] = Field(default_factory=list)
     summary: Optional[TickSummary] = None
 
 

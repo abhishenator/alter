@@ -134,7 +134,10 @@ class ConsciousnessEngine:
         logger.info("Starting %s tick for user %s", tick_type, self.state.user_id)
 
         # 1. Assemble context
-        assembler = ContextAssembler(self.state, self.user_model, self.constitution)
+        assembler = ContextAssembler(
+            self.state, self.user_model, self.constitution,
+            data_dir="data/user_data",
+        )
         context = assembler.assemble(tick_type, trigger_domain=trigger_domain)
         logger.debug(
             "Context assembled: %d sections, ~%d tokens (budget: %d)",

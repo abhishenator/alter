@@ -73,3 +73,6 @@ celerybeat.pid
 
 # ChromaDB
 chroma_data/
+
+# Tailwind standalone CLI binary
+tailwindcss

@@ -1,0 +1,161 @@
+{% if activity %}
+<div class="animate-fade-in">
+  {% for item in activity %}
+  {% if item is mapping %}
+  {% set etype = item.get('event_type', '') %}
+
+  {# ─── Thinking session marker — groups thoughts visually ─── #}
+  {% if 'observations' in item and 'insights' in item %}
+  <div class="flex items-center gap-3 py-4 px-5" style="background: rgba(255,255,255,0.015);">
+    <div class="flex-1 h-px" style="background: rgba(255,255,255,0.06);"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-1.5 h-1.5 rounded-full bg-pulse/40"></div>
+      <span class="text-[10px] tracking-wider uppercase font-medium" style="color: rgba(255,255,255,0.22);">
+        {{ etype|replace('manual_', '')|replace('_', ' ') }}
+      </span>
+      {% if item.get('timestamp') %}
+      <span class="text-[10px]" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+      {% endif %}
+    </div>
+    <div class="flex-1 h-px" style="background: rgba(255,255,255,0.06);"></div>
+  </div>
+
+  {# ─── Narrative: the big picture reflection ─── #}
+  {% elif etype == 'narrative_update' %}
+  <div class="px-5 py-5 border-l-2 border-pulse/30" style="background: linear-gradient(135deg, rgba(129,140,248,0.04), transparent);">
+    <p class="text-[13px] leading-[1.7] italic" style="color: rgba(255,255,255,0.75);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-3 block" style="color: rgba(255,255,255,0.15);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Notification: a message to myself (stands out most) ─── #}
+  {% elif etype == 'notification' %}
+  <div class="px-5 py-4 border-l-2
+    {% if item.get('urgency') == 'high' %}border-red-400/50{% elif item.get('urgency') == 'medium' %}border-amber-400/40{% else %}border-emerald-400/30{% endif %}"
+    style="background: {% if item.get('urgency') == 'high' %}rgba(248,113,113,0.04){% elif item.get('urgency') == 'medium' %}rgba(251,191,36,0.03){% else %}rgba(52,211,153,0.03){% endif %};">
+    <p class="text-[13px] font-medium leading-[1.7]" style="color: rgba(255,255,255,0.90);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-2 block" style="color: rgba(255,255,255,0.15);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Insight: a connection or pattern ─── #}
+  {% elif etype == 'insight' %}
+  <div class="px-5 py-3.5 border-l-2 border-pulse/20">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.78);">{{ item.get('summary', '') }}</p>
+    <div class="flex items-center gap-2 mt-2">
+      {% if item.get('confidence') %}
+      <div class="flex items-center gap-1" title="{{ (item.confidence * 100)|int }}% confidence">
+        {% for i in range(5) %}
+        <div class="w-1 h-1 rounded-full {% if i < (item.confidence * 5)|int %}bg-pulse/60{% else %}bg-white/8{% endif %}"></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if item.get('timestamp') %}
+      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ─── Decision: something I need to do ─── #}
+  {% elif etype == 'decision' %}
+  <div class="px-5 py-3.5 border-l-2 border-emerald-400/30">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.78);">{{ item.get('summary', item.get('target', '')) }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Goal suggestion ─── #}
+  {% elif etype == 'goal_suggestion' %}
+  <div class="px-5 py-3.5 border-l-2 border-emerald-400/25">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.75);">{{ item.get('summary', '') }}</p>
+    {% if item.get('reasoning') %}
+    <p class="text-xs mt-1.5 leading-relaxed" style="color: rgba(255,255,255,0.35);">{{ item.reasoning }}</p>
+    {% endif %}
+    <div class="flex items-center gap-2 mt-2">
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400/60">{{ item.get('time_horizon', '') }} goal</span>
+      {% if item.get('timestamp') %}
+      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ─── Observation: a noticed fact ─── #}
+  {% elif etype == 'observation' %}
+  <div class="px-5 py-3 border-l-2
+    {% if item.get('significance') == 'critical' %}border-red-400/40{% elif item.get('significance') == 'signal' %}border-amber-400/25{% else %}border-white/6{% endif %}">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.60);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── New question: something I'm wondering ─── #}
+  {% elif etype == 'new_question' %}
+  <div class="px-5 py-3 border-l-2 border-amber-400/20">
+    <p class="text-[13px] leading-[1.7] italic" style="color: rgba(255,255,255,0.55);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Question resolved ─── #}
+  {% elif etype == 'question_resolved' %}
+  <div class="px-5 py-3 border-l-2 border-emerald-400/20">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.55);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── World update ─── #}
+  {% elif etype == 'world_update' %}
+  <div class="px-5 py-3 border-l-2 border-sky-400/15">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.50);">{{ item.get('summary', '') }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Consciousness awakened ─── #}
+  {% elif etype == 'engine_started' %}
+  <div class="flex items-center gap-3 py-4 px-5">
+    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-breathe"></div>
+    <span class="text-xs" style="color: rgba(255,255,255,0.30);">Consciousness active</span>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+
+  {# ─── Manual observe — skip aggregate ─── #}
+  {% elif etype == 'manual_observe' %}
+
+  {# ─── Anything else ─── #}
+  {% else %}
+  {% if item.get('summary', item.get('message', '')) %}
+  <div class="px-5 py-3 border-l-2 border-white/5">
+    <p class="text-[13px] leading-[1.7]" style="color: rgba(255,255,255,0.45);">{{ item.get('summary', item.get('message', '')) }}</p>
+    {% if item.get('timestamp') %}
+    <span class="text-[10px] mt-1.5 block" style="color: rgba(255,255,255,0.12);">{{ item.timestamp[11:16] }}</span>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  {% else %}
+  <div class="px-5 py-3">
+    <p class="text-[13px]" style="color: rgba(255,255,255,0.45);">{{ item }}</p>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-16">
+  <p class="text-sm" style="color: rgba(255,255,255,0.25);">My mind is quiet.</p>
+  <p class="text-xs mt-2 max-w-xs mx-auto leading-relaxed" style="color: rgba(255,255,255,0.15);">
+    Hit "Think Now" above to start a thinking session, or it will run automatically tonight at 10pm.
+  </p>
+</div>
+{% endif %}

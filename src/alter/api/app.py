@@ -61,13 +61,15 @@ def create_app() -> FastAPI:
     )
 
     # API routes
-    from alter.api.routers import health, user, goals, constitution, cycle, consciousness
+    from alter.api.routers import health, user, goals, constitution, cycle, consciousness, inbox, habits
     application.include_router(health.router, prefix="/api/v1", tags=["health"])
     application.include_router(user.router, prefix="/api/v1", tags=["users"])
     application.include_router(goals.router, prefix="/api/v1", tags=["goals"])
     application.include_router(constitution.router, prefix="/api/v1", tags=["constitution"])
     application.include_router(cycle.router, prefix="/api/v1", tags=["cycles"])
     application.include_router(consciousness.router, prefix="/api/v1", tags=["consciousness"])
+    application.include_router(inbox.router, prefix="/api/v1", tags=["inbox"])
+    application.include_router(habits.router, prefix="/api/v1", tags=["habits"])
 
     # Static files
     static_dir = Path(__file__).parent.parent / "web" / "static"

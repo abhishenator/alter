@@ -1,145 +1,192 @@
 {% extends "base.html" %}
-{% block title %}ALTER - Settings{% endblock %}
+{% block title %}ALTER — Settings{% endblock %}
 
 {% block content %}
-<div class="space-y-6" x-data="settingsPage()">
+<div class="animate-fade-in space-y-6">
+
+  <!-- Header + Status (full width) -->
+  <div class="flex items-center justify-between">
     <div>
-        <h2 class="text-3xl font-bold text-gray-900">Settings</h2>
-        <p class="mt-1 text-gray-500">Manage your ALTER profile</p>
+      <h1 class="text-lg font-semibold">Settings</h1>
+      <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">Identity, context & reviews</p>
     </div>
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-full {% if consciousness_active %}bg-emerald-400 animate-breathe{% else %}bg-white/20{% endif %}"></div>
+      <span class="text-xs" style="color: rgba(255,255,255,0.40);">
+        {% if consciousness_active %}Online{% else %}Offline{% endif %}
+      </span>
+    </div>
+  </div>
 
-    <!-- Purpose -->
-    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Life Purpose</h3>
+  <!-- 2-Column Grid -->
+  <div class="md:grid md:grid-cols-2 md:gap-5 space-y-6 md:space-y-0">
+
+    <!-- Left Column -->
+    <div class="space-y-6">
+      <!-- Identity Card -->
+      <section class="glass p-6 halo">
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Identity</h3>
         <div class="space-y-3">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose Statement</label>
-                <textarea x-model="purpose" rows="3"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                          placeholder="What is your life purpose?"></textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
-                <input type="text" x-model="purposeNotes"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                       placeholder="Why this change?">
-            </div>
-            <div x-show="purposeSaved" class="p-2 bg-green-50 text-green-700 rounded text-sm">Purpose updated!</div>
-            <button @click="savePurpose()" :disabled="!purpose || savingPurpose"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
-                <span x-show="!savingPurpose">Update Purpose</span>
-                <span x-show="savingPurpose">Saving...</span>
-            </button>
+          <div class="flex items-center justify-between">
+            <span class="text-xs" style="color: rgba(255,255,255,0.50);">User</span>
+            <span class="text-sm font-medium">{{ user_id }}</span>
+          </div>
+          {% if status.get('purpose') %}
+          <div>
+            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Purpose</span>
+            <p class="text-sm mt-1" style="color: rgba(255,255,255,0.80);">{{ status.purpose }}</p>
+          </div>
+          {% endif %}
+          {% if status.get('active_goals_count') is not none %}
+          <div class="flex items-center justify-between">
+            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Active Goals</span>
+            <span class="text-sm text-pulse">{{ status.active_goals_count }}</span>
+          </div>
+          {% endif %}
         </div>
+      </section>
+
+      <!-- Automatic Reviews -->
+      <section x-data="thoughtLoops()" class="glass p-5">
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.30);">Automatic Reviews</h3>
+        <p class="text-xs mb-4" style="color: rgba(255,255,255,0.25);">Choose which reviews run automatically and when.</p>
+        <div class="space-y-3">
+          <template x-for="loop in loops" :key="loop.id">
+            <div class="flex items-start gap-3 px-3 py-3 rounded-lg transition-all"
+              :style="loop.enabled ? 'background: rgba(255,255,255,0.03)' : 'opacity: 0.5'">
+              <button @click="toggleLoop(loop)"
+                class="w-9 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-all"
+                :class="loop.enabled ? 'bg-pulse/30' : 'bg-white/10'">
+                <div class="w-3.5 h-3.5 rounded-full absolute top-[3px] transition-all"
+                  :class="loop.enabled ? 'right-[3px] bg-pulse' : 'left-[3px] bg-white/30'"></div>
+              </button>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);" x-text="loop.label"></p>
+                <p class="text-[11px] mt-0.5 leading-relaxed" style="color: rgba(255,255,255,0.35);" x-text="loop.description"></p>
+                <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.18);" x-text="loop.schedule_label"></p>
+              </div>
+              <button @click="triggerTick(loop.id)"
+                class="px-2 py-1 rounded text-[10px] transition-all flex-shrink-0
+                       bg-white/5 border border-white/10 hover:bg-white/10"
+                style="color: rgba(255,255,255,0.40);">
+                Run now
+              </button>
+            </div>
+          </template>
+        </div>
+      </section>
+
+      <!-- Data Sources -->
+      <details class="group">
+        <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
+          style="color: rgba(255,255,255,0.20);">
+          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+          <span class="text-xs tracking-wider uppercase">Data Sources</span>
+        </summary>
+        <div class="mt-2"
+          hx-get="/partials/profile-skills" hx-trigger="revealed"
+          hx-swap="innerHTML transition:true">
+          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
+        </div>
+      </details>
+
+      <!-- System Info -->
+      <section class="glass-sm p-4">
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">System</h3>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <span style="color: rgba(255,255,255,0.35);">Version</span>
+            <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">{{ status.get('version', '0.1.0') }}</p>
+          </div>
+          <div>
+            <span style="color: rgba(255,255,255,0.35);">Background Reviews</span>
+            <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">
+              {% if consciousness_active %}On{% else %}Off{% endif %}
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <!-- Personality Traits -->
-    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Personality Traits</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% for key, val in status.personality_traits.items() %}
-            <div class="p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-700 capitalize">{{ key | replace('_', ' ') }}</span>
-                    <span class="text-sm font-bold text-indigo-600">{{ val }}</span>
-                </div>
-                <div class="mt-1 w-full bg-gray-200 rounded-full h-1.5">
-                    <div class="bg-indigo-500 h-1.5 rounded-full" style="width: {{ (val / 10 * 100) | int }}%"></div>
-                </div>
-            </div>
-            {% endfor %}
+    <!-- Right Column -->
+    <div class="space-y-6">
+      <!-- Import Context -->
+      <section x-data="importForm()" class="glass p-5">
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Import Context</h3>
+        <p class="text-xs mb-4" style="color: rgba(255,255,255,0.35);">Give ALTER more context — chat exports, memories, notes, journal entries.</p>
+
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button @click="source = 'chatgpt'" class="glass-sm p-2.5 text-center transition-all text-xs"
+            :class="source === 'chatgpt' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
+            style="color: rgba(255,255,255,0.55);">ChatGPT</button>
+          <button @click="source = 'claude'" class="glass-sm p-2.5 text-center transition-all text-xs"
+            :class="source === 'claude' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
+            style="color: rgba(255,255,255,0.55);">Claude</button>
+          <button @click="source = 'gemini'" class="glass-sm p-2.5 text-center transition-all text-xs"
+            :class="source === 'gemini' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
+            style="color: rgba(255,255,255,0.55);">Gemini</button>
+          <button @click="source = 'text'" class="glass-sm p-2.5 text-center transition-all text-xs"
+            :class="source === 'text' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
+            style="color: rgba(255,255,255,0.55);">Text / Notes</button>
         </div>
+
+        <div x-show="source && source !== 'text'" x-cloak class="mb-3">
+          <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-white/5 transition-all">
+            <input type="file" accept=".json,.txt,.csv" @change="handleFile($event)" class="hidden">
+            <p class="text-sm" style="color: rgba(255,255,255,0.55);" x-text="fileName || 'Click to upload ' + source + ' export file'"></p>
+            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.25);">JSON, TXT, or CSV</p>
+          </label>
+        </div>
+
+        <div x-show="source === 'text'" x-cloak class="mb-3">
+          <textarea x-model="textContent" rows="5" class="w-full text-sm resize-none"
+            placeholder="Paste anything — memories, notes, facts about yourself, journal entries, chat logs..."></textarea>
+        </div>
+
+        <div x-show="source" x-cloak class="flex items-center gap-3">
+          <button @click="submitImport()" :disabled="importing || (!textContent.trim() && !fileContent)"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition-all
+                   bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+                   disabled:opacity-30 disabled:cursor-not-allowed">
+            <span x-show="!importing">Import</span>
+            <span x-show="importing" x-cloak>Importing...</span>
+          </button>
+          <span x-show="imported" x-cloak class="text-xs text-emerald-400">Imported successfully</span>
+        </div>
+      </section>
+
+      <!-- Your Memories -->
+      <section>
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Your Memories</h3>
+        <div id="memories-section"
+          hx-get="/partials/profile-memories" hx-trigger="load, refreshMemories from:body"
+          hx-swap="innerHTML transition:true">
+          <div class="glass-sm p-4">
+            <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Values & Rules -->
+      <details class="group">
+        <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
+          style="color: rgba(255,255,255,0.20);">
+          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+          <span class="text-xs tracking-wider uppercase">Values & Rules</span>
+        </summary>
+        <div class="mt-2"
+          hx-get="/partials/profile-constitution" hx-trigger="revealed"
+          hx-swap="innerHTML transition:true">
+          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
+        </div>
+      </details>
     </div>
 
-    <!-- Strengths & Growth Areas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Strengths</h3>
-            {% if status.strengths %}
-            <div class="space-y-2">
-                {% for s in status.strengths %}
-                <div class="flex items-center space-x-2 text-sm text-gray-700">
-                    <span class="text-green-500">&#10003;</span>
-                    <span>{{ s }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p class="text-sm text-gray-400 italic">Discovered through cycles. Run more cycles to detect strengths.</p>
-            {% endif %}
-        </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Growth Areas</h3>
-            {% if status.growth_areas %}
-            <div class="space-y-2">
-                {% for g in status.growth_areas %}
-                <div class="flex items-center space-x-2 text-sm text-gray-700">
-                    <span class="text-amber-500">&#9650;</span>
-                    <span>{{ g }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p class="text-sm text-gray-400 italic">Discovered through cycles. Run more cycles to detect growth areas.</p>
-            {% endif %}
-        </div>
-    </div>
+  </div>
 
-    <!-- Account Info -->
-    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Account</h3>
-        <div class="space-y-3 text-sm">
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">User ID</span>
-                <span class="font-medium text-gray-900">{{ user_id }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">Total Goals</span>
-                <span class="font-medium text-gray-900">{{ status.total_goals }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">Cycles Completed</span>
-                <span class="font-medium text-gray-900">{{ status.cycle_count }}</span>
-            </div>
-            <div class="flex justify-between py-2">
-                <span class="text-gray-500">Version</span>
-                <span class="font-medium text-gray-900">ALTER v0.1.0</span>
-            </div>
-        </div>
-    </div>
 </div>
-
-<script>
-function settingsPage() {
-    return {
-        purpose: '{{ status.purpose or "" }}',
-        purposeNotes: '',
-        savingPurpose: false,
-        purposeSaved: false,
-
-        async savePurpose() {
-            this.savingPurpose = true;
-            this.purposeSaved = false;
-            try {
-                const response = await fetch('/api/v1/users/{{ user_id }}/purpose', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        purpose: this.purpose,
-                        notes: this.purposeNotes
-                    })
-                });
-                if (!response.ok) throw new Error('Failed to update purpose');
-                this.purposeSaved = true;
-                this.purposeNotes = '';
-                setTimeout(() => this.purposeSaved = false, 3000);
-            } catch (e) {
-                alert(e.message);
-            } finally {
-                this.savingPurpose = false;
-            }
-        }
-    };
-}
-</script>
 {% endblock %}

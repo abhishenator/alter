@@ -1,0 +1,45 @@
+{% if goal_analyses %}
+<div class="space-y-2">
+  {% for ga in goal_analyses %}
+  <details class="glass-sm overflow-hidden">
+    <summary class="px-4 py-3 cursor-pointer hover:bg-white/3 transition-all flex items-center gap-2">
+      {% if ga.domain %}
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 flex-shrink-0"
+        style="color: rgba(255,255,255,0.25);">{{ ga.domain }}</span>
+      {% endif %}
+      <span class="text-sm" style="color: rgba(255,255,255,0.70);">{{ ga.summary }}</span>
+    </summary>
+    <div class="px-4 pb-3 space-y-2 text-xs" style="color: rgba(255,255,255,0.45);">
+      {% if ga.current_state %}
+      <div>
+        <span class="font-medium" style="color: rgba(255,255,255,0.30);">Current State:</span>
+        <p class="mt-0.5">{{ ga.current_state }}</p>
+      </div>
+      {% endif %}
+      {% if ga.whats_stopping_me %}
+      <div>
+        <span class="font-medium" style="color: rgba(255,255,255,0.30);">Blockers:</span>
+        <p class="mt-0.5">{{ ga.whats_stopping_me }}</p>
+      </div>
+      {% endif %}
+      {% if ga.possibilities %}
+      <div>
+        <span class="font-medium" style="color: rgba(255,255,255,0.30);">Possibilities:</span>
+        <p class="mt-0.5">{{ ga.possibilities }}</p>
+      </div>
+      {% endif %}
+      {% if ga.next_action %}
+      <div>
+        <span class="font-medium text-pulse/60">Next Move:</span>
+        <p class="mt-0.5" style="color: rgba(255,255,255,0.55);">{{ ga.next_action }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </details>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">
+  No analyses yet. Run a "Goal Deep-Dive" tick to generate them.
+</p>
+{% endif %}

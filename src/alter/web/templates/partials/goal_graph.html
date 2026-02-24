@@ -1,0 +1,137 @@
+{% if layers %}
+<div class="space-y-1">
+
+  {% for layer in layers %}
+  <div class="relative">
+    <!-- Horizon label -->
+    <div class="flex items-center gap-2 px-1 py-2">
+      <span class="text-[10px] font-semibold tracking-widest uppercase"
+        style="color: rgba(255,255,255,0.20);">{{ layer.label }}</span>
+      <div class="flex-1 h-px" style="background: rgba(255,255,255,0.06);"></div>
+    </div>
+
+    <!-- Goals in this horizon -->
+    <div class="grid gap-2 {% if layer.goals | length > 1 %}sm:grid-cols-2{% endif %}">
+      {% for goal in layer.goals %}
+      {% set children = goal_children.get(goal.id, {}) %}
+      {% set thought_count = children.get('thoughts', []) | length %}
+      {% set habit_count = children.get('habits', []) | length %}
+      {% set note_count = children.get('notes', []) | length %}
+      {% set has_children = thought_count > 0 or habit_count > 0 or note_count > 0 %}
+
+      <div class="glass-sm p-3 space-y-2 group" x-data="{ expanded: false }">
+        <!-- Goal header -->
+        <div class="flex items-start gap-2">
+          {% set domain_colors = {
+            'health': 'bg-emerald-500/15 text-emerald-300',
+            'career': 'bg-blue-500/15 text-blue-300',
+            'wealth': 'bg-amber-500/15 text-amber-300',
+            'relationships': 'bg-rose-500/15 text-rose-300',
+            'growth': 'bg-purple-500/15 text-purple-300',
+            'emotions': 'bg-indigo-500/15 text-indigo-300',
+          } %}
+          <span class="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0
+            {{ domain_colors.get(goal.domain, 'bg-white/10 text-white/40') }}">{{ goal.domain }}</span>
+          <p class="text-sm leading-snug flex-1" style="color: rgba(255,255,255,0.75);">{{ goal.description }}</p>
+          <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+            <button onclick="completeGoal('{{ goal.id }}')"
+              class="text-[10px] px-1.5 py-0.5 rounded hover:bg-emerald-500/10 transition-all"
+              style="color: rgba(52,211,153,0.4);">done</button>
+            <button onclick="decomposeGoal('{{ goal.id }}')"
+              class="text-[10px] px-1.5 py-0.5 rounded hover:bg-white/5 transition-all"
+              style="color: rgba(255,255,255,0.20);">break down</button>
+          </div>
+        </div>
+
+        <!-- Linked items summary (collapsed) -->
+        {% if has_children %}
+        <button @click="expanded = !expanded"
+          class="flex items-center gap-2 text-[10px] transition-all hover:opacity-80 w-full"
+          style="color: rgba(255,255,255,0.25);">
+          <svg class="w-2.5 h-2.5 transition-transform" :class="expanded && 'rotate-90'"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+          {% if thought_count > 0 %}
+          <span class="px-1.5 py-0.5 rounded-full bg-pulse/10 text-pulse/60">{{ thought_count }} thought{{ 's' if thought_count != 1 }}</span>
+          {% endif %}
+          {% if habit_count > 0 %}
+          <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400/60">{{ habit_count }} habit{{ 's' if habit_count != 1 }}</span>
+          {% endif %}
+          {% if note_count > 0 %}
+          <span class="px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400/60">{{ note_count }} note{{ 's' if note_count != 1 }}</span>
+          {% endif %}
+        </button>
+
+        <!-- Expanded linked items -->
+        <div x-show="expanded" x-cloak x-transition class="pl-3 space-y-1 border-l border-white/5">
+          {% for t in children.get('thoughts', [])[:5] %}
+          <div class="flex items-center gap-1.5 py-0.5">
+            {% set type_colors = {
+              'insight': 'text-purple-300/50',
+              'discovery': 'text-amber-300/50',
+              'goal_suggestion': 'text-emerald-300/50',
+              'decision': 'text-blue-300/50',
+              'notification': 'text-rose-300/50',
+            } %}
+            <span class="w-1 h-1 rounded-full flex-shrink-0 {{ type_colors.get(t.type, 'bg-white/20') }}"
+              style="background: currentColor;"></span>
+            <span class="text-[10px] truncate" style="color: rgba(255,255,255,0.35);">{{ t.title }}</span>
+            {% if t.status != 'pending' %}
+            <span class="text-[9px] px-1 rounded bg-white/5" style="color: rgba(255,255,255,0.15);">{{ t.status }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% for h in children.get('habits', []) %}
+          <div class="flex items-center gap-1.5 py-0.5">
+            <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+              style="color: rgba(52,211,153,0.4);">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            <span class="text-[10px]" style="color: rgba(255,255,255,0.35);">{{ h.name }}</span>
+            {% if h.streak > 0 %}
+            <span class="text-[9px] text-emerald-400/50">{{ h.streak }}d</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% for n in children.get('notes', []) %}
+          <div class="flex items-center gap-1.5 py-0.5">
+            <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+              style="color: rgba(251,191,36,0.4);">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+            </svg>
+            <span class="text-[10px] truncate" style="color: rgba(255,255,255,0.35);">{{ n.text }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Sub-goals (children) -->
+        {% for sub in layer.goals %}
+        {% if sub.get('parent_goal_id') == goal.id %}
+        <div class="flex items-center gap-2 py-1 pl-4 rounded-lg hover:bg-white/3 transition-all">
+          <span class="text-[10px] px-1 py-0.5 rounded bg-white/3 flex-shrink-0"
+            style="color: rgba(255,255,255,0.18);">sub</span>
+          <p class="text-xs flex-1" style="color: rgba(255,255,255,0.50);">{{ sub.description }}</p>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if not loop.last %}
+  <!-- Connector line between horizons -->
+  <div class="flex justify-center py-1">
+    <div class="w-px h-4" style="background: linear-gradient(to bottom, rgba(129,140,248,0.15), rgba(129,140,248,0.05));"></div>
+  </div>
+  {% endif %}
+  {% endfor %}
+
+</div>
+{% else %}
+<div class="glass p-6 text-center">
+  <p class="text-xs" style="color: rgba(255,255,255,0.30);">No active goals yet. Add one above to get started.</p>
+</div>
+{% endif %}

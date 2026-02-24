@@ -20,6 +20,18 @@ import time
 from datetime import datetime, date
 from typing import Optional
 
+# Load .env file if present
+from pathlib import Path as _P
+_env_file = _P(__file__).resolve().parents[2] / ".env"
+if _env_file.exists():
+    import os as _os
+    with open(_env_file) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _, _v = _line.partition("=")
+                _os.environ.setdefault(_k.strip(), _v.strip())
+
 from alter.core.user_model import UserModel, Goal
 from alter.core.state import SystemState
 from alter.core.meta_loop import MetaLoop

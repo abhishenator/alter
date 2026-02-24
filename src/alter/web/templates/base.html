@@ -1,105 +1,101 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ALTER{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
-    <style>
-        [x-cloak] { display: none !important; }
-        .htmx-indicator { opacity: 0; transition: opacity 200ms ease-in; }
-        .htmx-request .htmx-indicator { opacity: 1; }
-        .htmx-request.htmx-indicator { opacity: 1; }
-    </style>
-    <link rel="stylesheet" href="/static/css/app.css">
-    {% block head %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ALTER{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/tailwind.css">
+
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+  <style>[x-cloak] { display: none !important; }</style>
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block head %}{% endblock %}
 </head>
-<body class="h-full bg-gray-50" x-data="{ sidebarOpen: true }">
-    <div class="flex h-full">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white flex flex-col flex-shrink-0" x-show="sidebarOpen">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold tracking-tight">ALTER</h1>
-                <p class="text-gray-400 text-xs mt-1">Life Transformation Runtime</p>
-            </div>
-            <nav class="flex-1 px-4 space-y-1">
-                <a href="/"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'dashboard' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="/goals"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'goals' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                    </svg>
-                    Goals
-                </a>
-                <a href="/plan"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'plan' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Daily Plan
-                </a>
-                <a href="/constitution"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'constitution' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                    Constitution
-                </a>
-                <a href="/thoughts"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'thoughts' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                    </svg>
-                    Thoughts
-                </a>
-                <a href="/settings"
-                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                          {% if page == 'settings' %}bg-gray-800 text-white{% else %}text-gray-300 hover:bg-gray-800 hover:text-white{% endif %}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Settings
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-800">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-bold">
-                        {{ (user_id or 'U')[0]|upper }}
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium">{{ user_id or 'Guest' }}</p>
-                        <p class="text-xs text-gray-400">ALTER v0.1.0</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
+<body class="h-full alter-bg font-sans antialiased" style="color: rgba(255,255,255,0.92);">
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <div class="max-w-6xl mx-auto px-6 py-8">
-                {% block content %}{% endblock %}
-            </div>
-        </main>
+  <!-- Desktop sidebar nav -->
+  {% include "partials/nav.html" %}
+
+  <!-- Main content area -->
+  <main class="min-h-screen md:ml-56 lg:ml-64 pb-28 md:pb-8">
+    <div class="px-4 pt-8 md:px-6 lg:px-8 max-w-6xl mx-auto">
+      {% block content %}{% endblock %}
     </div>
+  </main>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+  <!-- Mobile bottom nav -->
+  {% include "partials/nav_mobile.html" %}
 
-    <script src="/static/js/app.js"></script>
-    {% block scripts %}{% endblock %}
+  <!-- Toast container -->
+  <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-3 max-w-sm"></div>
+
+  <!-- Processing overlay (shown during reviews) -->
+  <div id="processing-overlay" class="fixed inset-0 z-[60] hidden"
+       style="background: rgba(10, 14, 26, 0.88); backdrop-filter: blur(8px); transition: opacity 0.3s ease;">
+    <div class="flex flex-col items-center justify-center h-full animate-fade-in">
+      <div class="relative w-24 h-24 mb-8">
+        <div class="absolute inset-0 rounded-full bg-pulse/15 animate-breathe"></div>
+        <div class="absolute inset-4 rounded-full bg-pulse/25 animate-breathe" style="animation-delay: 0.5s;"></div>
+        <div class="absolute inset-8 rounded-full bg-pulse/40" style="animation: breathe 2s ease-in-out infinite;"></div>
+        <div class="absolute inset-0 rounded-full border-2 border-pulse/20 border-t-pulse/60 animate-spin-slow"></div>
+      </div>
+      <p id="processing-title" class="text-base font-medium mb-2" style="color: rgba(255,255,255,0.85);">Reviewing your day...</p>
+      <p id="processing-detail" class="text-sm" style="color: rgba(255,255,255,0.40);">This usually takes 10-20 seconds</p>
+      <div class="flex gap-1.5 mt-6">
+        <div class="w-1.5 h-1.5 rounded-full bg-pulse/40 animate-breathe"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-pulse/40 animate-breathe" style="animation-delay: 0.3s;"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-pulse/40 animate-breathe" style="animation-delay: 0.6s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const USER_ID = '{{ user_id | default("default", true) }}';
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.store('alter', {
+        userId: USER_ID,
+        consciousnessActive: false,
+        notifications: [],
+        narrative: '',
+
+        async refreshStatus() {
+          try {
+            const res = await fetch('/api/v1/consciousness/status');
+            if (res.ok) {
+              const data = await res.json();
+              this.consciousnessActive = data.running || false;
+              this.narrative = data.narrative || '';
+            }
+          } catch(e) {}
+        },
+
+        async refreshNotifications() {
+          try {
+            const res = await fetch('/api/v1/consciousness/notifications');
+            if (res.ok) {
+              const data = await res.json();
+              this.notifications = data.notifications || [];
+            }
+          } catch(e) {}
+        }
+      });
+
+      Alpine.store('alter').refreshStatus();
+      Alpine.store('alter').refreshNotifications();
+      setInterval(() => {
+        Alpine.store('alter').refreshStatus();
+        Alpine.store('alter').refreshNotifications();
+      }, 120000);
+    });
+  </script>
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

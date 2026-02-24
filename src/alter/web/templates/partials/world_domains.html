@@ -1,0 +1,42 @@
+{% if domains %}
+<div class="space-y-4 animate-fade-in">
+  {% for domain, expectations in domains.items() %}
+  <div class="glass p-5 halo-{{ domain }}">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="w-2.5 h-2.5 rounded-full dot-{{ domain }}"></div>
+      <h4 class="text-sm font-medium">{{ domain|capitalize }}</h4>
+      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.25);">{{ expectations|length }} expectations</span>
+    </div>
+    {% if expectations %}
+    <div class="space-y-3">
+      {% for exp in expectations %}
+      <div class="pl-4 border-l border-white/5">
+        <p class="text-xs" style="color: rgba(255,255,255,0.70);">{{ exp.get('aspect', exp.get('description', '')) }}</p>
+        {% if exp.get('expected_value') is not none %}
+        <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.35);">
+          Expected: <span class="text-pulse">{{ exp.expected_value }}</span>
+        </p>
+        {% endif %}
+        {% if exp.get('confidence') is not none %}
+        <div class="mt-1.5 flex items-center gap-2">
+          <div class="flex-1 confidence-bar">
+            <div class="confidence-bar-fill bg-pulse/60" style="width: {{ (exp.confidence * 100)|int }}%;"></div>
+          </div>
+          <span class="text-[10px]" style="color: rgba(255,255,255,0.25);">{{ (exp.confidence * 100)|int }}%</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-xs" style="color: rgba(255,255,255,0.25);">No expectations formed yet.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-6 text-center">
+  <p class="text-sm" style="color: rgba(255,255,255,0.30);">No world model data yet.</p>
+  <p class="text-xs mt-1" style="color: rgba(255,255,255,0.20);">ALTER builds its world model through observations and skill data collection.</p>
+</div>
+{% endif %}

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@source "../../templates/**/*.html";
+
+@theme {
+  --color-void: #0a0e1a;
+  --color-abyss: #0d1225;
+  --color-deep: #111832;
+  --color-surface: #1a2342;
+  --color-surface-hover: #1f2a4e;
+  --color-pulse: #818cf8;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}

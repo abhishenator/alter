@@ -1,0 +1,46 @@
+{% if domains %}
+<div class="space-y-4">
+  {% for domain, domain_goals in domains.items() %}
+  <div class="glass-sm p-4">
+    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2"
+      style="color: rgba(255,255,255,0.30);">{{ domain }}</h4>
+    <div class="space-y-1.5">
+      {% for goal in domain_goals %}
+      {% if goal.parent_goal_id is none or goal.parent_goal_id == '' %}
+      <div class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-white/3 transition-all group">
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 flex-shrink-0"
+          style="color: rgba(255,255,255,0.25);">{{ goal.time_horizon }}</span>
+        <p class="text-sm flex-1" style="color: rgba(255,255,255,0.70);">{{ goal.description }}</p>
+        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onclick="completeGoal('{{ goal.id }}')"
+            class="text-[10px] px-1.5 py-0.5 rounded hover:bg-emerald-500/10 transition-all"
+            style="color: rgba(52,211,153,0.4);">done</button>
+          <button onclick="decomposeGoal('{{ goal.id }}')"
+            class="text-[10px] px-1.5 py-0.5 rounded hover:bg-white/5 transition-all"
+            style="color: rgba(255,255,255,0.20);">break down</button>
+        </div>
+      </div>
+      {# Show child goals indented #}
+      {% for child in domain_goals %}
+      {% if child.parent_goal_id == goal.id %}
+      <div class="flex items-center gap-2 py-1 px-2 pl-7 rounded-lg hover:bg-white/3 transition-all group">
+        <span class="text-[10px] px-1 py-0.5 rounded bg-white/3 flex-shrink-0"
+          style="color: rgba(255,255,255,0.18);">{{ child.time_horizon }}</span>
+        <p class="text-xs flex-1" style="color: rgba(255,255,255,0.50);">{{ child.description }}</p>
+        <button onclick="completeGoal('{{ child.id }}')"
+          class="text-[10px] px-1.5 py-0.5 rounded hover:bg-emerald-500/10 transition-all opacity-0 group-hover:opacity-100"
+          style="color: rgba(52,211,153,0.4);">done</button>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass p-6 text-center">
+  <p class="text-xs" style="color: rgba(255,255,255,0.30);">No active goals yet.</p>
+</div>
+{% endif %}

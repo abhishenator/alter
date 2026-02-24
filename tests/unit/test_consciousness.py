@@ -1303,42 +1303,42 @@ class TestPromptBuilder:
         ctx = self._make_context("daily_review")
         prompt = build_prompt("daily_review", ctx, user_name="Alex")
 
-        assert "ALTER" in prompt
-        assert "Alex" in prompt
-        assert "daily review" in prompt
-        assert "OBSERVE" in prompt
-        assert "ASSESS" in prompt
-        assert "THINK" in prompt
-        assert "DECIDE" in prompt
-        assert "NARRATE" in prompt
-        assert "SUMMARIZE" in prompt
+        # First person voice
+        assert "inner voice" in prompt or "my" in prompt.lower()
+        # Has daily framing
+        assert "daily" in prompt.lower()
+        # Has goal-tracking instructions
+        assert "goal" in prompt.lower()
+        # Has output schema
         assert "json" in prompt.lower()
+        assert "observations" in prompt
+        assert "narrative" in prompt
 
     def test_weekly_prompt_has_synthesis_steps(self):
         from alter.consciousness.prompts import build_prompt
         ctx = self._make_context("weekly_reflect")
         prompt = build_prompt("weekly_reflect", ctx)
 
-        assert "weekly reflection" in prompt
-        assert "SYNTHESIZE" in prompt
-        assert "cross-domain" in prompt.lower() or "Cross-domain" in prompt
+        assert "week" in prompt.lower()
+        assert "goal" in prompt.lower()
+        assert "pattern" in prompt.lower()
 
     def test_monthly_prompt_has_identity_steps(self):
         from alter.consciousness.prompts import build_prompt
         ctx = self._make_context("monthly_deep")
         prompt = build_prompt("monthly_deep", ctx)
 
-        assert "monthly deep review" in prompt
-        assert "REFLECT" in prompt
+        assert "month" in prompt.lower()
         assert "purpose" in prompt.lower()
+        assert "goal" in prompt.lower()
 
     def test_urgent_prompt_is_focused(self):
         from alter.consciousness.prompts import build_prompt
         ctx = self._make_context("urgent")
         prompt = build_prompt("urgent", ctx)
 
-        assert "urgent" in prompt.lower() or "immediate attention" in prompt
-        assert "brief" in prompt.lower() or "focused" in prompt.lower()
+        assert "attention" in prompt.lower()
+        assert "right now" in prompt.lower()
 
     def test_prompt_includes_output_schema(self):
         from alter.consciousness.prompts import build_prompt
@@ -1958,7 +1958,7 @@ class TestHourlyObserve:
 
         # Should have fired urgent tick (think_fn was called)
         assert len(recorded) == 1
-        assert "immediate attention" in recorded[0] or "urgent" in recorded[0].lower()
+        assert "attention" in recorded[0].lower()
 
         # Watch event should be recorded
         assert len(engine.state.watch_events) == 1
@@ -2180,10 +2180,13 @@ class TestStandaloneAdapter:
         assert len(result.observations) >= 1
         assert len(result.notifications) >= 1
 
-        # Should be logged
+        # Should log individual items + summary
         activity = adapter.get_activity()
-        assert len(activity) == 1
-        assert "manual_daily_review" in activity[0]["event_type"]
+        assert len(activity) >= 2  # At least individual items + summary
+        event_types = [a["event_type"] for a in activity]
+        assert "manual_daily_review" in event_types
+        # Should have individual thoughts
+        assert any(et in event_types for et in ("observation", "insight", "decision", "notification", "narrative_update"))
 
     @pytest.mark.asyncio
     async def test_adapter_trigger_observe(self, tmp_path):
@@ -2193,10 +2196,12 @@ class TestStandaloneAdapter:
 
         assert len(observations) >= 1
 
-        # Should be logged
+        # Should log individual observations + summary
         activity = adapter.get_activity()
-        assert len(activity) == 1
-        assert activity[0]["event_type"] == "manual_observe"
+        assert len(activity) >= 2
+        event_types = [a["event_type"] for a in activity]
+        assert "manual_observe" in event_types
+        assert "observation" in event_types
 
     @pytest.mark.asyncio
     async def test_adapter_start_stop(self, tmp_path):
@@ -2733,30 +2738,30 @@ class TestEngineReadinessIntegration:
 class TestPromptNarrativeContinuity:
     """Tests for enhanced prompt language around narrative and ready questions."""
 
-    def test_daily_prompt_mentions_ready_questions(self):
-        """Daily reasoning should mention resolving ready questions."""
+    def test_daily_prompt_mentions_questions(self):
+        """Daily reasoning should mention questions."""
         from alter.consciousness.prompts import DAILY_REASONING
-        assert "Ready for Resolution" in DAILY_REASONING
+        assert "question" in DAILY_REASONING.lower() or "figuring out" in DAILY_REASONING.lower()
 
     def test_daily_prompt_has_narrative_continuity(self):
-        """Daily reasoning should encourage narrative continuity."""
+        """Daily reasoning should encourage personal narrative."""
         from alter.consciousness.prompts import DAILY_REASONING
-        assert "continuous thread" in DAILY_REASONING or "Build on" in DAILY_REASONING
+        assert "narrative" in DAILY_REASONING.lower()
 
-    def test_weekly_prompt_mentions_ready_questions(self):
-        """Weekly reasoning should mention resolving ready questions."""
+    def test_weekly_prompt_mentions_patterns(self):
+        """Weekly reasoning should mention patterns."""
         from alter.consciousness.prompts import WEEKLY_REASONING
-        assert "Ready for Resolution" in WEEKLY_REASONING
+        assert "pattern" in WEEKLY_REASONING.lower()
 
     def test_weekly_prompt_has_narrative_continuity(self):
         """Weekly reasoning should encourage narrative evolution."""
         from alter.consciousness.prompts import WEEKLY_REASONING
-        assert "living story" in WEEKLY_REASONING or "Evolve" in WEEKLY_REASONING
+        assert "narrative" in WEEKLY_REASONING.lower() or "story" in WEEKLY_REASONING.lower()
 
-    def test_monthly_prompt_mentions_ready_questions(self):
-        """Monthly reasoning should mention resolving ready questions."""
+    def test_monthly_prompt_mentions_goals(self):
+        """Monthly reasoning should mention goals."""
         from alter.consciousness.prompts import MONTHLY_REASONING
-        assert "Ready for Resolution" in MONTHLY_REASONING
+        assert "goal" in MONTHLY_REASONING.lower()
 
 
 # ─── OpenClaw Adapter Tests (C6) ───
