@@ -4,17 +4,17 @@
   <div class="glass p-5 halo-{{ category }}">
     <div class="flex items-center gap-2 mb-3">
       <div class="w-2.5 h-2.5 rounded-full dot-{{ category }}"></div>
-      <h4 class="text-xs font-semibold tracking-widest uppercase" style="color: rgba(255,255,255,0.40);">{{ category|capitalize }}</h4>
-      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.20);">{{ items|length }} memories</span>
+      <h4 class="text-xs font-semibold tracking-widest uppercase" style="color: #a69880;">{{ category|capitalize }}</h4>
+      <span class="text-[10px] ml-auto" style="color: #c4b8a6;">{{ items|length }} memories</span>
     </div>
     <div class="space-y-2">
       {% for item in items[:8] %}
-      <div class="pl-3 border-l border-white/8">
-        <p class="text-xs leading-relaxed" style="color: rgba(255,255,255,0.65);">{{ item }}</p>
+      <div class="pl-3 border-l border-stone-200/40">
+        <p class="text-xs leading-relaxed" style="color: #6b5d4b;">{{ item }}</p>
       </div>
       {% endfor %}
       {% if items|length > 8 %}
-      <p class="text-[10px] pl-3" style="color: rgba(255,255,255,0.20);">+ {{ items|length - 8 }} more</p>
+      <p class="text-[10px] pl-3" style="color: #c4b8a6;">+ {{ items|length - 8 }} more</p>
       {% endif %}
     </div>
   </div>
@@ -22,7 +22,7 @@
 </div>
 {% else %}
 <div class="glass-sm p-4">
-  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+  <p class="text-xs" style="color: #c4b8a6;">
     No memories imported yet. Go to <a href="/profile" class="text-pulse hover:underline">Self</a> to import context.
   </p>
 </div>

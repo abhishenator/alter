@@ -5,26 +5,26 @@
     <div class="flex items-start gap-3">
       <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 dot-{{ goal.get('domain', 'default') }}"></div>
       <div class="flex-1 min-w-0">
-        <p class="text-sm" style="color: rgba(255,255,255,0.80);">{{ goal.get('description', '') }}</p>
+        <p class="text-sm" style="color: #4a3d2e;">{{ goal.get('description', '') }}</p>
         <div class="flex items-center gap-3 mt-2">
-          <span class="text-[10px] uppercase tracking-wider" style="color: rgba(255,255,255,0.25);">{{ goal.get('domain', '') }}</span>
-          <span class="text-[10px]" style="color: rgba(255,255,255,0.20);">{{ goal.get('time_horizon', '') }}</span>
+          <span class="text-[10px] uppercase tracking-wider" style="color: #c4b8a6;">{{ goal.get('domain', '') }}</span>
+          <span class="text-[10px]" style="color: #c4b8a6;">{{ goal.get('time_horizon', '') }}</span>
           {% if goal.get('progress') is not none %}
           <div class="flex-1 readiness-bar">
             <div class="readiness-bar-fill" style="width: {{ (goal.progress * 100)|int }}%;"></div>
           </div>
-          <span class="text-[10px]" style="color: rgba(255,255,255,0.30);">{{ (goal.progress * 100)|int }}%</span>
+          <span class="text-[10px]" style="color: #c4b8a6;">{{ (goal.progress * 100)|int }}%</span>
           {% endif %}
         </div>
         {% if goal.get('sub_goals') %}
-        <div class="mt-3 ml-3 space-y-1.5 border-l border-white/8 pl-3">
+        <div class="mt-3 ml-3 space-y-1.5 border-l border-stone-200/40 pl-3">
           {% for sub in goal.sub_goals %}
           <div class="flex items-center gap-2">
             <div class="w-1.5 h-1.5 rounded-full
-              {% if sub.get('status') == 'completed' %}bg-emerald-400{% else %}bg-white/15{% endif %}"></div>
+              {% if sub.get('status') == 'completed' %}bg-emerald-400{% else %}bg-stone-200/60{% endif %}"></div>
             <span class="text-xs {% if sub.get('status') == 'completed' %}line-through{% endif %}"
-              style="color: rgba(255,255,255,0.55);">{{ sub.get('description', '') }}</span>
-            <span class="text-[9px] ml-auto" style="color: rgba(255,255,255,0.15);">{{ sub.get('time_horizon', '') }}</span>
+              style="color: #8a7b68;">{{ sub.get('description', '') }}</span>
+            <span class="text-[9px] ml-auto" style="color: #c4b8a6;">{{ sub.get('time_horizon', '') }}</span>
           </div>
           {% endfor %}
         </div>
@@ -33,10 +33,10 @@
       <div class="flex gap-1 flex-shrink-0">
         {% if goal.get('status') == 'active' and goal.get('id') %}
         <button onclick="completeGoal('{{ goal.id }}')"
-          class="w-6 h-6 rounded-full border border-white/15 hover:border-emerald-400/50 hover:bg-emerald-400/10
+          class="w-6 h-6 rounded-full border border-stone-300/40 hover:border-emerald-400/50 hover:bg-emerald-400/10
                  flex items-center justify-center transition-all"
           title="Complete">
-          <svg class="w-3 h-3" style="color: rgba(255,255,255,0.25);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="w-3 h-3" style="color: #c4b8a6;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
           </svg>
         </button>
@@ -48,7 +48,7 @@
 </div>
 {% else %}
 <div class="glass-sm p-4">
-  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+  <p class="text-xs" style="color: #c4b8a6;">
     No goals yet. Add one above to get started.
   </p>
 </div>

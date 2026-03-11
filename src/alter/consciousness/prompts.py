@@ -324,8 +324,16 @@ def build_prompt(
     tick_type: str,
     context: AssembledContext,
     user_name: Optional[str] = None,
+    user_context: Optional[str] = None,
 ) -> str:
-    """Build the full prompt for an LLM tick."""
+    """Build the full prompt for an LLM tick.
+
+    Args:
+        tick_type: The type of tick (daily_review, urgent, etc.)
+        context: Assembled context from the state
+        user_name: The user's name/id
+        user_context: Optional user-provided question or context (for "Ask ALTER")
+    """
     parts = []
 
     # 1. Identity
@@ -352,6 +360,12 @@ def build_prompt(
         parts.append(f"\nTime to think beyond my current goals. What am I not seeing? "
                      f"What opportunities, risks, or insights would be obvious to a "
                      f"brilliant outside observer of my life?\n")
+
+    # 2b. User-provided question or context (Ask ALTER)
+    if user_context:
+        parts.append(f"I'm specifically asking myself: {user_context}\n"
+                     f"Focus my thinking on this question while drawing on everything "
+                     f"I know about my life, goals, and patterns.")
 
     # 3. Context
     parts.append(context.full_text)

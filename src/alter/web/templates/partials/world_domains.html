@@ -5,15 +5,15 @@
     <div class="flex items-center gap-2 mb-3">
       <div class="w-2.5 h-2.5 rounded-full dot-{{ domain }}"></div>
       <h4 class="text-sm font-medium">{{ domain|capitalize }}</h4>
-      <span class="text-[10px] ml-auto" style="color: rgba(255,255,255,0.25);">{{ expectations|length }} expectations</span>
+      <span class="text-[10px] ml-auto" style="color: #c4b8a6;">{{ expectations|length }} expectations</span>
     </div>
     {% if expectations %}
     <div class="space-y-3">
       {% for exp in expectations %}
-      <div class="pl-4 border-l border-white/5">
-        <p class="text-xs" style="color: rgba(255,255,255,0.70);">{{ exp.get('aspect', exp.get('description', '')) }}</p>
+      <div class="pl-4 border-l border-stone-200/30">
+        <p class="text-xs" style="color: #5a4d3c;">{{ exp.get('aspect', exp.get('description', '')) }}</p>
         {% if exp.get('expected_value') is not none %}
-        <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.35);">
+        <p class="text-[10px] mt-1" style="color: #b8aa96;">
           Expected: <span class="text-pulse">{{ exp.expected_value }}</span>
         </p>
         {% endif %}
@@ -22,21 +22,21 @@
           <div class="flex-1 confidence-bar">
             <div class="confidence-bar-fill bg-pulse/60" style="width: {{ (exp.confidence * 100)|int }}%;"></div>
           </div>
-          <span class="text-[10px]" style="color: rgba(255,255,255,0.25);">{{ (exp.confidence * 100)|int }}%</span>
+          <span class="text-[10px]" style="color: #c4b8a6;">{{ (exp.confidence * 100)|int }}%</span>
         </div>
         {% endif %}
       </div>
       {% endfor %}
     </div>
     {% else %}
-    <p class="text-xs" style="color: rgba(255,255,255,0.25);">No expectations formed yet.</p>
+    <p class="text-xs" style="color: #c4b8a6;">No expectations formed yet.</p>
     {% endif %}
   </div>
   {% endfor %}
 </div>
 {% else %}
 <div class="glass-sm p-6 text-center">
-  <p class="text-sm" style="color: rgba(255,255,255,0.30);">No world model data yet.</p>
-  <p class="text-xs mt-1" style="color: rgba(255,255,255,0.20);">ALTER builds its world model through observations and skill data collection.</p>
+  <p class="text-sm" style="color: #c4b8a6;">No world model data yet.</p>
+  <p class="text-xs mt-1" style="color: #c4b8a6;">ALTER builds its world model through observations and skill data collection.</p>
 </div>
 {% endif %}

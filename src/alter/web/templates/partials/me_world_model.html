@@ -1,0 +1,27 @@
+{# World model expectations for Me page #}
+
+{% if expectations %}
+<div class="glass-sm p-4 space-y-3">
+  {% for exp in expectations %}
+  <div class="space-y-1">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 dot-{{ exp.domain | default('default') }}"></span>
+      <span class="text-[10px] uppercase tracking-wider flex-shrink-0" style="color: #a69880;">{{ exp.aspect }}</span>
+      <span class="text-[10px] ml-auto" style="color: #c4b8a6;">{{ (exp.confidence * 100) | int }}%</span>
+    </div>
+    <p class="text-xs pl-4" style="color: #6b5d4b;">{{ exp.description }}</p>
+    {% if exp.numeric_value is not none %}
+    <p class="text-[10px] pl-4" style="color: #a69880;">
+      Value: {{ exp.numeric_value }}{% if exp.numeric_range %} (range: {{ exp.numeric_range[0] }}–{{ exp.numeric_range[1] }}){% endif %}
+    </p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-4 text-center">
+  <p class="text-xs" style="color: #a69880;">
+    World model is empty. Run a review to build ALTER's understanding.
+  </p>
+</div>
+{% endif %}

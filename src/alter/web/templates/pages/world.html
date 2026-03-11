@@ -7,13 +7,13 @@
   <!-- Header -->
   <div>
     <h1 class="text-lg font-semibold">World Model</h1>
-    <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">What ALTER believes about your life</p>
+    <p class="text-xs mt-0.5" style="color: #b8aa96;">What ALTER believes about your life</p>
   </div>
 
   <!-- Consciousness Status -->
   {% if not consciousness_active %}
   <div class="glass-sm p-4 severity-elevated">
-    <p class="text-xs" style="color: rgba(255,255,255,0.50);">
+    <p class="text-xs" style="color: #8a7b68;">
       Consciousness engine is not active. Start with <code class="text-pulse">alter serve --consciousness</code> to see live world model data.
     </p>
   </div>
@@ -21,24 +21,24 @@
 
   <!-- Domain Expectations -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Domain Expectations</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">Domain Expectations</h3>
     <div id="domains-section"
       hx-get="/partials/world-domains" hx-trigger="load"
       hx-swap="innerHTML transition:true">
       <div class="glass-sm p-4">
-        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading world model...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading world model...</p>
       </div>
     </div>
   </section>
 
   <!-- Prediction Errors -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Recent Prediction Errors</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">Recent Prediction Errors</h3>
     <div id="errors-section"
       hx-get="/partials/world-errors" hx-trigger="load"
       hx-swap="innerHTML transition:true">
       <div class="glass-sm p-4">
-        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading...</p>
       </div>
     </div>
   </section>

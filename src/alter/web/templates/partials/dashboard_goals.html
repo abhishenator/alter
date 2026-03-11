@@ -1,0 +1,39 @@
+{# Compact goal list for Dashboard sidebar #}
+
+{% if goals %}
+<section class="glass-sm p-4 space-y-2">
+  <div class="flex items-center justify-between">
+    <h3 class="text-[10px] font-semibold tracking-widest uppercase" style="color: #a69880;">
+      Active Goals
+    </h3>
+    <a href="/goals" class="text-[10px] text-pulse/60 hover:text-pulse transition-all">View all</a>
+  </div>
+
+  {% for goal in goals[:8] %}
+  <div class="flex items-center gap-2 py-1">
+    {% set domain_colors = {
+      'health': 'dot-health',
+      'career': 'dot-career',
+      'wealth': 'dot-career',
+      'relationships': 'dot-relationships',
+      'growth': 'dot-growth',
+      'emotions': 'dot-emotions',
+    } %}
+    <span class="w-2 h-2 rounded-full flex-shrink-0 {{ domain_colors.get(goal.domain, 'dot-default') }}"></span>
+    <p class="text-xs flex-1 truncate" style="color: #5a4d3c;">{{ goal.description }}</p>
+    <span class="text-[9px] flex-shrink-0 px-1 py-0.5 rounded bg-stone-100/60" style="color: #c4b8a6;">{{ goal.time_horizon }}</span>
+  </div>
+  {% endfor %}
+
+  {% if goals | length > 8 %}
+  <p class="text-[10px] text-center pt-1" style="color: #c4b8a6;">
+    +{{ goals | length - 8 }} more
+  </p>
+  {% endif %}
+</section>
+{% else %}
+<section class="glass-sm p-4 text-center">
+  <p class="text-xs" style="color: #a69880;">No active goals.</p>
+  <a href="/goals" class="text-[10px] text-pulse/60 hover:text-pulse transition-all">Add a goal</a>
+</section>
+{% endif %}

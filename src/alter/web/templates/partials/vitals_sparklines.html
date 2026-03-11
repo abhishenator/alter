@@ -1,0 +1,58 @@
+{# 7-day vitals sparklines — pure SVG, no charting library #}
+
+{% macro sparkline(values, label, current, color, max_val, unit='') %}
+{% set valid = values | reject('none') | list %}
+{% if valid | length > 1 %}
+{% set chart_w = 64 %}
+{% set chart_h = 24 %}
+{% set v_min = 0 %}
+{% set v_max = max_val %}
+{% set v_range = v_max - v_min if v_max > v_min else 1 %}
+<div class="flex items-center gap-3">
+  <div class="w-16 flex-shrink-0">
+    <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">{{ label }}</p>
+    {% if current is not none %}
+    <p class="text-sm font-medium" style="color: {{ color }};">{{ current }}{{ unit }}</p>
+    {% else %}
+    <p class="text-sm" style="color: #a69880;">—</p>
+    {% endif %}
+  </div>
+  <svg width="{{ chart_w }}" height="{{ chart_h }}" viewBox="0 0 {{ chart_w }} {{ chart_h }}" class="flex-shrink-0">
+    <polyline
+      fill="none"
+      stroke="{{ color }}"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      points="{% for v in values %}{% if v is not none %}{{ (loop.index0 / ([values | length - 1, 1] | max) * chart_w) | round(1) }},{{ (chart_h - ((v - v_min) / v_range * (chart_h - 4) + 2)) | round(1) }}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}"
+    />
+    {# Dot for latest value #}
+    {% if values[-1] is not none %}
+    <circle
+      cx="{{ chart_w }}"
+      cy="{{ (chart_h - ((values[-1] - v_min) / v_range * (chart_h - 4) + 2)) | round(1) }}"
+      r="2"
+      fill="{{ color }}"
+    />
+    {% endif %}
+  </svg>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% set has_data = vitals.sleep | reject('none') | list | length > 1 or vitals.mood | reject('none') | list | length > 1 %}
+
+{% if has_data %}
+<section class="glass-sm p-4">
+  <h3 class="text-[10px] font-semibold tracking-widest uppercase mb-3" style="color: #a69880;">
+    This Week
+  </h3>
+  <div class="grid grid-cols-2 gap-3">
+    {{ sparkline(vitals.sleep, 'Sleep', vitals.sleep[-1], 'rgba(167,139,250,0.8)', 12, 'h') }}
+    {{ sparkline(vitals.mood, 'Mood', vitals.mood[-1], 'rgba(168,85,247,0.8)', 10) }}
+    {{ sparkline(vitals.energy, 'Energy', vitals.energy[-1], 'rgba(14,165,233,0.8)', 10) }}
+    {{ sparkline(vitals.stress, 'Stress', vitals.stress[-1], 'rgba(251,113,133,0.8)', 10) }}
+    {{ sparkline(vitals.exercise, 'Exercise', vitals.exercise[-1], 'rgba(52,211,153,0.8)', 120, 'm') }}
+  </div>
+</section>
+{% endif %}

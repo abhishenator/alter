@@ -1,0 +1,46 @@
+{# Memories section for Me page with client-side category filters #}
+
+{% if memories %}
+<div class="glass-sm p-4 space-y-3" x-data="{ cat: '' }">
+  {% if categories | length > 1 %}
+  <div class="flex flex-wrap gap-1.5">
+    <button @click="cat = ''"
+      class="px-2 py-0.5 rounded-full text-[11px] font-medium transition-all border"
+      :class="cat === '' ? 'bg-pulse/15 border-pulse/30 text-pulse' : 'border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300'">
+      All
+    </button>
+    {% for c in categories %}
+    <button @click="cat = '{{ c }}'"
+      class="px-2 py-0.5 rounded-full text-[11px] font-medium transition-all border"
+      :class="cat === '{{ c }}' ? 'bg-pulse/15 border-pulse/30 text-pulse' : 'border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300'">
+      {{ c }}
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="space-y-2 max-h-80 overflow-y-auto dashboard-scroll">
+    {% for m in memories[:50] %}
+    <div class="flex items-start gap-2 py-1"
+      x-show="cat === '' || cat === '{{ m.category | default('general') }}'"
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 mt-1 dot-{{ m.category | default('default') }}"></span>
+      <p class="text-xs leading-relaxed" style="color: #6b5d4b;">{{ m.text }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% if memories | length > 50 %}
+  <p class="text-[10px] text-center" style="color: #c4b8a6;">
+    Showing 50 of {{ memories | length }} memories
+  </p>
+  {% endif %}
+</div>
+{% else %}
+<div class="glass-sm p-4 text-center">
+  <p class="text-xs" style="color: #a69880;">
+    No memories imported yet. Go to Settings to import context.
+  </p>
+</div>
+{% endif %}

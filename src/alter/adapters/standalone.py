@@ -270,9 +270,9 @@ class StandaloneAdapter:
     # Manual triggers (from API)
     # ------------------------------------------------------------------
 
-    async def trigger_tick(self, tick_type: str) -> Optional[Any]:
+    async def trigger_tick(self, tick_type: str, context: Optional[str] = None) -> Optional[Any]:
         """Manually trigger a thinking tick. Returns TickResult or None."""
-        result = await self.engine.tick(tick_type)
+        result = await self.engine.tick(tick_type, user_context=context)
         if result:
             self._log_tick_details(f"manual_{tick_type}", result)
         return result
@@ -616,6 +616,7 @@ class StandaloneAdapter:
     def get_status(self) -> Dict[str, Any]:
         """Get consciousness engine status for the API."""
         state = self.consciousness_state
+        pending_inbox = state.get_pending_inbox()
         return {
             "running": self.is_running,
             "user_id": self.user_id,
@@ -624,10 +625,11 @@ class StandaloneAdapter:
             "narrative": state.narrative,
             "world_model_domains": state.world_model.get_domains(),
             "pending_notifications": len(state.get_pending_notifications()),
+            "pending_inbox_count": len(pending_inbox),
             "dormant_questions": len(state.get_unresolved_questions()),
             "daily_token_usage": state.get_daily_token_usage(),
             "activity_count": len(self._activity_log),
-            "inbox_pending": len(state.get_pending_inbox()),
+            "inbox_pending": len(pending_inbox),
             "skills": self.skill_registry.skill_names,
             "thought_loops": {
                 k: {"label": v["label"], "enabled": v["enabled"], "schedule_type": v["schedule_type"]}

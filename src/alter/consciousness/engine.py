@@ -110,6 +110,7 @@ class ConsciousnessEngine:
         self,
         tick_type: str,
         trigger_domain: Optional[str] = None,
+        user_context: Optional[str] = None,
     ) -> Optional[TickResult]:
         """
         Run a full thinking cycle.
@@ -124,6 +125,7 @@ class ConsciousnessEngine:
         Args:
             tick_type: "daily_review", "weekly_reflect", "monthly_deep", "urgent"
             trigger_domain: For urgent ticks, which domain triggered it
+            user_context: Optional user-provided question/context (for Ask ALTER)
 
         Returns:
             TickResult on success, None on parse failure
@@ -148,7 +150,7 @@ class ConsciousnessEngine:
         user_name = None
         if self.user_model and hasattr(self.user_model, 'user_id'):
             user_name = self.user_model.user_id
-        prompt = build_prompt(tick_type, context, user_name=user_name)
+        prompt = build_prompt(tick_type, context, user_name=user_name, user_context=user_context)
 
         # 3. Call LLM
         logger.debug("Calling think_fn with prompt (%d chars)", len(prompt))

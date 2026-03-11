@@ -217,6 +217,24 @@ class UserModel:
             goal.completion_notes = notes
             goal.completed_at = datetime.now()
 
+    def update_goal(self, goal_id: str, **kwargs: Any) -> Optional[Goal]:
+        """Update fields on an existing goal. Returns updated Goal or None."""
+        goal = self.get_goal(goal_id)
+        if not goal:
+            return None
+        for field in ("description", "domain", "time_horizon", "parent_goal_id", "status"):
+            if field in kwargs:
+                setattr(goal, field, kwargs[field])
+        return goal
+
+    def remove_goal(self, goal_id: str) -> bool:
+        """Remove a goal entirely. Returns True if found and removed."""
+        goal = self.get_goal(goal_id)
+        if not goal:
+            return False
+        self.goals.remove(goal)
+        return True
+
     def abandon_goal(self, goal_id: str, reason: str = "") -> None:
         """Mark a goal as abandoned."""
         goal = self.get_goal(goal_id)

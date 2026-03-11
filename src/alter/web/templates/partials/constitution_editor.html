@@ -1,0 +1,78 @@
+{# Constitution editor — inline edit principles #}
+
+<div class="space-y-4">
+  {% if constitution.principles %}
+  {% for p in constitution.principles %}
+  <div class="glass-sm p-4 space-y-2" x-data="{ editing: false, name: '{{ p.name | e }}', description: '{{ p.description | e }}', weight: {{ p.weight }}, saving: false }">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-pulse/12 text-pulse/60">{{ p.id }}</span>
+        <template x-if="!editing">
+          <h4 class="text-sm font-medium" style="color: #3d3225;" x-text="name"></h4>
+        </template>
+        <template x-if="editing">
+          <input type="text" x-model="name" class="text-sm font-medium bg-stone-100/60 border border-stone-200/50 rounded px-2 py-0.5"
+            style="color: #3d3225;">
+        </template>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px]" style="color: #c4b8a6;">weight: <span x-text="weight"></span></span>
+        <button @click="editing = !editing"
+          class="text-[10px] hover:text-stone-400 transition-all"
+          style="color: #a69880;"
+          x-text="editing ? 'cancel' : 'edit'"></button>
+      </div>
+    </div>
+
+    <template x-if="!editing">
+      <p class="text-xs leading-relaxed" style="color: #8a7b68;" x-text="description"></p>
+    </template>
+
+    <template x-if="editing">
+      <div class="space-y-2">
+        <textarea x-model="description" rows="2"
+          class="w-full bg-stone-100/60 border border-stone-200/50 rounded-lg px-3 py-2 text-xs"
+          style="color: #5a4d3c;"></textarea>
+        <div class="flex items-center gap-3">
+          <label class="text-[10px]" style="color: #a69880;">Weight (1-10):</label>
+          <input type="range" min="1" max="10" x-model.number="weight" class="flex-1">
+          <span class="text-xs text-pulse/60" x-text="weight"></span>
+        </div>
+        <button @click="saving = true; fetch('/api/v1/constitution/principles/{{ p.id }}', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ name, description, weight }) }).then(r => { saving = false; if(r.ok){ editing = false; showToast('Saved', 'Principle updated.', 'success'); } else { showToast('Error', 'Could not save.', 'error'); } }).catch(() => { saving = false; showToast('Error', 'Connection error.', 'error'); })"
+          :disabled="saving"
+          class="px-3 py-1 rounded-lg text-[11px] bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18 transition-all">
+          <span x-text="saving ? 'Saving...' : 'Save Changes'"></span>
+        </button>
+      </div>
+    </template>
+
+    {% if p.rules %}
+    <div class="pl-2 space-y-0.5">
+      {% for rule in p.rules %}
+      <p class="text-[10px] leading-relaxed" style="color: #a69880;">• {{ rule }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if constitution.domains %}
+  <div class="pt-2">
+    <h4 class="text-[10px] font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">
+      Life Domains
+    </h4>
+    <div class="grid grid-cols-2 gap-2">
+      {% for d in constitution.domains %}
+      <div class="glass-sm p-3">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-2 h-2 rounded-full dot-{{ d.id | default('default') }}"></span>
+          <span class="text-xs font-medium" style="color: #6b5d4b;">{{ d.name }}</span>
+        </div>
+        <p class="text-[10px]" style="color: #a69880;">{{ d.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>

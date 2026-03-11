@@ -151,6 +151,44 @@ class AlterService:
         goal = user.get_goal(full_id)
         return self._goal_to_dict(goal)
 
+    def update_goal(self, user_id: str, goal_id: str, **kwargs) -> dict:
+        """Update fields on an existing goal."""
+        user, state, _, _ = self._load(user_id)
+        full_id = self._resolve_goal_id(user, goal_id)
+        if not full_id:
+            raise ValueError(f"Goal '{goal_id}' not found")
+        goal = user.update_goal(full_id, **kwargs)
+        if not goal:
+            raise ValueError(f"Goal '{goal_id}' not found")
+        self._save(user, state)
+        return self._goal_to_dict(goal)
+
+    def delete_goal(self, user_id: str, goal_id: str) -> dict:
+        """Delete a goal entirely."""
+        user, state, _, _ = self._load(user_id)
+        full_id = self._resolve_goal_id(user, goal_id)
+        if not full_id:
+            raise ValueError(f"Goal '{goal_id}' not found")
+        if not user.remove_goal(full_id):
+            raise ValueError(f"Goal '{goal_id}' not found")
+        self._save(user, state)
+        return {"deleted": full_id}
+
+    def update_principle(self, principle_id: str, **kwargs) -> dict:
+        """Update a constitution principle and save."""
+        constitution = Constitution.load()
+        principle = constitution.update_principle(principle_id, **kwargs)
+        if not principle:
+            raise ValueError(f"Principle '{principle_id}' not found")
+        constitution.save_to_yaml()
+        return {
+            "id": principle.id,
+            "name": principle.name,
+            "description": principle.description,
+            "rules": principle.rules,
+            "weight": principle.weight,
+        }
+
     # Cycle Operations
 
     def run_cycle(self, user_id: str) -> dict:

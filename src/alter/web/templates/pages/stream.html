@@ -8,12 +8,12 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-lg font-semibold">Inner Dialogue</h1>
-      <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">My thoughts, patterns & plans</p>
+      <p class="text-xs mt-0.5" style="color: #b8aa96;">My thoughts, patterns & plans</p>
     </div>
     <div class="flex gap-2">
       <button onclick="triggerTick('daily_review')"
         class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all
-               bg-pulse/10 border border-pulse/20 text-pulse hover:bg-pulse/20 hover:border-pulse/30">
+               bg-pulse/12 border border-pulse/20 text-pulse hover:bg-pulse/18 hover:border-pulse/30">
         Think Now
       </button>
     </div>
@@ -21,9 +21,9 @@
 
   <!-- How it works -->
   <div class="px-4 py-3 rounded-lg" style="background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.08);">
-    <p class="text-xs leading-relaxed" style="color: rgba(255,255,255,0.40);">
+    <p class="text-xs leading-relaxed" style="color: #a69880;">
       Your consciousness reflects on goals, health, and life context automatically.
-      <span style="color: rgba(255,255,255,0.25);">Runs nightly at 10pm, weekly Sundays, monthly on the 1st. "Think Now" triggers it manually.</span>
+      <span style="color: #c4b8a6;">Runs nightly at 10pm, weekly Sundays, monthly on the 1st. "Think Now" triggers it manually.</span>
     </p>
   </div>
 
@@ -39,7 +39,7 @@
       hx-get="/partials/stream-organized" hx-trigger="load, every 15s"
       hx-swap="innerHTML transition:true">
       <div class="p-6 text-center">
-        <p class="text-xs" style="color: rgba(255,255,255,0.25);">Loading...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading...</p>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@
   <!-- Raw Timeline (collapsed) -->
   <details class="group">
     <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-      style="color: rgba(255,255,255,0.20);">
+      style="color: #c4b8a6;">
       <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
@@ -58,7 +58,7 @@
         hx-get="/partials/stream-feed" hx-trigger="revealed, every 15s"
         hx-swap="innerHTML transition:true">
         <div class="p-6 text-center">
-          <p class="text-xs" style="color: rgba(255,255,255,0.25);">Loading timeline...</p>
+          <p class="text-xs" style="color: #c4b8a6;">Loading timeline...</p>
         </div>
       </div>
     </div>
@@ -67,29 +67,29 @@
   <!-- Other Thinking Modes -->
   <details class="group">
     <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-      style="color: rgba(255,255,255,0.20);">
+      style="color: #c4b8a6;">
       <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
       <span class="text-xs tracking-wider uppercase">Other thinking modes</span>
     </summary>
     <div class="mt-2 glass p-4">
-      <p class="text-xs mb-3" style="color: rgba(255,255,255,0.30);">
+      <p class="text-xs mb-3" style="color: #c4b8a6;">
         Different thinking modes for different depths. Configure schedules on the Self page.
       </p>
       <div class="flex flex-wrap gap-2">
         {% for tick, label in [('daily_review', 'Daily Review'), ('weekly_reflect', 'Weekly Reflect'), ('monthly_deep', 'Monthly Deep'), ('goal_analysis', 'Goal Deep-Dive'), ('discovery', 'Discovery')] %}
         <button onclick="triggerTick('{{ tick }}')"
           class="px-3 py-1.5 rounded-lg text-xs transition-all
-                 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
-          style="color: rgba(255,255,255,0.50);">
+                 bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50 hover:border-stone-300/50"
+          style="color: #8a7b68;">
           {{ label }}
         </button>
         {% endfor %}
         <button onclick="triggerObserve()"
           class="px-3 py-1.5 rounded-lg text-xs transition-all
-                 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
-          style="color: rgba(255,255,255,0.50);">
+                 bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50 hover:border-stone-300/50"
+          style="color: #8a7b68;">
           Quick Scan
         </button>
       </div>

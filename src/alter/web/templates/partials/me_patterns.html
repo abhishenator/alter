@@ -1,0 +1,28 @@
+{# Patterns section for Me page — confidence bars #}
+
+{% if patterns %}
+<section class="glass-sm p-5 space-y-3">
+  <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: #a69880;">
+    Detected Patterns
+  </h3>
+
+  {% for p in patterns %}
+  <div class="space-y-1">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 dot-{{ p.domain | default('default') }}"></span>
+      <p class="text-xs flex-1" style="color: #5a4d3c;">{{ p.description }}</p>
+      <span class="text-[10px] flex-shrink-0" style="color: #a69880;">{{ (p.confidence * 100) | int }}%</span>
+    </div>
+    <div class="confidence-bar ml-4">
+      <div class="confidence-bar-fill bg-pulse/50" style="width: {{ (p.confidence * 100) | int }}%;"></div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}
+<section class="glass-sm p-5 text-center">
+  <p class="text-xs" style="color: #a69880;">
+    No patterns detected yet. Keep checking in daily to help ALTER learn.
+  </p>
+</section>
+{% endif %}

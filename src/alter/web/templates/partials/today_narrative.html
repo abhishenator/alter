@@ -1,11 +1,148 @@
-{% if narrative %}
-<div class="glass p-5 halo">
-  <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.75);">{{ narrative }}</p>
+{# Briefing Card — structured daily briefing with cold-start guidance #}
+
+{% if has_any_data %}
+{# ── Normal Briefing ── #}
+<div class="glass p-5 halo space-y-4">
+
+  {# Greeting #}
+  <div>
+    <h2 class="text-base font-medium" style="color: #2c2418;">
+      {{ greeting }}, {{ user_id }}.
+    </h2>
+    {% if hours_since_checkin and hours_since_checkin > 24 %}
+    <p class="text-xs mt-1" style="color: #a69880;">
+      It's been {{ (hours_since_checkin // 24) }} day{{ 's' if hours_since_checkin >= 48 else '' }} since your last check-in.
+    </p>
+    {% elif consciousness_active %}
+    <p class="text-xs mt-1" style="color: #a69880;">
+      Here's what I've been thinking about.
+    </p>
+    {% endif %}
+  </div>
+
+  {# Key Signal — elevated observations or top inbox item #}
+  {% if elevated_observations %}
+  <div class="space-y-1.5">
+    {% for obs in elevated_observations %}
+    <div class="flex items-start gap-2 py-1.5 px-3 rounded-lg
+      {% if obs.severity == 'critical' %}severity-critical{% else %}severity-elevated{% endif %}">
+      <span class="w-2 h-2 rounded-full flex-shrink-0 mt-1.5 dot-{{ obs.domain }}"></span>
+      <p class="text-sm leading-snug" style="color: #3d3225;">{{ obs.summary }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% elif top_inbox_item %}
+  <div class="flex items-start gap-2 py-2 px-3 rounded-lg bg-pulse/8 border border-pulse/10">
+    <span class="text-xs px-1.5 py-0.5 rounded bg-pulse/15 text-pulse flex-shrink-0 mt-0.5">new</span>
+    <p class="text-sm leading-snug" style="color: #4a3d2e;">{{ top_inbox_item.title }}</p>
+  </div>
+  {% endif %}
+
+  {# Today's Focus — short-horizon goals #}
+  {% if focus_goals %}
+  <div>
+    <p class="text-[10px] uppercase tracking-widest font-semibold mb-2" style="color: #a69880;">Today's Focus</p>
+    <div class="space-y-1">
+      {% for g in focus_goals %}
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full dot-{{ g.domain }}"></span>
+        <span class="text-xs" style="color: #5a4d3c;">{{ g.description }}</span>
+        <span class="text-[10px] ml-auto" style="color: #b8aa96;">{{ g.time_horizon }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Narrative #}
+  {% if narrative %}
+  <p class="text-sm leading-relaxed pt-1 border-t border-stone-200/30" style="color: #5a4d3c;">{{ narrative }}</p>
+  {% endif %}
 </div>
+
 {% else %}
-<div class="glass p-5">
-  <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.30);">
-    Your daily summary will appear here after your first review.
-  </p>
+{# ── Cold Start / Getting Started ── #}
+{% set checkin_done = hours_since_checkin is not none and hours_since_checkin == 0 %}
+{% set goals_done = active_goal_count > 0 %}
+{% set steps_done = (1 if checkin_done else 0) + (1 if goals_done else 0) %}
+
+<div class="glass p-6 space-y-5">
+  <div>
+    <h2 class="text-base font-medium" style="color: #2c2418;">
+      {{ greeting }}, {{ user_id }}.
+    </h2>
+    <p class="text-sm mt-1" style="color: #8a7b68;">
+      I'm still learning about you. Here's how to help me think better for you.
+    </p>
+  </div>
+
+  {# Progress indicator #}
+  <div class="flex items-center gap-3">
+    <div class="flex gap-1">
+      {% for i in range(3) %}
+      <div class="w-2 h-2 rounded-full transition-all
+        {% if i < steps_done %}bg-pulse/80{% else %}bg-stone-200/50{% endif %}"></div>
+      {% endfor %}
+    </div>
+    <span class="text-[10px]" style="color: #a69880;">{{ steps_done }}/3 complete</span>
+  </div>
+
+  {# Steps #}
+  <div class="space-y-3">
+    <div class="flex items-start gap-3">
+      <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
+        {% if checkin_done %}bg-emerald-500/20 border border-emerald-500/40{% else %}bg-pulse/15 border border-pulse/25{% endif %}">
+        {% if checkin_done %}
+        <svg class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        {% else %}
+        <span class="text-[10px] font-bold text-pulse">1</span>
+        {% endif %}
+      </div>
+      <div>
+        <p class="text-sm {% if checkin_done %}line-through{% endif %}"
+          style="color: {% if checkin_done %}#a69880{% else %}#4a3d2e{% endif %};">
+          Complete your daily check-in below
+        </p>
+        <p class="text-[10px]" style="color: #a69880;">Takes 30 seconds — mood, energy, sleep, exercise</p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
+        {% if goals_done %}bg-emerald-500/20 border border-emerald-500/40{% else %}bg-stone-200/40 border border-stone-300/40{% endif %}">
+        {% if goals_done %}
+        <svg class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        {% else %}
+        <span class="text-[10px] font-bold" style="color: #8a7b68;">2</span>
+        {% endif %}
+      </div>
+      <div>
+        <p class="text-sm {% if goals_done %}line-through{% endif %}"
+          style="color: {% if goals_done %}#a69880{% else %}#6b5d4b{% endif %};">
+          Set at least one goal on the <a href="/goals" class="text-pulse hover:text-pulse/80">Goals page</a>
+        </p>
+        <p class="text-[10px]" style="color: #a69880;">Give ALTER something to track and think about</p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
+        bg-stone-200/40 border border-stone-300/40">
+        <span class="text-[10px] font-bold" style="color: #8a7b68;">3</span>
+      </div>
+      <div>
+        <p class="text-sm" style="color: #6b5d4b;">
+          Wait for your first review tonight at 10pm
+        </p>
+        <p class="text-[10px]" style="color: #a69880;">
+          Or run one now with "Run a Review" below{% if consciousness_active %} — ALTER is awake{% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}

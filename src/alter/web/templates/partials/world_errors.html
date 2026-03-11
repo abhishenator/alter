@@ -5,18 +5,18 @@
     <div class="flex items-start gap-3">
       <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 dot-{{ obs.domain }}"></div>
       <div class="flex-1 min-w-0">
-        <p class="text-sm" style="color: rgba(255,255,255,0.80);">{{ obs.summary }}</p>
+        <p class="text-sm" style="color: #4a3d2e;">{{ obs.summary }}</p>
         <div class="flex items-center gap-3 mt-2 flex-wrap">
-          <span class="text-[10px] uppercase tracking-wider" style="color: rgba(255,255,255,0.25);">{{ obs.domain }} / {{ obs.aspect }}</span>
+          <span class="text-[10px] uppercase tracking-wider" style="color: #c4b8a6;">{{ obs.domain }} / {{ obs.aspect }}</span>
           {% if obs.prediction_error is not none %}
           <span class="text-[10px] font-medium
             {% if obs.severity == 'critical' %}text-red-400
             {% elif obs.severity == 'elevated' %}text-amber-400
-            {% else %}text-white/30{% endif %}">
+            {% else %}text-stone-400{% endif %}">
             Error: {{ "%.2f"|format(obs.prediction_error) }}
           </span>
           {% endif %}
-          <span class="text-[10px]" style="color: rgba(255,255,255,0.20);">{{ obs.timestamp }}</span>
+          <span class="text-[10px]" style="color: #c4b8a6;">{{ obs.timestamp }}</span>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
 </div>
 {% else %}
 <div class="glass-sm p-4">
-  <p class="text-xs" style="color: rgba(255,255,255,0.30);">
+  <p class="text-xs" style="color: #c4b8a6;">
     No significant prediction errors in the last 48 hours.
   </p>
 </div>

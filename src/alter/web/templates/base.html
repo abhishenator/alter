@@ -12,12 +12,20 @@
 
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <script>
+    // Re-initialize Alpine components after HTMX swaps in new HTML
+    document.addEventListener('htmx:afterSettle', function(evt) {
+      if (evt.detail.elt && typeof Alpine !== 'undefined') {
+        Alpine.initTree(evt.detail.elt);
+      }
+    });
+  </script>
 
   <style>[x-cloak] { display: none !important; }</style>
   <link rel="stylesheet" href="/static/css/app.css">
   {% block head %}{% endblock %}
 </head>
-<body class="h-full alter-bg font-sans antialiased" style="color: rgba(255,255,255,0.92);">
+<body class="h-full alter-bg font-sans antialiased" style="color: #2c2418;">
 
   <!-- Desktop sidebar nav -->
   {% include "partials/nav.html" %}
@@ -36,17 +44,18 @@
   <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-3 max-w-sm"></div>
 
   <!-- Processing overlay (shown during reviews) -->
-  <div id="processing-overlay" class="fixed inset-0 z-[60] hidden"
-       style="background: rgba(10, 14, 26, 0.88); backdrop-filter: blur(8px); transition: opacity 0.3s ease;">
+  <div id="processing-overlay" class="fixed inset-0 z-[60] hidden cursor-pointer"
+       onclick="hideProcessingOverlay()"
+       style="background: rgba(250, 248, 245, 0.92); backdrop-filter: blur(8px); transition: opacity 0.3s ease;">
     <div class="flex flex-col items-center justify-center h-full animate-fade-in">
       <div class="relative w-24 h-24 mb-8">
-        <div class="absolute inset-0 rounded-full bg-pulse/15 animate-breathe"></div>
-        <div class="absolute inset-4 rounded-full bg-pulse/25 animate-breathe" style="animation-delay: 0.5s;"></div>
-        <div class="absolute inset-8 rounded-full bg-pulse/40" style="animation: breathe 2s ease-in-out infinite;"></div>
-        <div class="absolute inset-0 rounded-full border-2 border-pulse/20 border-t-pulse/60 animate-spin-slow"></div>
+        <div class="absolute inset-0 rounded-full bg-pulse/12 animate-breathe"></div>
+        <div class="absolute inset-4 rounded-full bg-pulse/18 animate-breathe" style="animation-delay: 0.5s;"></div>
+        <div class="absolute inset-8 rounded-full bg-pulse/30" style="animation: breathe 2s ease-in-out infinite;"></div>
+        <div class="absolute inset-0 rounded-full border-2 border-pulse/15 border-t-pulse/50 animate-spin-slow"></div>
       </div>
-      <p id="processing-title" class="text-base font-medium mb-2" style="color: rgba(255,255,255,0.85);">Reviewing your day...</p>
-      <p id="processing-detail" class="text-sm" style="color: rgba(255,255,255,0.40);">This usually takes 10-20 seconds</p>
+      <p id="processing-title" class="text-base font-medium mb-2" style="color: #2c2418;">Reviewing your day...</p>
+      <p id="processing-detail" class="text-sm" style="color: #8a7b68;">This usually takes 10-20 seconds</p>
       <div class="flex gap-1.5 mt-6">
         <div class="w-1.5 h-1.5 rounded-full bg-pulse/40 animate-breathe"></div>
         <div class="w-1.5 h-1.5 rounded-full bg-pulse/40 animate-breathe" style="animation-delay: 0.3s;"></div>
@@ -64,6 +73,7 @@
         consciousnessActive: false,
         notifications: [],
         narrative: '',
+        pendingCount: 0,
 
         async refreshStatus() {
           try {
@@ -72,6 +82,7 @@
               const data = await res.json();
               this.consciousnessActive = data.running || false;
               this.narrative = data.narrative || '';
+              this.pendingCount = data.pending_inbox_count || data.inbox_pending || 0;
             }
           } catch(e) {}
         },

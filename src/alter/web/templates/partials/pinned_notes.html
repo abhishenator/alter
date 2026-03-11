@@ -1,7 +1,7 @@
 {% if notes %}
 <details class="group" open>
   <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-    style="color: rgba(255,255,255,0.25);">
+    style="color: #c4b8a6;">
     <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
     </svg>
@@ -10,14 +10,14 @@
   <div class="mt-1 space-y-1.5">
     {% for note in notes %}
     <div class="glass-sm px-4 py-2.5 flex items-start gap-3">
-      <p class="text-xs leading-relaxed flex-1" style="color: rgba(255,255,255,0.55);">{{ note.text }}</p>
+      <p class="text-xs leading-relaxed flex-1" style="color: #8a7b68;">{{ note.text }}</p>
       {% if note.domain %}
-      <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 flex-shrink-0"
-        style="color: rgba(255,255,255,0.25);">{{ note.domain }}</span>
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-100/60 flex-shrink-0"
+        style="color: #c4b8a6;">{{ note.domain }}</span>
       {% endif %}
       <button onclick="archivePinnedNote('{{ note.id }}')"
-        class="text-[10px] hover:text-white/40 transition-all flex-shrink-0"
-        style="color: rgba(255,255,255,0.15);">remove</button>
+        class="text-[10px] hover:text-stone-400 transition-all flex-shrink-0"
+        style="color: #c4b8a6;">remove</button>
     </div>
     {% endfor %}
   </div>

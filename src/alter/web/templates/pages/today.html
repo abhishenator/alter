@@ -4,117 +4,114 @@
 {% block content %}
 <div class="animate-fade-in space-y-5">
 
-  <!-- Narrative (full width) -->
+  <!-- Briefing Card (full width, polls every 120s) -->
   <div id="narrative-section"
     hx-get="/partials/today-narrative" hx-trigger="load, every 120s"
     hx-swap="innerHTML transition:true">
     <div class="glass p-5">
-      <p class="text-sm leading-relaxed" style="color: rgba(255,255,255,0.45);">Loading...</p>
+      <p class="text-sm leading-relaxed" style="color: #7a6c58;">Loading...</p>
     </div>
   </div>
 
-  <!-- 2-Column Grid: Stream (2/3) | Sidebar (1/3) -->
-  <div class="md:grid md:grid-cols-5 lg:grid-cols-3 md:gap-5">
-
-    <!-- Left: Thought Stream -->
-    <div class="md:col-span-3 lg:col-span-2 md:max-h-[calc(100vh-12rem)] md:overflow-y-auto dashboard-scroll space-y-5">
-      <div id="inbox-section"
-        hx-get="/partials/inbox" hx-trigger="load, every 60s, refreshInbox from:body"
-        hx-swap="innerHTML transition:true">
-      </div>
-    </div>
-
-    <!-- Right: Habits + Check-in + Notes + Review -->
-    <div class="md:col-span-2 lg:col-span-1 md:sticky md:top-6 space-y-5 mt-5 md:mt-0 self-start">
-
-      <!-- My Day: Habits + Check-in -->
-      <section x-data="{ showCheckin: false, ...checkinForm() }">
-        <div id="habits-section"
-          hx-get="/partials/habits" hx-trigger="load, refreshHabits from:body"
-          hx-swap="innerHTML transition:true">
-        </div>
-
-        <div class="glass p-5 -mt-1" style="border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-          <button @click="showCheckin = !showCheckin"
-            class="text-xs transition-all hover:text-white/50 w-full text-left"
-            style="color: rgba(255,255,255,0.30);">
-            <span x-show="!showCheckin">+ Log how I feel</span>
-            <span x-show="showCheckin" x-cloak>- Hide check-in</span>
-          </button>
-
-          <div x-show="showCheckin" x-cloak x-transition class="mt-3">
-            <div class="grid grid-cols-2 gap-3 text-xs">
-              <label class="space-y-1">
-                <span style="color: rgba(255,255,255,0.40);">Mood</span>
-                <input type="range" min="1" max="10" x-model="mood" class="w-full accent-purple-400">
-                <div class="text-center text-sm text-pulse" x-text="mood"></div>
-              </label>
-              <label class="space-y-1">
-                <span style="color: rgba(255,255,255,0.40);">Energy</span>
-                <input type="range" min="1" max="10" x-model="energy" class="w-full accent-purple-400">
-                <div class="text-center text-sm text-pulse" x-text="energy"></div>
-              </label>
-              <label class="space-y-1">
-                <span style="color: rgba(255,255,255,0.40);">Stress</span>
-                <input type="range" min="1" max="10" x-model="stress" class="w-full accent-purple-400">
-                <div class="text-center text-sm text-pulse" x-text="stress"></div>
-              </label>
-              <label class="space-y-1">
-                <span style="color: rgba(255,255,255,0.40);">Sleep (hours)</span>
-                <input type="number" x-model="sleep" step="0.5" min="0" max="14"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm">
-              </label>
-              <label class="space-y-1">
-                <span style="color: rgba(255,255,255,0.40);">Exercise (min)</span>
-                <input type="number" x-model="exercise" step="5" min="0" max="300"
-                  class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm">
-              </label>
-              <div class="flex items-end">
-                <button @click="submit()" :disabled="saving"
-                  class="w-full px-3 py-1.5 rounded-lg text-xs font-medium transition-all
-                         bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
-                         disabled:opacity-30 disabled:cursor-not-allowed">
-                  <span x-show="!saving && !saved">Log</span>
-                  <span x-show="saving" x-cloak>...</span>
-                  <span x-show="saved" x-cloak class="text-emerald-400">Saved</span>
-                </button>
-              </div>
-            </div>
+  <!-- Daily Check-in (full width, prominent when not logged) -->
+  <section x-data="{ ...checkinForm(), showCheckin: {{ 'false' if today_logged else 'true' }} }">
+    {% if today_logged %}
+    {# Compact summary badge #}
+    <div class="glass-sm p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="text-[10px] uppercase tracking-widest font-semibold" style="color: #a69880;">Logged Today</span>
+          <div class="flex items-center gap-3 text-xs" style="color: #8a7b68;">
+            {% if today_data.get('emotions', {}).get('mood') %}
+            <span>Mood {{ today_data.emotions.mood }}</span>
+            {% endif %}
+            {% if today_data.get('emotions', {}).get('energy') %}
+            <span>Energy {{ today_data.emotions.energy }}</span>
+            {% endif %}
+            {% if today_data.get('health', {}).get('sleep_hours') %}
+            <span>Sleep {{ today_data.health.sleep_hours }}h</span>
+            {% endif %}
+            {% if today_data.get('emotions', {}).get('stress') %}
+            <span>Stress {{ today_data.emotions.stress }}</span>
+            {% endif %}
           </div>
         </div>
-      </section>
-
-      <!-- Saved Notes -->
-      <div id="pinned-section"
-        hx-get="/partials/pinned-notes" hx-trigger="load, refreshPinned from:body"
-        hx-swap="innerHTML transition:true">
+        <button @click="showCheckin = !showCheckin"
+          class="text-[10px] hover:text-stone-400 transition-all"
+          style="color: #a69880;">
+          <span x-show="!showCheckin">update</span>
+          <span x-show="showCheckin" x-cloak>hide</span>
+        </button>
       </div>
 
-      <!-- Run a Review -->
-      <details class="group">
-        <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-          style="color: rgba(255,255,255,0.20);">
-          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-          <span class="text-xs tracking-wider uppercase">Run a Review</span>
-          <span class="text-[10px] ml-1" style="color: rgba(255,255,255,0.12);">Ask ALTER to analyze something</span>
-        </summary>
-        <div class="mt-2 glass p-4">
-          <div class="flex flex-wrap gap-2">
-            {% for tick, label in [('daily_review', 'Review My Day'), ('weekly_reflect', 'Weekly Check-in'), ('goal_analysis', 'Analyze Goals'), ('discovery', 'Find Patterns')] %}
-            <button onclick="triggerTick('{{ tick }}')"
-              class="px-3 py-1.5 rounded-lg text-xs transition-all
-                     bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
-              style="color: rgba(255,255,255,0.50);">
-              {{ label }}
-            </button>
-            {% endfor %}
-          </div>
-        </div>
-      </details>
-
+      {# Expandable update form #}
+      <div x-show="showCheckin" x-cloak x-transition class="mt-4 pt-4 border-t border-stone-200/30">
+        {% include "partials/_checkin_form.html" %}
+      </div>
     </div>
+    {% else %}
+    {# Full check-in card (prominent) #}
+    <div class="glass p-5 border-pulse/10">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-sm font-medium" style="color: #3d3225;">How are you today?</h3>
+          <p class="text-[10px] mt-0.5" style="color: #a69880;">
+            This helps ALTER understand your current state
+          </p>
+        </div>
+        <button @click="showCheckin = !showCheckin"
+          class="text-[10px] hover:text-stone-400 transition-all"
+          style="color: #a69880;">
+          <span x-show="showCheckin" x-cloak>hide</span>
+          <span x-show="!showCheckin">show</span>
+        </button>
+      </div>
+      <div x-show="showCheckin" x-transition>
+        {% include "partials/_checkin_form.html" %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Curated Top Actions (preview from inbox) -->
+  <div id="actions-section"
+    hx-get="/partials/today-actions" hx-trigger="load, every 60s, refreshInbox from:body"
+    hx-swap="innerHTML transition:true">
+  </div>
+
+  <!-- Run a Review -->
+  <details class="group">
+    <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
+      style="color: #a69880;">
+      <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+      <span class="text-xs tracking-wider uppercase">Run a Review</span>
+      <span class="text-[10px] ml-1" style="color: #c4b8a6;">Ask ALTER to analyze something</span>
+    </summary>
+    <div class="mt-2 glass p-4">
+      <div class="flex flex-wrap gap-2">
+        {% for tick, label in [('daily_review', 'Review My Day'), ('weekly_reflect', 'Weekly Check-in'), ('goal_analysis', 'Analyze Goals'), ('discovery', 'Find Patterns')] %}
+        <button onclick="triggerTick('{{ tick }}')"
+          class="px-3 py-1.5 rounded-lg text-xs transition-all
+                 bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50 hover:border-stone-300/50"
+          style="color: #6b5d4b;">
+          {{ label }}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+  </details>
+
+  <!-- Go to Dashboard -->
+  <div class="px-1">
+    <a href="/dashboard"
+      class="text-[10px] text-pulse/50 hover:text-pulse/70 transition-all tracking-wider uppercase flex items-center gap-1">
+      Go to Dashboard
+      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+      </svg>
+    </a>
   </div>
 
 </div>

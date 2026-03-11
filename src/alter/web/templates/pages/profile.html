@@ -8,11 +8,11 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-lg font-semibold">Self</h1>
-      <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">Identity, skills & constitution</p>
+      <p class="text-xs mt-0.5" style="color: #b8aa96;">Identity, skills & constitution</p>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-2 h-2 rounded-full {% if consciousness_active %}bg-emerald-400 animate-breathe{% else %}bg-white/20{% endif %}"></div>
-      <span class="text-xs" style="color: rgba(255,255,255,0.40);">
+      <div class="w-2 h-2 rounded-full {% if consciousness_active %}bg-emerald-400 animate-breathe{% else %}bg-stone-300/50{% endif %}"></div>
+      <span class="text-xs" style="color: #a69880;">
         {% if consciousness_active %}Online{% else %}Offline{% endif %}
       </span>
     </div>
@@ -20,28 +20,28 @@
 
   <!-- Identity Card -->
   <section class="glass p-6 halo">
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Identity</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #c4b8a6;">Identity</h3>
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <span class="text-xs" style="color: rgba(255,255,255,0.50);">User</span>
+        <span class="text-xs" style="color: #8a7b68;">User</span>
         <span class="text-sm font-medium">{{ user_id }}</span>
       </div>
       {% if status.get('purpose') %}
       <div>
-        <span class="text-xs" style="color: rgba(255,255,255,0.50);">Purpose</span>
-        <p class="text-sm mt-1" style="color: rgba(255,255,255,0.80);">{{ status.purpose }}</p>
+        <span class="text-xs" style="color: #8a7b68;">Purpose</span>
+        <p class="text-sm mt-1" style="color: #4a3d2e;">{{ status.purpose }}</p>
       </div>
       {% endif %}
       {% if status.get('active_goals') is not none %}
       <div class="flex items-center justify-between">
-        <span class="text-xs" style="color: rgba(255,255,255,0.50);">Active Goals</span>
+        <span class="text-xs" style="color: #8a7b68;">Active Goals</span>
         <span class="text-sm text-pulse">{{ status.active_goals }}</span>
       </div>
       {% endif %}
       {% if status.get('total_entries') is not none %}
       <div class="flex items-center justify-between">
-        <span class="text-xs" style="color: rgba(255,255,255,0.50);">Data Points</span>
-        <span class="text-sm" style="color: rgba(255,255,255,0.70);">{{ status.total_entries }}</span>
+        <span class="text-xs" style="color: #8a7b68;">Data Points</span>
+        <span class="text-sm" style="color: #5a4d3c;">{{ status.total_entries }}</span>
       </div>
       {% endif %}
     </div>
@@ -49,31 +49,31 @@
 
   <!-- Import Context -->
   <section x-data="importForm()" class="glass p-5">
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Import Context</h3>
-    <p class="text-xs mb-4" style="color: rgba(255,255,255,0.35);">Feed ALTER more context — chat exports, memories, notes, journal entries.</p>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #c4b8a6;">Import Context</h3>
+    <p class="text-xs mb-4" style="color: #b8aa96;">Feed ALTER more context — chat exports, memories, notes, journal entries.</p>
 
     <!-- Source selector -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
       <button @click="source = 'chatgpt'" class="glass-sm p-2.5 text-center transition-all text-xs"
-        :class="source === 'chatgpt' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-        style="color: rgba(255,255,255,0.55);">ChatGPT</button>
+        :class="source === 'chatgpt' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+        style="color: #8a7b68;">ChatGPT</button>
       <button @click="source = 'claude'" class="glass-sm p-2.5 text-center transition-all text-xs"
-        :class="source === 'claude' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-        style="color: rgba(255,255,255,0.55);">Claude</button>
+        :class="source === 'claude' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+        style="color: #8a7b68;">Claude</button>
       <button @click="source = 'gemini'" class="glass-sm p-2.5 text-center transition-all text-xs"
-        :class="source === 'gemini' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-        style="color: rgba(255,255,255,0.55);">Gemini</button>
+        :class="source === 'gemini' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+        style="color: #8a7b68;">Gemini</button>
       <button @click="source = 'text'" class="glass-sm p-2.5 text-center transition-all text-xs"
-        :class="source === 'text' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-        style="color: rgba(255,255,255,0.55);">Text / Notes</button>
+        :class="source === 'text' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+        style="color: #8a7b68;">Text / Notes</button>
     </div>
 
     <!-- File upload -->
     <div x-show="source && source !== 'text'" x-cloak class="mb-3">
-      <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-white/5 transition-all">
+      <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-stone-100/60 transition-all">
         <input type="file" accept=".json,.txt,.csv" @change="handleFile($event)" class="hidden">
-        <p class="text-sm" style="color: rgba(255,255,255,0.55);" x-text="fileName || 'Click to upload ' + source + ' export file'"></p>
-        <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.25);">JSON, TXT, or CSV</p>
+        <p class="text-sm" style="color: #8a7b68;" x-text="fileName || 'Click to upload ' + source + ' export file'"></p>
+        <p class="text-[10px] mt-1" style="color: #c4b8a6;">JSON, TXT, or CSV</p>
       </label>
     </div>
 
@@ -87,7 +87,7 @@
     <div x-show="source" x-cloak class="flex items-center gap-3">
       <button @click="submitImport()" :disabled="importing || (!textContent.trim() && !fileContent)"
         class="px-4 py-2 rounded-xl text-sm font-medium transition-all
-               bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+               bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18
                disabled:opacity-30 disabled:cursor-not-allowed">
         <span x-show="!importing">Import</span>
         <span x-show="importing" x-cloak>Importing...</span>
@@ -98,27 +98,27 @@
 
   <!-- Thought Loops Configuration -->
   <section x-data="thoughtLoops()" class="glass p-5">
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.30);">Thought Loops</h3>
-    <p class="text-xs mb-4" style="color: rgba(255,255,255,0.25);">Configure which autonomous thinking modes run and when.</p>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #c4b8a6;">Thought Loops</h3>
+    <p class="text-xs mb-4" style="color: #c4b8a6;">Configure which autonomous thinking modes run and when.</p>
     <div class="space-y-3">
       <template x-for="loop in loops" :key="loop.id">
         <div class="flex items-start gap-3 px-3 py-3 rounded-lg transition-all"
-          :style="loop.enabled ? 'background: rgba(255,255,255,0.03)' : 'opacity: 0.5'">
+          :style="loop.enabled ? 'background: rgba(192, 120, 48, 0.04)' : 'opacity: 0.5'">
           <button @click="toggleLoop(loop)"
             class="w-9 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-all"
-            :class="loop.enabled ? 'bg-pulse/30' : 'bg-white/10'">
+            :class="loop.enabled ? 'bg-pulse/30' : 'bg-stone-200/50'">
             <div class="w-3.5 h-3.5 rounded-full absolute top-[3px] transition-all"
-              :class="loop.enabled ? 'right-[3px] bg-pulse' : 'left-[3px] bg-white/30'"></div>
+              :class="loop.enabled ? 'right-[3px] bg-pulse' : 'left-[3px] bg-stone-100/400'"></div>
           </button>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);" x-text="loop.label"></p>
-            <p class="text-[11px] mt-0.5 leading-relaxed" style="color: rgba(255,255,255,0.35);" x-text="loop.description"></p>
-            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.18);" x-text="loop.schedule_label"></p>
+            <p class="text-sm font-medium" style="color: #4a3d2e;" x-text="loop.label"></p>
+            <p class="text-[11px] mt-0.5 leading-relaxed" style="color: #b8aa96;" x-text="loop.description"></p>
+            <p class="text-[10px] mt-1" style="color: #c4b8a6;" x-text="loop.schedule_label"></p>
           </div>
           <button @click="triggerTick(loop.id)"
             class="px-2 py-1 rounded text-[10px] transition-all flex-shrink-0
-                   bg-white/5 border border-white/10 hover:bg-white/10"
-            style="color: rgba(255,255,255,0.40);">
+                   bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+            style="color: #a69880;">
             Run now
           </button>
         </div>
@@ -128,51 +128,51 @@
 
   <!-- Imported Memories -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">What ALTER Knows</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">What ALTER Knows</h3>
     <div id="memories-section"
       hx-get="/partials/profile-memories" hx-trigger="load, refreshMemories from:body"
       hx-swap="innerHTML transition:true">
       <div class="glass-sm p-4">
-        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading...</p>
       </div>
     </div>
   </section>
 
   <!-- Skills -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Skills</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">Skills</h3>
     <div id="skills-section"
       hx-get="/partials/profile-skills" hx-trigger="load"
       hx-swap="innerHTML transition:true">
       <div class="glass-sm p-4">
-        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading skills...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading skills...</p>
       </div>
     </div>
   </section>
 
   <!-- Constitution -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Constitution</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">Constitution</h3>
     <div id="constitution-section"
       hx-get="/partials/profile-constitution" hx-trigger="load"
       hx-swap="innerHTML transition:true">
       <div class="glass-sm p-4">
-        <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading...</p>
+        <p class="text-xs" style="color: #c4b8a6;">Loading...</p>
       </div>
     </div>
   </section>
 
   <!-- System Info -->
   <section class="glass-sm p-4">
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">System</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">System</h3>
     <div class="grid grid-cols-2 gap-3 text-xs">
       <div>
-        <span style="color: rgba(255,255,255,0.35);">Version</span>
-        <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">{{ status.get('version', '0.1.0') }}</p>
+        <span style="color: #b8aa96;">Version</span>
+        <p class="text-sm mt-0.5" style="color: #7a6c58;">{{ status.get('version', '0.1.0') }}</p>
       </div>
       <div>
-        <span style="color: rgba(255,255,255,0.35);">Engine</span>
-        <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">
+        <span style="color: #b8aa96;">Engine</span>
+        <p class="text-sm mt-0.5" style="color: #7a6c58;">
           {% if consciousness_active %}Active{% else %}Dormant{% endif %}
         </p>
       </div>

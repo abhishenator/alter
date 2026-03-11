@@ -20,6 +20,7 @@ def _get_adapter(request: Request):
 
 class TickRequest(BaseModel):
     tick_type: str = "daily_review"
+    context: Optional[str] = None
 
 
 @router.get("/status")
@@ -74,7 +75,7 @@ async def consciousness_tick(request: Request, body: TickRequest):
             status_code=400,
             detail=f"Invalid tick_type. Must be one of: {valid_types}",
         )
-    result = await adapter.trigger_tick(body.tick_type)
+    result = await adapter.trigger_tick(body.tick_type, context=body.context)
     if result is None:
         return {"status": "completed", "result": None, "detail": "Tick ran but parse failed"}
     return {

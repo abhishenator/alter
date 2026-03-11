@@ -1,0 +1,37 @@
+{# Curated top-5 action items from inbox — simplified version without filter bars #}
+
+{% if items %}
+<section class="space-y-3">
+  <div class="px-1">
+    <div class="flex items-center gap-2">
+      <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: #8a7b68;">
+        Needs Your Attention
+      </h3>
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pulse/15 text-pulse">{{ items | length }}{% if remaining_count > 0 %}+{{ remaining_count }}{% endif %}</span>
+    </div>
+  </div>
+
+  {% for item in items %}
+  {% with delay=loop.index0 * 0.05 %}
+  {% include "partials/_inbox_card.html" %}
+  {% endwith %}
+  {% endfor %}
+
+  {# View all link #}
+  {% if remaining_count > 0 %}
+  <div class="text-center py-2">
+    <button hx-get="/partials/inbox" hx-target="#actions-section" hx-swap="innerHTML transition:true"
+      class="text-xs text-pulse/60 hover:text-pulse transition-all">
+      View all {{ items | length + remaining_count }} thoughts
+    </button>
+  </div>
+  {% endif %}
+</section>
+
+{% else %}
+<section class="glass-sm p-5 text-center">
+  <p class="text-xs" style="color: #a69880;">
+    No pending thoughts. Run a review to generate insights.
+  </p>
+</section>
+{% endif %}

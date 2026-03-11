@@ -572,6 +572,58 @@ class Constitution:
 
         return interventions
 
+    def update_principle(self, principle_id: str, **kwargs: Any) -> Optional[Principle]:
+        """Update fields on an existing principle. Returns updated Principle or None."""
+        principle = self.get_principle(principle_id)
+        if not principle:
+            return None
+        for field in ("name", "description", "weight"):
+            if field in kwargs:
+                setattr(principle, field, kwargs[field])
+        if "rules" in kwargs:
+            principle.rules = kwargs["rules"]
+        return principle
+
+    def save_to_yaml(self, path: Optional[Path] = None) -> Path:
+        """Serialize the constitution back to YAML and write to disk."""
+        if path is None:
+            path = Path("data/user_data/my_constitution.yaml")
+
+        data: Dict[str, Any] = {
+            "version": self.version,
+            "constitution_type": self.constitution_type,
+            "core_principles": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "description": p.description,
+                    "rules": p.rules,
+                    "weight": p.weight,
+                }
+                for p in self.core_principles
+            ],
+            "life_domains": [
+                {
+                    "id": d.id,
+                    "name": d.name,
+                    "description": d.description,
+                    "metrics": d.metrics,
+                    "minimum_standards": d.minimum_standards,
+                }
+                for d in self.life_domains
+            ],
+            "decision_framework": self.decision_framework,
+            "intervention_triggers": self.intervention_triggers,
+            "guardrails": self.guardrails,
+            "override_system": self.override_system,
+            "meta_principles": self.meta_principles,
+        }
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w") as f:
+            yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+        return path
+
     def _check_active_overrides(self, decision: Dict[str, Any]) -> bool:
         """Check if decision is covered by active overrides."""
         # Clean expired overrides

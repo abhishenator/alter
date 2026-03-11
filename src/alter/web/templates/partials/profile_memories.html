@@ -2,14 +2,14 @@
 <div class="space-y-3 animate-fade-in">
   <!-- Import sources -->
   <div class="glass-sm p-4">
-    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.30);">Import Sources</h4>
+    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #c4b8a6;">Import Sources</h4>
     {% for imp in imports %}
     <div class="flex items-center justify-between py-1.5">
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 rounded-full bg-pulse/60"></div>
-        <span class="text-sm" style="color: rgba(255,255,255,0.70);">{{ imp.source|capitalize }}</span>
+        <span class="text-sm" style="color: #5a4d3c;">{{ imp.source|capitalize }}</span>
       </div>
-      <span class="text-[10px]" style="color: rgba(255,255,255,0.25);">{{ imp.imported_at[:10] }}</span>
+      <span class="text-[10px]" style="color: #c4b8a6;">{{ imp.imported_at[:10] }}</span>
     </div>
     {% endfor %}
   </div>
@@ -17,8 +17,8 @@
   <!-- Parsed memory count by category -->
   {% if memories %}
   <div class="glass-sm p-4">
-    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.30);">Parsed Memories</h4>
-    <p class="text-sm mb-2" style="color: rgba(255,255,255,0.60);">{{ memories|length }} memories extracted</p>
+    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #c4b8a6;">Parsed Memories</h4>
+    <p class="text-sm mb-2" style="color: #7a6c58;">{{ memories|length }} memories extracted</p>
     {% set cats = {} %}
     {% for m in memories %}
       {% if m.category not in cats %}
@@ -28,9 +28,9 @@
     {% endfor %}
     <div class="flex flex-wrap gap-2">
       {% for cat, count in cats.items() %}
-      <span class="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5">
+      <span class="flex items-center gap-1.5 px-2 py-1 rounded-full bg-stone-100/60">
         <span class="w-1.5 h-1.5 rounded-full dot-{{ cat }}"></span>
-        <span class="text-[10px]" style="color: rgba(255,255,255,0.50);">{{ cat }} ({{ count }})</span>
+        <span class="text-[10px]" style="color: #8a7b68;">{{ cat }} ({{ count }})</span>
       </span>
       {% endfor %}
     </div>
@@ -41,7 +41,7 @@
     {% for m in memories %}
     <div class="glass-sm p-3 flex items-start gap-2">
       <div class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 dot-{{ m.category }}"></div>
-      <p class="text-xs leading-relaxed" style="color: rgba(255,255,255,0.60);">{{ m.text }}</p>
+      <p class="text-xs leading-relaxed" style="color: #7a6c58;">{{ m.text }}</p>
     </div>
     {% endfor %}
   </div>
@@ -49,7 +49,7 @@
 </div>
 {% else %}
 <div class="glass-sm p-4 text-center">
-  <p class="text-sm" style="color: rgba(255,255,255,0.30);">No context imported yet.</p>
-  <p class="text-xs mt-1" style="color: rgba(255,255,255,0.20);">Visit <a href="/setup" class="text-pulse hover:underline">setup</a> to import from ChatGPT, Claude, or paste memories.</p>
+  <p class="text-sm" style="color: #c4b8a6;">No context imported yet.</p>
+  <p class="text-xs mt-1" style="color: #c4b8a6;">Visit <a href="/setup" class="text-pulse hover:underline">setup</a> to import from ChatGPT, Claude, or paste memories.</p>
 </div>
 {% endif %}

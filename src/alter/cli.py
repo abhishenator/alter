@@ -586,7 +586,7 @@ def serve(
     host: str = typer.Option("0.0.0.0", help="Host to bind to"),
     port: int = typer.Option(8000, help="Port to bind to"),
     reload: bool = typer.Option(False, help="Auto-reload on code changes"),
-    consciousness: bool = typer.Option(False, "--consciousness", "-c", help="Enable consciousness engine"),
+    consciousness: bool = typer.Option(True, "--consciousness/--no-consciousness", "-c", help="Enable consciousness engine (on by default)"),
     user_id: str = typer.Option("default", "--user-id", "-u", help="User ID for consciousness"),
     provider: str = typer.Option("anthropic", "--provider", help="LLM provider (anthropic, openai)"),
     model: Optional[str] = typer.Option(None, "--model", help="LLM model name"),
@@ -611,7 +611,7 @@ def serve(
             f"{f' | Model: [cyan]{model}[/cyan]' if model else ''}"
         )
     else:
-        consciousness_info = "\nConsciousness: [dim]OFF (use --consciousness to enable)[/dim]"
+        consciousness_info = "\nConsciousness: [dim]OFF (use -c to enable)[/dim]"
 
     console.print(Panel(
         f"[bold]ALTER Web Server[/bold]\n"

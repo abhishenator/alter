@@ -6,15 +6,15 @@
   <div class="glass-sm p-4">
     <div class="flex items-center gap-2 mb-2">
       <div class="w-2 h-2 rounded-full bg-pulse/60"></div>
-      <h4 class="text-sm font-medium" style="color: rgba(255,255,255,0.85);">{{ p.name }}</h4>
-      <span class="text-[10px] ml-auto px-1.5 py-0.5 rounded-full bg-white/5"
-        style="color: rgba(255,255,255,0.25);">weight {{ p.weight }}</span>
+      <h4 class="text-sm font-medium" style="color: #3d3225;">{{ p.name }}</h4>
+      <span class="text-[10px] ml-auto px-1.5 py-0.5 rounded-full bg-stone-100/60"
+        style="color: #c4b8a6;">weight {{ p.weight }}</span>
     </div>
-    <p class="text-xs mb-2" style="color: rgba(255,255,255,0.50);">{{ p.description }}</p>
+    <p class="text-xs mb-2" style="color: #8a7b68;">{{ p.description }}</p>
     {% if p.rules %}
-    <div class="space-y-1 pl-3 border-l border-white/8">
+    <div class="space-y-1 pl-3 border-l border-stone-200/40">
       {% for rule in p.rules %}
-      <p class="text-[11px]" style="color: rgba(255,255,255,0.40);">{{ rule }}</p>
+      <p class="text-[11px]" style="color: #a69880;">{{ rule }}</p>
       {% endfor %}
     </div>
     {% endif %}
@@ -24,15 +24,15 @@
 
   {% if constitution.get('domains') %}
   <div class="mt-4">
-    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.25);">Life Domains</h4>
+    <h4 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #c4b8a6;">Life Domains</h4>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {% for d in constitution.domains %}
       <div class="glass-sm p-3">
         <div class="flex items-center gap-2 mb-1">
           <div class="w-2 h-2 rounded-full dot-{{ d.id }}"></div>
-          <span class="text-xs font-medium" style="color: rgba(255,255,255,0.75);">{{ d.name }}</span>
+          <span class="text-xs font-medium" style="color: #5a4d3c;">{{ d.name }}</span>
         </div>
-        <p class="text-[10px]" style="color: rgba(255,255,255,0.35);">{{ d.description }}</p>
+        <p class="text-[10px]" style="color: #b8aa96;">{{ d.description }}</p>
       </div>
       {% endfor %}
     </div>
@@ -42,6 +42,6 @@
 </div>
 {% else %}
 <div class="glass-sm p-4">
-  <p class="text-xs" style="color: rgba(255,255,255,0.30);">No constitution defined.</p>
+  <p class="text-xs" style="color: #c4b8a6;">No constitution defined.</p>
 </div>
 {% endif %}

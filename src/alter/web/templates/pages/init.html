@@ -8,13 +8,13 @@
     <!-- Pulse Orb — grows as steps progress -->
     <div class="flex flex-col items-center mb-6">
       <div class="halo flex items-center justify-center rounded-full transition-all duration-700"
-        :style="`width: ${32 + step * 10}px; height: ${32 + step * 10}px; background: radial-gradient(circle, rgba(129,140,248,${0.1 + step * 0.04}) 0%, transparent 70%);`">
+        :style="`width: ${32 + step * 10}px; height: ${32 + step * 10}px; background: radial-gradient(circle, rgba(167,139,250,${0.1 + step * 0.04}) 0%, transparent 70%);`">
         <div class="rounded-full bg-pulse/80 transition-all duration-700"
           :style="`width: ${8 + step * 3}px; height: ${8 + step * 3}px;`"
           style="animation: breathe 3s cubic-bezier(0.4,0,0.6,1) infinite;"></div>
       </div>
       <h1 class="text-xl font-light mt-3 tracking-wide">ALTER</h1>
-      <p class="text-[10px] mt-1 tracking-widest uppercase" style="color: rgba(255,255,255,0.25);"
+      <p class="text-[10px] mt-1 tracking-widest uppercase" style="color: #a69880;"
         x-text="stepLabel"></p>
     </div>
 
@@ -22,21 +22,21 @@
     <div class="flex justify-center gap-2 mb-6">
       <template x-for="i in 6">
         <div class="w-1.5 h-1.5 rounded-full transition-all duration-300"
-          :class="i <= step ? 'bg-pulse/80' : 'bg-white/10'"></div>
+          :class="i <= step ? 'bg-pulse/80' : 'bg-stone-200/50'"></div>
       </template>
     </div>
 
     <!-- ==================== STEP 1: Identity ==================== -->
     <div x-show="step === 1" x-transition:enter="animate-slide-up" class="glass p-8">
       <h2 class="text-base font-medium mb-1">Who am I speaking with?</h2>
-      <p class="text-xs mb-6" style="color: rgba(255,255,255,0.35);">Choose an identifier. This is how ALTER will know you.</p>
+      <p class="text-xs mb-6" style="color: #8a7b68;">Choose an identifier. This is how ALTER will know you.</p>
 
       <input type="text" x-model="userId" @keydown.enter="if(userId.trim()) step = 2"
         class="w-full text-sm" placeholder="Your name or alias" autofocus>
 
       <button @click="step = 2" :disabled="!userId.trim()"
         class="mt-6 w-full py-2.5 rounded-xl text-sm font-medium transition-all
-               bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+               bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18
                disabled:opacity-30 disabled:cursor-not-allowed">
         Continue
       </button>
@@ -45,15 +45,15 @@
     <!-- ==================== STEP 2: Purpose ==================== -->
     <div x-show="step === 2" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">What pulls you forward?</h2>
-      <p class="text-xs mb-5" style="color: rgba(255,255,255,0.35);">Your north star. It can evolve over time.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">Your north star. It can evolve over time.</p>
 
       <!-- Suggestions -->
       <div class="space-y-2 mb-4">
         <template x-for="s in purposeSuggestions">
           <button @click="purpose = s"
             class="w-full text-left glass-sm p-3 text-sm transition-all"
-            :class="purpose === s ? 'border-pulse/40 bg-pulse/10' : ''"
-            :style="purpose === s ? 'color: rgba(255,255,255,0.90)' : 'color: rgba(255,255,255,0.55)'"
+            :class="purpose === s ? 'border-pulse/40 bg-pulse/12' : ''"
+            :style="purpose === s ? 'color: #2c2418' : 'color: #5a4d3c'"
             x-text="s"></button>
         </template>
       </div>
@@ -64,11 +64,11 @@
 
       <div class="flex gap-3 mt-5">
         <button @click="step = 1"
-          class="px-4 py-2 rounded-xl text-sm bg-white/5 border border-white/10 hover:bg-white/10"
-          style="color: rgba(255,255,255,0.50);">Back</button>
+          class="px-4 py-2 rounded-xl text-sm bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+          style="color: #6b5d4b;">Back</button>
         <button @click="step = 3"
           class="flex-1 py-2.5 rounded-xl text-sm font-medium
-                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25">
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18">
           Continue
         </button>
       </div>
@@ -77,40 +77,40 @@
     <!-- ==================== STEP 3: Life Snapshot ==================== -->
     <div x-show="step === 3" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">Where are you right now?</h2>
-      <p class="text-xs mb-5" style="color: rgba(255,255,255,0.35);">A quick snapshot. ALTER needs a starting point to see your world.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">A quick snapshot. ALTER needs a starting point to see your world.</p>
 
       <div class="grid grid-cols-2 gap-x-6 gap-y-4">
         <label class="space-y-1.5">
           <div class="flex justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Sleep (hours)</span>
+            <span class="text-xs" style="color: #6b5d4b;">Sleep (hours)</span>
             <span class="text-xs text-pulse" x-text="snapshot.sleep"></span>
           </div>
           <input type="range" min="0" max="12" step="0.5" x-model="snapshot.sleep">
         </label>
         <label class="space-y-1.5">
           <div class="flex justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Exercise (min)</span>
+            <span class="text-xs" style="color: #6b5d4b;">Exercise (min)</span>
             <span class="text-xs text-pulse" x-text="snapshot.exercise"></span>
           </div>
           <input type="range" min="0" max="120" step="5" x-model="snapshot.exercise">
         </label>
         <label class="space-y-1.5">
           <div class="flex justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Energy</span>
+            <span class="text-xs" style="color: #6b5d4b;">Energy</span>
             <span class="text-xs text-pulse" x-text="snapshot.energy"></span>
           </div>
           <input type="range" min="1" max="10" x-model="snapshot.energy">
         </label>
         <label class="space-y-1.5">
           <div class="flex justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Mood</span>
+            <span class="text-xs" style="color: #6b5d4b;">Mood</span>
             <span class="text-xs text-pulse" x-text="snapshot.mood"></span>
           </div>
           <input type="range" min="1" max="10" x-model="snapshot.mood">
         </label>
         <label class="col-span-2 space-y-1.5">
           <div class="flex justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Stress</span>
+            <span class="text-xs" style="color: #6b5d4b;">Stress</span>
             <span class="text-xs text-pulse" x-text="snapshot.stress"></span>
           </div>
           <input type="range" min="1" max="10" x-model="snapshot.stress">
@@ -119,11 +119,11 @@
 
       <div class="flex gap-3 mt-6">
         <button @click="step = 2"
-          class="px-4 py-2 rounded-xl text-sm bg-white/5 border border-white/10 hover:bg-white/10"
-          style="color: rgba(255,255,255,0.50);">Back</button>
+          class="px-4 py-2 rounded-xl text-sm bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+          style="color: #6b5d4b;">Back</button>
         <button @click="step = 4"
           class="flex-1 py-2.5 rounded-xl text-sm font-medium
-                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25">
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18">
           Continue
         </button>
       </div>
@@ -132,23 +132,23 @@
     <!-- ==================== STEP 4: Quick Goals ==================== -->
     <div x-show="step === 4" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">Where do you want to go?</h2>
-      <p class="text-xs mb-5" style="color: rgba(255,255,255,0.35);">Pick a few goals to start. You can always add more later.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">Pick a few goals to start. You can always add more later.</p>
 
       <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
         <template x-for="(goal, idx) in goalSuggestions" :key="idx">
           <button @click="toggleGoal(idx)"
             class="w-full text-left glass-sm p-3 flex items-center gap-3 transition-all"
-            :class="goal.selected ? 'border-pulse/40 bg-pulse/10' : ''">
+            :class="goal.selected ? 'border-pulse/40 bg-pulse/12' : ''">
             <div class="w-2 h-2 rounded-full flex-shrink-0"
               :class="'dot-' + goal.domain"></div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm" :style="goal.selected ? 'color: rgba(255,255,255,0.90)' : 'color: rgba(255,255,255,0.60)'"
+              <p class="text-sm" :style="goal.selected ? 'color: #2c2418' : 'color: #5a4d3c'"
                 x-text="goal.description"></p>
-              <p class="text-[10px] uppercase tracking-wider mt-0.5" style="color: rgba(255,255,255,0.25);"
+              <p class="text-[10px] uppercase tracking-wider mt-0.5" style="color: #a69880;"
                 x-text="goal.domain + ' · ' + goal.horizon"></p>
             </div>
             <div class="w-5 h-5 rounded-full border flex-shrink-0 flex items-center justify-center transition-all"
-              :class="goal.selected ? 'border-pulse bg-pulse/20' : 'border-white/15'">
+              :class="goal.selected ? 'border-pulse bg-pulse/18' : 'border-stone-300/40'">
               <svg x-show="goal.selected" class="w-3 h-3 text-pulse" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
               </svg>
@@ -162,20 +162,20 @@
         <input type="text" x-model="customGoal" @keydown.enter="addCustomGoal()"
           class="flex-1 text-sm" placeholder="Or type a custom goal...">
         <button @click="addCustomGoal()" :disabled="!customGoal.trim()"
-          class="px-3 py-1.5 rounded-lg text-xs bg-white/5 border border-white/10 hover:bg-white/10
-                 disabled:opacity-30" style="color: rgba(255,255,255,0.50);">Add</button>
+          class="px-3 py-1.5 rounded-lg text-xs bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50
+                 disabled:opacity-30" style="color: #6b5d4b;">Add</button>
       </div>
 
-      <p class="text-[10px] mt-3" style="color: rgba(255,255,255,0.25);"
+      <p class="text-[10px] mt-3" style="color: #a69880;"
         x-text="selectedGoalCount + ' goals selected'"></p>
 
       <div class="flex gap-3 mt-4">
         <button @click="step = 3"
-          class="px-4 py-2 rounded-xl text-sm bg-white/5 border border-white/10 hover:bg-white/10"
-          style="color: rgba(255,255,255,0.50);">Back</button>
+          class="px-4 py-2 rounded-xl text-sm bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+          style="color: #6b5d4b;">Back</button>
         <button @click="step = 5"
           class="flex-1 py-2.5 rounded-xl text-sm font-medium
-                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25">
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18">
           Continue
         </button>
       </div>
@@ -184,42 +184,42 @@
     <!-- ==================== STEP 5: Import Context ==================== -->
     <div x-show="step === 5" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">Bring your history</h2>
-      <p class="text-xs mb-5" style="color: rgba(255,255,255,0.35);">ALTER can learn from your past conversations and memories. Optional.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">ALTER can learn from your past conversations and memories. Optional.</p>
 
       <!-- Import source cards -->
       <div class="grid grid-cols-2 gap-2 mb-4">
         <button @click="importSource = 'chatgpt'"
           class="glass-sm p-3 text-left transition-all"
-          :class="importSource === 'chatgpt' ? 'border-pulse/40 bg-pulse/10' : ''">
-          <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);">ChatGPT</p>
-          <p class="text-[10px] mt-0.5" style="color: rgba(255,255,255,0.30);">Upload conversations.json</p>
+          :class="importSource === 'chatgpt' ? 'border-pulse/40 bg-pulse/12' : ''">
+          <p class="text-sm font-medium" style="color: #2c2418;">ChatGPT</p>
+          <p class="text-[10px] mt-0.5" style="color: #8a7b68;">Upload conversations.json</p>
         </button>
         <button @click="importSource = 'claude'"
           class="glass-sm p-3 text-left transition-all"
-          :class="importSource === 'claude' ? 'border-pulse/40 bg-pulse/10' : ''">
-          <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);">Claude</p>
-          <p class="text-[10px] mt-0.5" style="color: rgba(255,255,255,0.30);">Upload conversation export</p>
+          :class="importSource === 'claude' ? 'border-pulse/40 bg-pulse/12' : ''">
+          <p class="text-sm font-medium" style="color: #2c2418;">Claude</p>
+          <p class="text-[10px] mt-0.5" style="color: #8a7b68;">Upload conversation export</p>
         </button>
         <button @click="importSource = 'gemini'"
           class="glass-sm p-3 text-left transition-all"
-          :class="importSource === 'gemini' ? 'border-pulse/40 bg-pulse/10' : ''">
-          <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);">Gemini</p>
-          <p class="text-[10px] mt-0.5" style="color: rgba(255,255,255,0.30);">Google Takeout data</p>
+          :class="importSource === 'gemini' ? 'border-pulse/40 bg-pulse/12' : ''">
+          <p class="text-sm font-medium" style="color: #2c2418;">Gemini</p>
+          <p class="text-[10px] mt-0.5" style="color: #8a7b68;">Google Takeout data</p>
         </button>
         <button @click="importSource = 'text'"
           class="glass-sm p-3 text-left transition-all"
-          :class="importSource === 'text' ? 'border-pulse/40 bg-pulse/10' : ''">
-          <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);">Memories</p>
-          <p class="text-[10px] mt-0.5" style="color: rgba(255,255,255,0.30);">Paste text, notes, facts</p>
+          :class="importSource === 'text' ? 'border-pulse/40 bg-pulse/12' : ''">
+          <p class="text-sm font-medium" style="color: #2c2418;">Memories</p>
+          <p class="text-[10px] mt-0.5" style="color: #8a7b68;">Paste text, notes, facts</p>
         </button>
       </div>
 
       <!-- File upload (for chatgpt/claude/gemini) -->
       <div x-show="importSource && importSource !== 'text'" x-cloak>
-        <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-white/5 transition-all">
+        <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-stone-100/60 transition-all">
           <input type="file" accept=".json,.txt" @change="handleFileUpload($event)" class="hidden">
-          <p class="text-sm" style="color: rgba(255,255,255,0.60);" x-text="importFile ? importFile.name : 'Click to upload file'"></p>
-          <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.25);">JSON or text file</p>
+          <p class="text-sm" style="color: #5a4d3c;" x-text="importFile ? importFile.name : 'Click to upload file'"></p>
+          <p class="text-[10px] mt-1" style="color: #a69880;">JSON or text file</p>
         </label>
       </div>
 
@@ -232,11 +232,11 @@
 
       <div class="flex gap-3 mt-5">
         <button @click="step = 4"
-          class="px-4 py-2 rounded-xl text-sm bg-white/5 border border-white/10 hover:bg-white/10"
-          style="color: rgba(255,255,255,0.50);">Back</button>
+          class="px-4 py-2 rounded-xl text-sm bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+          style="color: #6b5d4b;">Back</button>
         <button @click="step = 6; awaken()"
           class="flex-1 py-2.5 rounded-xl text-sm font-medium
-                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25">
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18">
           <span x-text="importSource ? 'Import & Awaken' : 'Skip & Awaken'"></span>
         </button>
       </div>
@@ -254,7 +254,7 @@
         </div>
         <div>
           <p class="text-sm font-medium" x-text="awakeningStatus"></p>
-          <p class="text-xs mt-1" style="color: rgba(255,255,255,0.30);">ALTER is learning to see through your eyes</p>
+          <p class="text-xs mt-1" style="color: #8a7b68;">ALTER is learning to see through your eyes</p>
         </div>
       </div>
 
@@ -267,11 +267,11 @@
         </div>
         <div>
           <h2 class="text-lg font-medium">Consciousness Initialized</h2>
-          <p class="text-xs mt-1" style="color: rgba(255,255,255,0.35);">Your Mirror is ready.</p>
+          <p class="text-xs mt-1" style="color: #8a7b68;">Your Mirror is ready.</p>
         </div>
-        <a href="/"
+        <a href="/?first=1"
           class="inline-block px-8 py-2.5 rounded-xl text-sm font-medium
-                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25 transition-all">
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18 transition-all">
           Enter the Mirror
         </a>
       </div>

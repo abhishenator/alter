@@ -1,0 +1,43 @@
+{# Vitals section for Me page — sparklines + weekly averages #}
+
+{% include "partials/vitals_sparklines.html" %}
+
+{% if averages %}
+<section class="glass-sm p-4 mt-3">
+  <h3 class="text-[10px] font-semibold tracking-widest uppercase mb-3" style="color: #a69880;">
+    Weekly Averages
+  </h3>
+  <div class="flex flex-wrap gap-4">
+    {% if averages.sleep is defined %}
+    <div>
+      <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Sleep</p>
+      <p class="text-sm font-medium" style="color: rgba(167,139,250,0.8);">{{ averages.sleep }}h</p>
+    </div>
+    {% endif %}
+    {% if averages.mood is defined %}
+    <div>
+      <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Mood</p>
+      <p class="text-sm font-medium" style="color: rgba(168,85,247,0.8);">{{ averages.mood }}</p>
+    </div>
+    {% endif %}
+    {% if averages.energy is defined %}
+    <div>
+      <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Energy</p>
+      <p class="text-sm font-medium" style="color: rgba(14,165,233,0.8);">{{ averages.energy }}</p>
+    </div>
+    {% endif %}
+    {% if averages.stress is defined %}
+    <div>
+      <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Stress</p>
+      <p class="text-sm font-medium" style="color: rgba(251,113,133,0.8);">{{ averages.stress }}</p>
+    </div>
+    {% endif %}
+    {% if averages.exercise is defined %}
+    <div>
+      <p class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Exercise</p>
+      <p class="text-sm font-medium" style="color: rgba(52,211,153,0.8);">{{ averages.exercise }}m</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

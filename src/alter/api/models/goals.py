@@ -29,6 +29,13 @@ class GoalListResponse(BaseModel):
     total: int
 
 
+class GoalUpdateRequest(BaseModel):
+    description: Optional[str] = None
+    domain: Optional[str] = None
+    time_horizon: Optional[str] = None
+    parent_goal_id: Optional[str] = None
+
+
 class GoalCompleteRequest(BaseModel):
     outcome: str = "success"
     notes: str = ""

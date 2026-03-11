@@ -5,11 +5,11 @@
     <svg class="w-3.5 h-3.5 text-emerald-400/50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
     </svg>
-    <p class="text-xs flex-1 line-through" style="color: rgba(255,255,255,0.35);">{{ goal.description }}</p>
-    <span class="text-[10px]" style="color: rgba(255,255,255,0.15);">{{ goal.domain }}</span>
+    <p class="text-xs flex-1 line-through" style="color: #b8aa96;">{{ goal.description }}</p>
+    <span class="text-[10px]" style="color: #c4b8a6;">{{ goal.domain }}</span>
   </div>
   {% endfor %}
 </div>
 {% else %}
-<p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">No completed goals yet.</p>
+<p class="text-xs p-4" style="color: #c4b8a6;">No completed goals yet.</p>
 {% endif %}

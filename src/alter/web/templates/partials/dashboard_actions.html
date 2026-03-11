@@ -1,0 +1,23 @@
+{# Recent activity log for Dashboard #}
+
+{% if activity %}
+<div class="glass-sm p-4 space-y-2">
+  {% for item in activity[:15] %}
+  <div class="flex items-start gap-2 py-1">
+    <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 bg-pulse/30"></span>
+    <div class="flex-1">
+      <p class="text-xs" style="color: #7a6c58;">
+        {{ item.get('summary', item.get('event_type', 'event')) }}
+      </p>
+      {% if item.get('timestamp') %}
+      <p class="text-[10px]" style="color: #c4b8a6;">{{ item.timestamp }}</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-sm p-4 text-center">
+  <p class="text-xs" style="color: #a69880;">No recent activity.</p>
+</div>
+{% endif %}

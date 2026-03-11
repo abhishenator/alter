@@ -17,8 +17,8 @@ function showToast(title, message, type = 'info') {
   toast.className = 'animate-slide-up';
   toast.innerHTML = `
     <div class="glass-sm p-4 ${color}">
-      <p class="text-sm font-medium" style="color: rgba(255,255,255,0.85);">${title}</p>
-      <p class="text-xs mt-1" style="color: rgba(255,255,255,0.50);">${message}</p>
+      <p class="text-sm font-medium" style="color: rgba(255,255,255,0.95);">${title}</p>
+      <p class="text-xs mt-1" style="color: rgba(255,255,255,0.65);">${message}</p>
     </div>
   `;
   container.appendChild(toast);
@@ -40,12 +40,14 @@ document.addEventListener('htmx:responseError', function(evt) {
 function checkinForm() {
   return {
     mood: 5, energy: 5, stress: 3, sleep: 7, exercise: 0,
+    note: '',
     saving: false, saved: false,
     async submit() {
       this.saving = true;
       this.saved = false;
       const today = new Date().toISOString().split('T')[0];
       try {
+        // 1. Log daily data
         const res = await fetch(`/api/v1/users/${USER_ID}/daily-data`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -62,9 +64,44 @@ function checkinForm() {
             }
           })
         });
+
         if (res.ok) {
           this.saved = true;
-          showToast('Logged', 'Your check-in has been saved.', 'success');
+
+          // 2. Save free-text note as import (if provided)
+          if (this.note.trim()) {
+            try {
+              await fetch(`/api/v1/users/${USER_ID}/import`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source: 'text', content: this.note })
+              });
+            } catch(e) { /* non-critical */ }
+            this.note = '';
+          }
+
+          // 3. Trigger background observe for immediate feedback
+          let observeMsg = "Got it. I'll factor this into tonight's review.";
+          try {
+            const obsRes = await fetch('/api/v1/consciousness/observe', { method: 'POST' });
+            if (obsRes.ok) {
+              const obsData = await obsRes.json();
+              const critical = (obsData.observations || []).filter(o => o.severity === 'critical');
+              if (critical.length > 0 && critical[0].summary) {
+                const s = critical[0].summary;
+                observeMsg = `I noticed ${s.toLowerCase().startsWith('i') ? '' : 'that '}${s.charAt(0).toLowerCase() + s.slice(1)} — I'll think about this.`;
+              }
+            }
+          } catch(e) { /* observe may not be running */ }
+
+          showToast('Check-in Logged', observeMsg, 'success');
+
+          // 4. Refresh relevant sections
+          htmx.trigger(document.body, 'refreshInbox');
+          if (document.getElementById('narrative-section')) {
+            htmx.trigger('#narrative-section', 'load');
+          }
+
           setTimeout(() => this.saved = false, 4000);
         }
       } catch(e) {
@@ -112,6 +149,8 @@ function goalForm() {
 async function triggerObserve() {
   const spinner = document.getElementById('orb-spinner');
   if (spinner) spinner.classList.remove('hidden');
+  // Also show mobile orb spinners
+  document.querySelectorAll('[data-orb-spinner-ring]').forEach(el => el.classList.remove('hidden'));
 
   try {
     const res = await fetch('/api/v1/consciousness/observe', { method: 'POST' });
@@ -135,6 +174,55 @@ async function triggerObserve() {
   }
   finally {
     if (spinner) spinner.classList.add('hidden');
+    document.querySelectorAll('[data-orb-spinner-ring]').forEach(el => el.classList.add('hidden'));
+  }
+}
+
+// ---- Ask ALTER (conversational tick with user context) ----
+
+async function askAlter(question) {
+  if (!question || !question.trim()) return;
+
+  document.dispatchEvent(new CustomEvent('alter:thinking', { detail: { on: true } }));
+
+  showProcessingOverlay(
+    'ALTER is thinking...',
+    question.length > 60 ? question.substring(0, 60) + '...' : question
+  );
+
+  try {
+    const res = await fetch('/api/v1/consciousness/tick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tick_type: 'urgent', context: question })
+    });
+
+    await new Promise(r => setTimeout(r, 500));
+
+    if (res.ok) {
+      const data = await res.json();
+      const titleEl = document.getElementById('processing-title');
+      const detailEl = document.getElementById('processing-detail');
+      if (titleEl) titleEl.textContent = 'Done!';
+      if (detailEl) detailEl.textContent = 'New thoughts added.';
+      await new Promise(r => setTimeout(r, 800));
+
+      const total = (data.insights || 0) + (data.notifications || 0) + (data.discoveries || 0);
+      showToast('ALTER Responded', `${total} thought${total !== 1 ? 's' : ''} generated about your question.`, 'success');
+
+      htmx.trigger(document.body, 'refreshInbox');
+      if (document.getElementById('narrative-section')) {
+        htmx.trigger('#narrative-section', 'load');
+      }
+    } else {
+      showToast('Error', 'ALTER could not process your question.', 'error');
+    }
+  } catch(e) {
+    showToast('Connection Error', 'Could not reach the server.', 'error');
+  }
+  finally {
+    hideProcessingOverlay();
+    document.dispatchEvent(new CustomEvent('alter:thinking', { detail: { on: false } }));
   }
 }
 
@@ -147,6 +235,8 @@ const REVIEW_LABELS = {
   discovery:       { title: 'Looking for patterns...', detail: 'Connecting dots across your life' },
 };
 
+let _overlayTimeout = null;
+
 function showProcessingOverlay(title, detail) {
   const overlay = document.getElementById('processing-overlay');
   const titleEl = document.getElementById('processing-title');
@@ -156,11 +246,15 @@ function showProcessingOverlay(title, detail) {
   detailEl.textContent = detail;
   overlay.classList.remove('hidden');
   overlay.style.opacity = '1';
+  // Safety timeout — auto-dismiss after 60s to prevent soft-lock
+  if (_overlayTimeout) clearTimeout(_overlayTimeout);
+  _overlayTimeout = setTimeout(() => hideProcessingOverlay(), 60000);
 }
 
 function hideProcessingOverlay() {
   const overlay = document.getElementById('processing-overlay');
   if (!overlay) return;
+  if (_overlayTimeout) { clearTimeout(_overlayTimeout); _overlayTimeout = null; }
   overlay.style.opacity = '0';
   setTimeout(() => {
     overlay.classList.add('hidden');
@@ -252,18 +346,43 @@ async function decomposeGoal(goalId) {
   }
 }
 
-// ---- Collect skill data ----
+// ---- Delete goal ----
 
-async function collectSkill(skillName) {
-  showToast('Collecting...', `Gathering data from ${skillName}.`, 'info');
+async function deleteGoal(goalId) {
+  if (!confirm('Delete this goal?')) return;
   try {
-    const res = await fetch(`/api/v1/consciousness/skills/${skillName}/collect`, {
-      method: 'POST'
+    const res = await fetch(`/api/v1/users/${USER_ID}/goals/${goalId}`, {
+      method: 'DELETE'
     });
     if (res.ok) {
-      showToast('Collected', `${skillName} data gathered.`, 'success');
+      showToast('Goal Deleted', 'Goal removed.', 'success');
+      htmx.trigger('#goal-tree', 'refresh');
     } else {
-      showToast('Error', `Could not collect from ${skillName}.`, 'error');
+      showToast('Error', 'Could not delete goal.', 'error');
+    }
+  } catch(e) {
+    showToast('Error', 'Could not reach the server.', 'error');
+  }
+}
+
+// ---- Save goal edit ----
+
+async function saveGoalEdit(goalId, description, domain, horizon) {
+  try {
+    const body = {};
+    if (description) body.description = description;
+    if (domain) body.domain = domain;
+    if (horizon) body.time_horizon = horizon;
+    const res = await fetch(`/api/v1/users/${USER_ID}/goals/${goalId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      showToast('Goal Updated', 'Changes saved.', 'success');
+      htmx.trigger('#goal-tree', 'refresh');
+    } else {
+      showToast('Error', 'Could not update goal.', 'error');
     }
   } catch(e) {
     showToast('Error', 'Could not reach the server.', 'error');
@@ -311,8 +430,9 @@ function importForm() {
           htmx.trigger(document.body, 'refreshMemories');
           setTimeout(() => this.imported = false, 4000);
         } else {
-          const data = await res.json();
-          showToast('Error', data.detail || 'Import failed.', 'error');
+          let msg = 'Import failed.';
+          try { const data = await res.json(); msg = data.detail || msg; } catch(e) {}
+          showToast('Error', msg, 'error');
         }
       } catch(e) {
         showToast('Error', 'Could not reach the server.', 'error');
@@ -332,13 +452,17 @@ function purposeEditor(initialPurpose) {
     async save() {
       this.saving = true;
       try {
-        await fetch(`/api/v1/users/${USER_ID}/purpose`, {
+        const res = await fetch(`/api/v1/users/${USER_ID}/purpose`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ statement: this.purpose })
+          body: JSON.stringify({ purpose: this.purpose })
         });
-        this.editing = false;
-        showToast('Saved', 'Purpose updated.', 'success');
+        if (res.ok) {
+          this.editing = false;
+          showToast('Saved', 'Purpose updated.', 'success');
+        } else {
+          showToast('Error', 'Could not update purpose.', 'error');
+        }
       } catch(e) {
         showToast('Error', 'Could not update purpose.', 'error');
       }

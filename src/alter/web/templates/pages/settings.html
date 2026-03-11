@@ -2,189 +2,228 @@
 {% block title %}ALTER — Settings{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in space-y-6">
+<div class="animate-fade-in space-y-6" x-data="{ tab: 'system' }">
 
-  <!-- Header + Status (full width) -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-lg font-semibold">Settings</h1>
-      <p class="text-xs mt-0.5" style="color: rgba(255,255,255,0.35);">Identity, context & reviews</p>
+  <!-- Header + Status + Tabs -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-lg font-semibold">Settings</h1>
+        <p class="text-xs mt-0.5" style="color: #8a7b68;">Identity, context & reviews</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full {% if consciousness_active %}bg-emerald-400 animate-breathe{% else %}bg-stone-300/50{% endif %}"></div>
+        <span class="text-xs" style="color: #8a7b68;">
+          {% if consciousness_active %}Online{% else %}Offline{% endif %}
+        </span>
+      </div>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="w-2 h-2 rounded-full {% if consciousness_active %}bg-emerald-400 animate-breathe{% else %}bg-white/20{% endif %}"></div>
-      <span class="text-xs" style="color: rgba(255,255,255,0.40);">
-        {% if consciousness_active %}Online{% else %}Offline{% endif %}
-      </span>
+
+    <!-- Tab Switcher -->
+    <div class="flex gap-1 p-1 rounded-lg bg-stone-100/60">
+      <button @click="tab = 'system'"
+        class="flex-1 px-4 py-1.5 rounded text-xs font-medium transition-all"
+        :class="tab === 'system' ? 'bg-stone-200/50 text-stone-700' : 'text-stone-400 hover:text-stone-500'">
+        System
+      </button>
+      <button @click="tab = 'memory'"
+        class="flex-1 px-4 py-1.5 rounded text-xs font-medium transition-all"
+        :class="tab === 'memory' ? 'bg-stone-200/50 text-stone-700' : 'text-stone-400 hover:text-stone-500'">
+        Memory
+      </button>
+      <button @click="tab = 'values'"
+        class="flex-1 px-4 py-1.5 rounded text-xs font-medium transition-all"
+        :class="tab === 'values' ? 'bg-stone-200/50 text-stone-700' : 'text-stone-400 hover:text-stone-500'">
+        Values
+      </button>
     </div>
   </div>
 
-  <!-- 2-Column Grid -->
-  <div class="md:grid md:grid-cols-2 md:gap-5 space-y-6 md:space-y-0">
+  <!-- ==================== System Tab ==================== -->
+  <div x-show="tab === 'system'" x-transition:enter="animate-fade-in" class="space-y-6">
 
-    <!-- Left Column -->
-    <div class="space-y-6">
-      <!-- Identity Card -->
-      <section class="glass p-6 halo">
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Identity</h3>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">User</span>
-            <span class="text-sm font-medium">{{ user_id }}</span>
-          </div>
-          {% if status.get('purpose') %}
-          <div>
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Purpose</span>
-            <p class="text-sm mt-1" style="color: rgba(255,255,255,0.80);">{{ status.purpose }}</p>
-          </div>
-          {% endif %}
-          {% if status.get('active_goals_count') is not none %}
-          <div class="flex items-center justify-between">
-            <span class="text-xs" style="color: rgba(255,255,255,0.50);">Active Goals</span>
-            <span class="text-sm text-pulse">{{ status.active_goals_count }}</span>
-          </div>
-          {% endif %}
+    <!-- Identity Card -->
+    <section class="glass p-6 halo">
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #8a7b68;">Identity</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs" style="color: #6b5d4b;">User</span>
+          <span class="text-sm font-medium">{{ user_id }}</span>
         </div>
-      </section>
+        {% if status.get('purpose') %}
+        <div>
+          <span class="text-xs" style="color: #6b5d4b;">Purpose</span>
+          <p class="text-sm mt-1" style="color: #2c2418;">{{ status.purpose }}</p>
+        </div>
+        {% endif %}
+        {% if status.get('active_goals_count') is not none %}
+        <div class="flex items-center justify-between">
+          <span class="text-xs" style="color: #6b5d4b;">Active Goals</span>
+          <span class="text-sm text-pulse">{{ status.active_goals_count }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </section>
 
-      <!-- Automatic Reviews -->
-      <section x-data="thoughtLoops()" class="glass p-5">
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: rgba(255,255,255,0.30);">Automatic Reviews</h3>
-        <p class="text-xs mb-4" style="color: rgba(255,255,255,0.25);">Choose which reviews run automatically and when.</p>
-        <div class="space-y-3">
-          <template x-for="loop in loops" :key="loop.id">
-            <div class="flex items-start gap-3 px-3 py-3 rounded-lg transition-all"
-              :style="loop.enabled ? 'background: rgba(255,255,255,0.03)' : 'opacity: 0.5'">
-              <button @click="toggleLoop(loop)"
-                class="w-9 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-all"
-                :class="loop.enabled ? 'bg-pulse/30' : 'bg-white/10'">
-                <div class="w-3.5 h-3.5 rounded-full absolute top-[3px] transition-all"
-                  :class="loop.enabled ? 'right-[3px] bg-pulse' : 'left-[3px] bg-white/30'"></div>
-              </button>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium" style="color: rgba(255,255,255,0.80);" x-text="loop.label"></p>
-                <p class="text-[11px] mt-0.5 leading-relaxed" style="color: rgba(255,255,255,0.35);" x-text="loop.description"></p>
-                <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.18);" x-text="loop.schedule_label"></p>
-              </div>
-              <button @click="triggerTick(loop.id)"
-                class="px-2 py-1 rounded text-[10px] transition-all flex-shrink-0
-                       bg-white/5 border border-white/10 hover:bg-white/10"
-                style="color: rgba(255,255,255,0.40);">
-                Run now
-              </button>
+    <!-- Automatic Reviews -->
+    <section x-data="thoughtLoops()" x-init="init()" class="glass p-5">
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #8a7b68;">Automatic Reviews</h3>
+      <p class="text-xs mb-4" style="color: #a69880;">Choose which reviews run automatically and when.</p>
+      <div class="space-y-3">
+        <template x-for="loop in loops" :key="loop.id">
+          <div class="flex items-start gap-3 px-3 py-3 rounded-lg transition-all"
+            :style="loop.enabled ? 'background: rgba(192, 120, 48, 0.04)' : 'opacity: 0.5'">
+            <button @click="toggleLoop(loop)"
+              class="w-9 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-all"
+              :class="loop.enabled ? 'bg-pulse/30' : 'bg-stone-200/50'">
+              <div class="w-3.5 h-3.5 rounded-full absolute top-[3px] transition-all"
+                :class="loop.enabled ? 'right-[3px] bg-pulse' : 'left-[3px] bg-stone-100/400'"></div>
+            </button>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium" style="color: #2c2418;" x-text="loop.label"></p>
+              <p class="text-[11px] mt-0.5 leading-relaxed" style="color: #8a7b68;" x-text="loop.description"></p>
+              <p class="text-[10px] mt-1" style="color: #b8aa96;" x-text="loop.schedule_label"></p>
             </div>
-          </template>
-        </div>
-      </section>
-
-      <!-- Data Sources -->
-      <details class="group">
-        <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-          style="color: rgba(255,255,255,0.20);">
-          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-          <span class="text-xs tracking-wider uppercase">Data Sources</span>
-        </summary>
-        <div class="mt-2"
-          hx-get="/partials/profile-skills" hx-trigger="revealed"
-          hx-swap="innerHTML transition:true">
-          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
-        </div>
-      </details>
-
-      <!-- System Info -->
-      <section class="glass-sm p-4">
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">System</h3>
-        <div class="grid grid-cols-2 gap-3 text-xs">
-          <div>
-            <span style="color: rgba(255,255,255,0.35);">Version</span>
-            <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">{{ status.get('version', '0.1.0') }}</p>
+            <button @click="triggerTick(loop.id)"
+              class="px-2 py-1 rounded text-[10px] transition-all flex-shrink-0
+                     bg-stone-100/60 border border-stone-200/50 hover:bg-stone-200/50"
+              style="color: #8a7b68;">
+              Run now
+            </button>
           </div>
-          <div>
-            <span style="color: rgba(255,255,255,0.35);">Background Reviews</span>
-            <p class="text-sm mt-0.5" style="color: rgba(255,255,255,0.60);">
-              {% if consciousness_active %}On{% else %}Off{% endif %}
-            </p>
-          </div>
-        </div>
-      </section>
-    </div>
+        </template>
+      </div>
+    </section>
 
-    <!-- Right Column -->
-    <div class="space-y-6">
-      <!-- Import Context -->
-      <section x-data="importForm()" class="glass p-5">
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: rgba(255,255,255,0.30);">Import Context</h3>
-        <p class="text-xs mb-4" style="color: rgba(255,255,255,0.35);">Give ALTER more context — chat exports, memories, notes, journal entries.</p>
+    <!-- Data Sources -->
+    <details class="group">
+      <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
+        style="color: #a69880;">
+        <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-xs tracking-wider uppercase">Data Sources</span>
+      </summary>
+      <div class="mt-2"
+        hx-get="/partials/profile-skills" hx-trigger="revealed"
+        hx-swap="innerHTML transition:true">
+        <p class="text-xs p-4" style="color: #a69880;">Loading...</p>
+      </div>
+    </details>
 
-        <div class="grid grid-cols-2 gap-2 mb-4">
-          <button @click="source = 'chatgpt'" class="glass-sm p-2.5 text-center transition-all text-xs"
-            :class="source === 'chatgpt' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-            style="color: rgba(255,255,255,0.55);">ChatGPT</button>
-          <button @click="source = 'claude'" class="glass-sm p-2.5 text-center transition-all text-xs"
-            :class="source === 'claude' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-            style="color: rgba(255,255,255,0.55);">Claude</button>
-          <button @click="source = 'gemini'" class="glass-sm p-2.5 text-center transition-all text-xs"
-            :class="source === 'gemini' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-            style="color: rgba(255,255,255,0.55);">Gemini</button>
-          <button @click="source = 'text'" class="glass-sm p-2.5 text-center transition-all text-xs"
-            :class="source === 'text' ? 'border-pulse/40 bg-pulse/10 text-pulse' : ''"
-            style="color: rgba(255,255,255,0.55);">Text / Notes</button>
+    <!-- System Info -->
+    <section class="glass-sm p-4">
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #8a7b68;">System</h3>
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <span style="color: #8a7b68;">Version</span>
+          <p class="text-sm mt-0.5" style="color: #5a4d3c;">{{ status.get('version', '0.1.0') }}</p>
         </div>
+        <div>
+          <span style="color: #8a7b68;">Background Reviews</span>
+          <p class="text-sm mt-0.5" style="color: #5a4d3c;">
+            {% if consciousness_active %}On{% else %}Off{% endif %}
+          </p>
+        </div>
+      </div>
+    </section>
 
-        <div x-show="source && source !== 'text'" x-cloak class="mb-3">
-          <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-white/5 transition-all">
-            <input type="file" accept=".json,.txt,.csv" @change="handleFile($event)" class="hidden">
-            <p class="text-sm" style="color: rgba(255,255,255,0.55);" x-text="fileName || 'Click to upload ' + source + ' export file'"></p>
-            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.25);">JSON, TXT, or CSV</p>
-          </label>
-        </div>
+  </div>
 
-        <div x-show="source === 'text'" x-cloak class="mb-3">
-          <textarea x-model="textContent" rows="5" class="w-full text-sm resize-none"
-            placeholder="Paste anything — memories, notes, facts about yourself, journal entries, chat logs..."></textarea>
-        </div>
+  <!-- ==================== Memory Tab ==================== -->
+  <div x-show="tab === 'memory'" x-cloak x-transition:enter="animate-fade-in" class="space-y-6">
 
-        <div x-show="source" x-cloak class="flex items-center gap-3">
-          <button @click="submitImport()" :disabled="importing || (!textContent.trim() && !fileContent)"
-            class="px-4 py-2 rounded-xl text-sm font-medium transition-all
-                   bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
-                   disabled:opacity-30 disabled:cursor-not-allowed">
-            <span x-show="!importing">Import</span>
-            <span x-show="importing" x-cloak>Importing...</span>
-          </button>
-          <span x-show="imported" x-cloak class="text-xs text-emerald-400">Imported successfully</span>
-        </div>
-      </section>
+    <!-- Import Context -->
+    <section x-data="importForm()" class="glass p-5">
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #8a7b68;">Import Context</h3>
+      <p class="text-xs mb-4" style="color: #8a7b68;">Give ALTER more context — chat exports, memories, notes, journal entries.</p>
 
-      <!-- Your Memories -->
-      <section>
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Your Memories</h3>
-        <div id="memories-section"
-          hx-get="/partials/profile-memories" hx-trigger="load, refreshMemories from:body"
-          hx-swap="innerHTML transition:true">
-          <div class="glass-sm p-4">
-            <p class="text-xs" style="color: rgba(255,255,255,0.30);">Loading...</p>
-          </div>
-        </div>
-      </section>
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button @click="source = 'chatgpt'" class="glass-sm p-2.5 text-center transition-all text-xs"
+          :class="source === 'chatgpt' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+          style="color: #5a4d3c;">ChatGPT</button>
+        <button @click="source = 'claude'" class="glass-sm p-2.5 text-center transition-all text-xs"
+          :class="source === 'claude' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+          style="color: #5a4d3c;">Claude</button>
+        <button @click="source = 'gemini'" class="glass-sm p-2.5 text-center transition-all text-xs"
+          :class="source === 'gemini' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+          style="color: #5a4d3c;">Gemini</button>
+        <button @click="source = 'text'" class="glass-sm p-2.5 text-center transition-all text-xs"
+          :class="source === 'text' ? 'border-pulse/40 bg-pulse/12 text-pulse' : ''"
+          style="color: #5a4d3c;">Text / Notes</button>
+      </div>
 
-      <!-- Values & Rules -->
-      <details class="group">
-        <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-          style="color: rgba(255,255,255,0.20);">
-          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-          <span class="text-xs tracking-wider uppercase">Values & Rules</span>
-        </summary>
-        <div class="mt-2"
-          hx-get="/partials/profile-constitution" hx-trigger="revealed"
-          hx-swap="innerHTML transition:true">
-          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
+      <div x-show="source && source !== 'text'" x-cloak class="mb-3">
+        <label class="block glass-sm p-4 text-center cursor-pointer hover:bg-stone-100/60 transition-all">
+          <input type="file" accept=".json,.txt,.csv" @change="handleFile($event)" class="hidden">
+          <p class="text-sm" style="color: #5a4d3c;" x-text="fileName || 'Click to upload ' + source + ' export file'"></p>
+          <p class="text-[10px] mt-1" style="color: #a69880;">JSON, TXT, or CSV</p>
+        </label>
+      </div>
+
+      <div x-show="source === 'text'" x-cloak class="mb-3">
+        <textarea x-model="textContent" rows="5" class="w-full text-sm resize-none"
+          placeholder="Paste anything — memories, notes, facts about yourself, journal entries, chat logs..."></textarea>
+      </div>
+
+      <div x-show="source" x-cloak class="flex items-center gap-3">
+        <button @click="submitImport()" :disabled="importing || (!textContent.trim() && !fileContent)"
+          class="px-4 py-2 rounded-xl text-sm font-medium transition-all
+                 bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18
+                 disabled:opacity-30 disabled:cursor-not-allowed">
+          <span x-show="!importing">Import</span>
+          <span x-show="importing" x-cloak>Importing...</span>
+        </button>
+        <span x-show="imported" x-cloak class="text-xs text-emerald-400">Imported successfully</span>
+      </div>
+    </section>
+
+    <!-- Your Memories -->
+    <section>
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #8a7b68;">Your Memories</h3>
+      <div id="memories-section"
+        hx-get="/partials/profile-memories" hx-trigger="load, refreshMemories from:body"
+        hx-swap="innerHTML transition:true">
+        <div class="glass-sm p-4">
+          <p class="text-xs" style="color: #8a7b68;">Loading...</p>
         </div>
-      </details>
-    </div>
+      </div>
+    </section>
+
+    <!-- Values & Rules -->
+    <details class="group">
+      <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
+        style="color: #a69880;">
+        <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-xs tracking-wider uppercase">Values & Rules</span>
+      </summary>
+      <div class="mt-2"
+        hx-get="/partials/profile-constitution" hx-trigger="revealed"
+        hx-swap="innerHTML transition:true">
+        <p class="text-xs p-4" style="color: #a69880;">Loading...</p>
+      </div>
+    </details>
+
+  </div>
+
+  <!-- ==================== Values Tab ==================== -->
+  <div x-show="tab === 'values'" x-cloak x-transition:enter="animate-fade-in" class="space-y-6">
+
+    <section>
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #8a7b68;">Constitution & Values</h3>
+      <p class="text-xs mb-4" style="color: #a69880;">
+        Your principles guide ALTER's reasoning. Edit weights and descriptions to shape how ALTER thinks.
+      </p>
+      <div id="constitution-editor-section"
+        hx-get="/partials/constitution-editor" hx-trigger="load"
+        hx-swap="innerHTML transition:true">
+        <div class="glass-sm p-4">
+          <p class="text-xs" style="color: #8a7b68;">Loading...</p>
+        </div>
+      </div>
+    </section>
 
   </div>
 

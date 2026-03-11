@@ -9,10 +9,10 @@
     <h1 class="text-lg font-semibold">Goals</h1>
     <div x-data="purposeEditor('{{ status.get('purpose', '') | e }}')" class="glass-sm p-4">
       <div x-show="!editing" class="flex items-center justify-between">
-        <p class="text-sm" style="color: rgba(255,255,255,0.55);"
+        <p class="text-sm" style="color: #5a4d3c;"
           x-text="purpose || 'Set your north star...'"></p>
-        <button @click="editing = true" class="text-[10px] hover:text-white/40 transition-all"
-          style="color: rgba(255,255,255,0.20);">edit</button>
+        <button @click="editing = true" class="text-[10px] hover:text-stone-400 transition-all"
+          style="color: #a69880;">edit</button>
       </div>
       <div x-show="editing" x-cloak class="space-y-2">
         <textarea x-model="purpose" rows="2" class="w-full text-sm resize-none bg-transparent"
@@ -21,7 +21,7 @@
           <button @click="save()" :disabled="saving"
             class="px-3 py-1 rounded text-xs bg-pulse/15 border border-pulse/25 text-pulse">Save</button>
           <button @click="editing = false" class="px-3 py-1 rounded text-xs"
-            style="color: rgba(255,255,255,0.30);">Cancel</button>
+            style="color: #8a7b68;">Cancel</button>
         </div>
       </div>
     </div>
@@ -36,23 +36,26 @@
         hx-get="/partials/goal-graph" hx-trigger="load, refresh"
         hx-swap="innerHTML transition:true">
         <div class="glass p-6 text-center">
-          <p class="text-xs" style="color: rgba(255,255,255,0.25);">Loading goals...</p>
+          <p class="text-xs" style="color: #a69880;">Loading goals...</p>
         </div>
       </div>
     </div>
 
-    <!-- Right: Add Goal + Reviews + Completed -->
+    <!-- Right: Vitals + Add Goal + Reviews + Completed -->
     <div class="md:col-span-2 lg:col-span-1 md:sticky md:top-6 space-y-5 mt-5 md:mt-0 self-start">
+
+      <!-- Vitals Sparklines (7-day) -->
+      <div hx-get="/partials/vitals" hx-trigger="load" hx-swap="innerHTML transition:true"></div>
 
       <!-- Add Goal Form -->
       <section x-data="goalForm()" class="glass p-5">
-        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: rgba(255,255,255,0.30);">Add Goal</h3>
+        <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #8a7b68;">Add Goal</h3>
         <div class="space-y-3">
           <input type="text" x-model="description" placeholder="What do you want to achieve?"
-            class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm">
+            class="w-full bg-stone-100/60 border border-stone-200/50 rounded-lg px-3 py-2 text-sm">
           <div class="flex flex-col gap-2">
             <select x-model="domain"
-              class="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs">
+              class="bg-stone-100/60 border border-stone-200/50 rounded-lg px-3 py-1.5 text-xs">
               <option value="health">Health</option>
               <option value="career">Career</option>
               <option value="wealth">Wealth</option>
@@ -61,7 +64,7 @@
               <option value="emotions">Emotions</option>
             </select>
             <select x-model="horizon"
-              class="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs">
+              class="bg-stone-100/60 border border-stone-200/50 rounded-lg px-3 py-1.5 text-xs">
               <option value="week">Week</option>
               <option value="month">Month</option>
               <option value="quarter">Quarter</option>
@@ -70,7 +73,7 @@
             </select>
             <button @click="submit()" :disabled="saving || !description.trim()"
               class="w-full px-4 py-1.5 rounded-lg text-xs font-medium transition-all
-                     bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/25
+                     bg-pulse/15 border border-pulse/25 text-pulse hover:bg-pulse/18
                      disabled:opacity-30 disabled:cursor-not-allowed">
               Add
             </button>
@@ -81,7 +84,7 @@
       <!-- Goal Analyses -->
       <details class="group">
         <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-          style="color: rgba(255,255,255,0.20);">
+          style="color: #a69880;">
           <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
@@ -90,14 +93,14 @@
         <div class="mt-2"
           hx-get="/partials/goal-analyses" hx-trigger="revealed"
           hx-swap="innerHTML transition:true">
-          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
+          <p class="text-xs p-4" style="color: #a69880;">Loading...</p>
         </div>
       </details>
 
       <!-- Completed Goals -->
       <details class="group">
         <summary class="flex items-center gap-2 cursor-pointer px-1 py-2"
-          style="color: rgba(255,255,255,0.20);">
+          style="color: #a69880;">
           <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
@@ -106,7 +109,7 @@
         <div class="mt-2"
           hx-get="/partials/completed-goals" hx-trigger="revealed"
           hx-swap="innerHTML transition:true">
-          <p class="text-xs p-4" style="color: rgba(255,255,255,0.25);">Loading...</p>
+          <p class="text-xs p-4" style="color: #a69880;">Loading...</p>
         </div>
       </details>
 
