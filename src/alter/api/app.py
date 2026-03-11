@@ -1,4 +1,4 @@
-"""FastAPI application factory for ALTER."""
+"""FastAPI application factory for LifeOS."""
 
 import logging
 import os
@@ -45,8 +45,8 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     application = FastAPI(
-        title="ALTER",
-        description="Adaptive Life Transformation & Evolution Runtime",
+        title="LifeOS",
+        description="Life Operating System — Automate thinking",
         version="0.1.0",
         lifespan=lifespan,
     )

@@ -1,5 +1,5 @@
 """
-Consciousness Layer — ALTER's autonomous thinking engine.
+Consciousness Layer — LifeOS's autonomous thinking engine.
 
 The consciousness layer is a state machine:
     Read state → Assemble context → Call LLM → Parse output → Update state

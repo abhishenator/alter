@@ -1,6 +1,6 @@
 # Constitution Customization Guide
 
-ALTER's constitution is fully customizable. You define the principles, values, and rules that govern how the system guides you.
+LifeOS's constitution is fully customizable. You define the principles, values, and rules that govern how the system guides you.
 
 ## Philosophy
 

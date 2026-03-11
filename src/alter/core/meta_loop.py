@@ -1,5 +1,5 @@
 """
-Meta-Loop - The Consciousness Layer of ALTER.
+Meta-Loop - The Consciousness Layer of LifeOS.
 
 Implements the central cognitive engine that maintains coherent identity and purpose:
 - Reflect: Analyze current life state and progress
@@ -105,7 +105,7 @@ class ConflictResolutionResult:
 
 class MetaLoop:
     """
-    The Meta-Loop - ALTER's consciousness layer.
+    The Meta-Loop - LifeOS's consciousness layer.
 
     Maintains coherent identity and purpose through continuous cycles of:
     Reflect → Reason → Plan → Execute → Evolve

@@ -1,7 +1,7 @@
 """
 Skills — Sense organs for the consciousness engine.
 
-Each skill expands what ALTER can perceive, investigate, or act upon.
+Each skill expands what LifeOS can perceive, investigate, or act upon.
 Before a skill exists, the system is blind to that domain. Adding a
 skill is like growing a new sense organ.
 

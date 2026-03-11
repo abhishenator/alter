@@ -1,17 +1,17 @@
-# ALTER — Adaptive Life Transformation & Evolution Runtime
+# LifeOS — Life Operating System
 
-ALTER is an autonomous consciousness layer that thinks on your behalf.
+LifeOS is an autonomous consciousness layer that thinks on your behalf.
 It observes your life data, detects patterns, maintains a narrative about
 your life, and surfaces insights when they matter.
 
 ## Tools
 
 ### alter_status
-Get the current state of ALTER's consciousness — what it's thinking about,
+Get the current state of LifeOS's consciousness — what it's thinking about,
 pending notifications, and open questions.
 
 ### alter_reflect
-Trigger a conscious thinking cycle. ALTER will review recent data, compare
+Trigger a conscious thinking cycle. LifeOS will review recent data, compare
 against expectations, generate insights, and update its understanding.
 
 **Parameters:**
@@ -21,22 +21,22 @@ against expectations, generate insights, and update its understanding.
   - `monthly_deep` — deep identity and purpose review
 
 ### alter_observe
-Run a quick observation check. ALTER compares current data against its
+Run a quick observation check. LifeOS compares current data against its
 world model expectations and reports any notable signals. No LLM call —
 pure pattern detection.
 
 ### alter_narrative
-Get ALTER's current narrative — the unified story of your life as ALTER
+Get LifeOS's current narrative — the unified story of your life as LifeOS
 understands it. This is updated after every thinking cycle.
 
 ### alter_questions
-Show ALTER's dormant questions — things it's been mulling over that
+Show LifeOS's dormant questions — things it's been mulling over that
 haven't been resolved yet. Questions accumulate readiness as new data
 arrives and are surfaced when they're ready to be answered.
 
 ### alter_notify
-Deliver any pending notifications from ALTER. These are insights and
-observations that ALTER wants to share with you.
+Deliver any pending notifications from LifeOS. These are insights and
+observations that LifeOS wants to share with you.
 
 ## Cron
 
@@ -56,7 +56,7 @@ observations that ALTER wants to share with you.
 
 ## Configuration
 
-ALTER requires:
+LifeOS requires:
 - A user profile (created on first run)
 - Daily life data (health metrics, mood, work hours, etc.)
 - Optionally, a constitution (ethical framework and life domains)

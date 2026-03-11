@@ -1,5 +1,5 @@
 """
-Demo: ALTER Consciousness Pipeline (C1 + C2 + C3)
+Demo: LifeOS Consciousness Pipeline (C1 + C2 + C3)
 
 This demo shows the full pipeline in two modes:
 
@@ -324,7 +324,7 @@ def demo_engine():
             print(f"  {pending[0]['message'][:120]}...")
 
     print("\n" + "=" * 70)
-    print("  ALTER is thinking. Phase C4 will schedule this automatically.")
+    print("  LifeOS is thinking. Phase C4 will schedule this automatically.")
     print("=" * 70)
 
 

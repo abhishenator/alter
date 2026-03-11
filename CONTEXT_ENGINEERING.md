@@ -1,16 +1,16 @@
-# Context Engineering — How ALTER Thinks With Limited Attention
+# Context Engineering — How LifeOS Thinks With Limited Attention
 
-*Design document for ALTER's context assembly, information processing, and memory hierarchy.*
+*Design document for LifeOS's context assembly, information processing, and memory hierarchy.*
 
 ---
 
 ## The Core Problem
 
-ALTER's consciousness runs on LLMs. LLMs have finite context windows. But a user's life generates unbounded data — daily observations, weekly patterns, monthly narratives, dormant questions, goals, values. The challenge:
+LifeOS's consciousness runs on LLMs. LLMs have finite context windows. But a user's life generates unbounded data — daily observations, weekly patterns, monthly narratives, dormant questions, goals, values. The challenge:
 
 **How do you give an LLM enough context to think deeply about someone's life, without drowning it in irrelevant detail or blowing through token budgets?**
 
-This is ALTER's most important engineering problem. Get context assembly wrong and the system either:
+This is LifeOS's most important engineering problem. Get context assembly wrong and the system either:
 - **Thinks shallowly** (too little context → misses cross-domain patterns)
 - **Thinks expensively** (too much context → wasted tokens, noise drowns signal)
 - **Forgets** (no summarization → old insights lost, same observations repeated)
@@ -31,7 +31,7 @@ The answer is **hierarchical context assembly** — inspired by RAG systems, Mem
 
 5. **The LLM does the cognitive work** — Context assembly is about *what* to include. The *thinking* (pattern recognition, hypothesis generation, narrative synthesis) happens in the LLM, not in Python.
 
-6. **Start simple, add complexity only when measured** — No vector databases, no embeddings, no cross-encoders. ALTER's data is small enough for time-ranged reads on structured JSON. Add sophisticated retrieval only when the data outgrows this.
+6. **Start simple, add complexity only when measured** — No vector databases, no embeddings, no cross-encoders. LifeOS's data is small enough for time-ranged reads on structured JSON. Add sophisticated retrieval only when the data outgrows this.
 
 ---
 
@@ -75,7 +75,7 @@ Inspired by MemGPT's virtual memory paging and how human memory actually works:
 
 ### Why This Mirrors the Brain
 
-| Brain | ALTER | Purpose |
+| Brain | LifeOS | Purpose |
 |-------|-------|---------|
 | Prefrontal cortex (working memory) | Narrative + world model | Always available, guides attention |
 | Hippocampus (recent episodic) | Raw observations, daily data | Detailed, recent, decays |
@@ -272,7 +272,7 @@ Drawing from RAG compression research, summaries must capture:
 
 ### Preventing Context Collapse
 
-Research shows iterative summarization can erode important details over time (the "telephone game" effect). ALTER's mitigation:
+Research shows iterative summarization can erode important details over time (the "telephone game" effect). LifeOS's mitigation:
 
 1. **Structured summaries** — Not free-form text. `key_insights`, `key_facts`, `prediction_errors_summary` as separate fields. Structured data resists compression loss.
 
@@ -310,7 +310,7 @@ After 1 year of operation:
 - Raw observations → always capped at last 48h → ~2K tokens
 - **Total: ~37K tokens ≈ 150KB JSON**
 
-ALTER's memory footprint stays small indefinitely.
+LifeOS's memory footprint stays small indefinitely.
 
 ---
 
@@ -370,14 +370,14 @@ Priority order (highest → lowest):
 Drawing from lessons learned across RAG, AutoGPT, and MemGPT:
 
 ### No Vector Database
-ALTER's data is small and structured. Time-ranged reads on JSON are sufficient. AutoGPT removed their vector DB because "agent runs didn't generate enough distinct facts." ALTER generates ~25 observations/day — trivially searchable without embeddings.
+LifeOS's data is small and structured. Time-ranged reads on JSON are sufficient. AutoGPT removed their vector DB because "agent runs didn't generate enough distinct facts." LifeOS generates ~25 observations/day — trivially searchable without embeddings.
 
 **When to add**: If/when skills expansion (calendar, email, web research) generates high-volume unstructured data that outgrows linear search.
 
 ### No Semantic Chunking
-ALTER doesn't process external documents. Its "chunks" are observations, summaries, and state fields — already semantically bounded by design. No need for sentence-boundary detection or embedding-based splitting.
+LifeOS doesn't process external documents. Its "chunks" are observations, summaries, and state fields — already semantically bounded by design. No need for sentence-boundary detection or embedding-based splitting.
 
-**When to add**: If/when ALTER gains a "read and understand documents" skill.
+**When to add**: If/when LifeOS gains a "read and understand documents" skill.
 
 ### No Cross-Encoder Reranking
 With ~25 observations/day and structured queries ("last 24h, elevated+"), there's nothing to rank. The time-range + severity filter IS the retrieval.
@@ -385,7 +385,7 @@ With ~25 observations/day and structured queries ("last 24h, elevated+"), there'
 **When to add**: If/when the observation log grows to hundreds of entries and relevance scoring becomes necessary.
 
 ### No Multi-Agent Context Isolation
-ALTER is one mind, not a committee. Context flows through one engine, one state. Research shows 40-80% failure rates in multi-agent systems, with 36.9% of failures from inter-agent misalignment.
+LifeOS is one mind, not a committee. Context flows through one engine, one state. Research shows 40-80% failure rates in multi-agent systems, with 36.9% of failures from inter-agent misalignment.
 
 **When to add**: If/when skills become complex enough to warrant specialized sub-agents with isolated contexts.
 
@@ -394,27 +394,27 @@ ALTER is one mind, not a committee. Context flows through one engine, one state.
 ## Lessons From Other Systems
 
 ### From RAG Systems
-- **Position-aware assembly**: Important content at start/end of context. ALTER places narrative first, output schema last.
-- **Token budget reservation**: Always reserve 20%+ for model response. ALTER's budgets explicitly allocate input vs output.
-- **Start with recursive, not semantic chunking**: ALTER's "chunks" are already semantically bounded (observations, summaries) — no chunking needed.
+- **Position-aware assembly**: Important content at start/end of context. LifeOS places narrative first, output schema last.
+- **Token budget reservation**: Always reserve 20%+ for model response. LifeOS's budgets explicitly allocate input vs output.
+- **Start with recursive, not semantic chunking**: LifeOS's "chunks" are already semantically bounded (observations, summaries) — no chunking needed.
 
 ### From OpenClaw
-- **Dual compaction**: Compaction (summarize old history) + pruning (drop old tool results in-memory). ALTER uses similar: summarization for semantic compression, compact() for storage cleanup.
-- **Plain text storage**: OpenClaw uses Markdown files. ALTER uses JSON. Both are inspectable, debuggable, greppable. No opaque database.
-- **Heartbeat pattern**: OpenClaw's heartbeat checks a checklist. ALTER's hourly pulse is similar — check expectations against reality, act only if something's off.
+- **Dual compaction**: Compaction (summarize old history) + pruning (drop old tool results in-memory). LifeOS uses similar: summarization for semantic compression, compact() for storage cleanup.
+- **Plain text storage**: OpenClaw uses Markdown files. LifeOS uses JSON. Both are inspectable, debuggable, greppable. No opaque database.
+- **Heartbeat pattern**: OpenClaw's heartbeat checks a checklist. LifeOS's hourly pulse is similar — check expectations against reality, act only if something's off.
 
 ### From MemGPT/Letta
-- **Hierarchical tiers**: Core memory (always in context) → Recall (searchable history) → Archival (long-term). ALTER maps this to: working memory → short-term → medium-term → long-term.
-- **Recursive summarization**: Each flush updates the summary. ALTER's daily summary incorporates hourly observations; weekly summary incorporates daily summaries.
-- **Agent-managed memory**: MemGPT lets the LLM decide what to store/load. ALTER's LLM ticks produce summaries as natural output — the LLM decides what's worth compressing.
+- **Hierarchical tiers**: Core memory (always in context) → Recall (searchable history) → Archival (long-term). LifeOS maps this to: working memory → short-term → medium-term → long-term.
+- **Recursive summarization**: Each flush updates the summary. LifeOS's daily summary incorporates hourly observations; weekly summary incorporates daily summaries.
+- **Agent-managed memory**: MemGPT lets the LLM decide what to store/load. LifeOS's LLM ticks produce summaries as natural output — the LLM decides what's worth compressing.
 
 ### From LangChain/LangGraph
-- **Token-based trimming over count-based**: Don't count messages, count tokens. ALTER uses token budgets, not "include N observations."
-- **Approximate counting on hot path**: `trim_messages` uses fast approximation during assembly, exact counting before API call. ALTER follows the same pattern.
+- **Token-based trimming over count-based**: Don't count messages, count tokens. LifeOS uses token budgets, not "include N observations."
+- **Approximate counting on hot path**: `trim_messages` uses fast approximation during assembly, exact counting before API call. LifeOS follows the same pattern.
 
 ### From AutoGPT's Evolution
-- **Start simple**: AutoGPT removed their vector DB because it was overkill. ALTER starts with JSON files and time-ranged reads. Add complexity only when measured.
-- **File-based storage is fine**: For ALTER's data volume (~150KB/year), JSON files are more than sufficient.
+- **Start simple**: AutoGPT removed their vector DB because it was overkill. LifeOS starts with JSON files and time-ranged reads. Add complexity only when measured.
+- **File-based storage is fine**: For LifeOS's data volume (~150KB/year), JSON files are more than sufficient.
 
 ---
 
@@ -474,9 +474,9 @@ Key methods:
 
 2. **Adaptive budgets**: Should token budgets be fixed or adapt based on "how interesting" a period was? A boring week might need 4K tokens; a crisis week might need 15K. Start fixed, consider adaptive later.
 
-3. **User-injected context**: Users should be able to add notes, corrections, or context that ALTER doesn't observe directly. "I'm going through a breakup" should enter the narrative immediately. This needs a first-class input path, not just daily data fields.
+3. **User-injected context**: Users should be able to add notes, corrections, or context that LifeOS doesn't observe directly. "I'm going through a breakup" should enter the narrative immediately. This needs a first-class input path, not just daily data fields.
 
-4. **Multi-modal context**: If ALTER gains a journal skill that processes photos or voice notes, how does that content enter the context window? Text descriptions (as RAG research recommends) are probably the right starting approach.
+4. **Multi-modal context**: If LifeOS gains a journal skill that processes photos or voice notes, how does that content enter the context window? Text descriptions (as RAG research recommends) are probably the right starting approach.
 
 ---
 

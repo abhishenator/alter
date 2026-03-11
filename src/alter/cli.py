@@ -1,5 +1,5 @@
 """
-ALTER CLI - Command-line interface for ALTER system.
+LifeOS CLI - Command-line interface for LifeOS system.
 
 Provides commands for:
 - User initialization and setup
@@ -39,7 +39,7 @@ from alter.core.constitution import Constitution
 
 app = typer.Typer(
     name="alter",
-    help="ALTER - Adaptive Life Transformation & Evolution Runtime",
+    help="LifeOS — Automate thinking",
     add_completion=False
 )
 console = Console()
@@ -90,7 +90,7 @@ def init(
     )
 ):
     """
-    Initialize ALTER for a new user.
+    Initialize LifeOS for a new user.
 
     Creates user profile, loads default constitution, and sets up system state.
     """
@@ -107,7 +107,7 @@ def init(
         TextColumn("[progress.description]{task.description}"),
         console=console
     ) as progress:
-        task = progress.add_task("Initializing ALTER...", total=None)
+        task = progress.add_task("Initializing LifeOS...", total=None)
 
         # Create user
         user = UserModel.create_new(user_id=user_id)
@@ -126,14 +126,14 @@ def init(
 
     console.print()
     console.print(Panel.fit(
-        f"[green]✓ ALTER initialized successfully![/green]\n\n"
+        f"[green]✓ LifeOS initialized successfully![/green]\n\n"
         f"User ID: [cyan]{user_id}[/cyan]\n"
         f"Purpose: [yellow]{purpose or 'Not set yet'}[/yellow]\n\n"
         f"Next steps:\n"
         f"  • Set your purpose: [dim]alter purpose set[/dim]\n"
         f"  • Add goals: [dim]alter goal add[/dim]\n"
         f"  • Run your first cycle: [dim]alter cycle run[/dim]",
-        title="🎉 Welcome to ALTER",
+        title="🎉 Welcome to LifeOS",
         border_style="green"
     ))
 
@@ -151,7 +151,7 @@ def status(
     console.print()
     console.print(Panel.fit(
         f"[cyan bold]{user.user_id}[/cyan bold]",
-        title="ALTER Status",
+        title="LifeOS Status",
         border_style="cyan"
     ))
     console.print()
@@ -591,7 +591,7 @@ def serve(
     provider: str = typer.Option("anthropic", "--provider", help="LLM provider (anthropic, openai)"),
     model: Optional[str] = typer.Option(None, "--model", help="LLM model name"),
 ):
-    """Start the ALTER web server with optional consciousness engine."""
+    """Start the LifeOS web server with optional consciousness engine."""
     import os
     import uvicorn
 
@@ -614,11 +614,11 @@ def serve(
         consciousness_info = "\nConsciousness: [dim]OFF (use -c to enable)[/dim]"
 
     console.print(Panel(
-        f"[bold]ALTER Web Server[/bold]\n"
+        f"[bold]LifeOS Web Server[/bold]\n"
         f"Running at [cyan]http://localhost:{port}[/cyan]\n"
         f"API docs at [cyan]http://localhost:{port}/docs[/cyan]"
         f"{consciousness_info}",
-        title="ALTER",
+        title="LifeOS",
         border_style="green"
     ))
     uvicorn.run(

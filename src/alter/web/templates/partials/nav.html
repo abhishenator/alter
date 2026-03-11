@@ -7,7 +7,7 @@
       <div class="absolute inset-0 rounded-full bg-pulse/12 animate-breathe"></div>
       <div class="w-3 h-3 rounded-full bg-pulse/80"></div>
     </div>
-    <span class="text-sm font-semibold tracking-wider" style="color: #2c2418;">ALTER</span>
+    <span class="text-sm font-semibold tracking-wider" style="color: #2c2418;">LifeOS</span>
   </div>
 
   <!-- Nav Links -->
@@ -58,7 +58,7 @@
     </a>
   </nav>
 
-  <!-- Ask ALTER (bottom of sidebar) -->
+  <!-- Ask LifeOS (bottom of sidebar) -->
   <div class="px-4 pb-6 space-y-2" x-data="{ question: '', asking: false }"
     @alter:thinking.document="asking = $event.detail.on">
     <div class="flex items-center gap-2">
@@ -73,7 +73,7 @@
       </div>
       <input type="text" x-model="question"
         @keydown.enter="if(question.trim()) { askAlter(question); question=''; }"
-        placeholder="Ask ALTER..."
+        placeholder="Ask LifeOS..."
         class="flex-1 bg-stone-100/60 border border-stone-200/50 rounded-lg px-3 py-1.5 text-xs"
         style="color: #5a4d3c;"
         :disabled="asking">

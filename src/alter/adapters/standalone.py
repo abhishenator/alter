@@ -1,7 +1,7 @@
 """
 Standalone Adapter — Wire APScheduler + ConsciousnessEngine for `alter serve`.
 
-This adapter makes ALTER conscious when running as a web server:
+This adapter makes LifeOS conscious when running as a web server:
 - APScheduler fires ticks on schedule (hourly, daily, weekly, monthly)
 - langchain provides the think_fn (LLM abstraction)
 - Activity log captures thoughts for the web UI
@@ -33,7 +33,7 @@ MAX_ACTIVITY_LOG = 200
 
 class StandaloneAdapter:
     """
-    Wires APScheduler + ConsciousnessEngine for alter serve.
+    Wires APScheduler + ConsciousnessEngine for LifeOS serve.
 
     The adapter owns:
     - Loading user data and creating the engine

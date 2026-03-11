@@ -1,4 +1,4 @@
-# ALTER — System Architecture
+# LifeOS — System Architecture
 
 ## Vision
 
@@ -8,8 +8,8 @@ The system doesn't wait to be asked. It notices.
 
 ## Core Philosophy
 
-- **Approximating the architecture of cognition**: LLMs provide the cognitive substrate. ALTER provides the meta-architecture — attention, prediction, memory, narrative, values — that turns raw intelligence into a coherent mind.
-- **A parallel you**: ALTER creates an autonomous version of you. It approximates your starting point and helps you evolve. You configure it, command it, override it. It's your agency amplified.
+- **Approximating the architecture of cognition**: LLMs provide the cognitive substrate. LifeOS provides the meta-architecture — attention, prediction, memory, narrative, values — that turns raw intelligence into a coherent mind.
+- **A parallel you**: LifeOS creates an autonomous version of you. It approximates your starting point and helps you evolve. You configure it, command it, override it. It's your agency amplified.
 - **Prediction error as the primary trigger**: Thought is triggered by surprise, not by schedule. But the architecture supports extensible triggers — user commands, dormant question readiness, goal deadlines, external events, cascading thought.
 - **Constitution-driven**: All autonomous actions filtered through user's ethical/value framework
 - **Narrative identity**: One coherent mind, not a collection of disconnected alerts
@@ -257,7 +257,7 @@ The engine, state, and context assembly stay the same. Only the trigger source a
 
 **Hierarchical Memory** — Raw observations compress into daily summaries, which compress into weekly summaries, which compress into monthly summaries. Higher-level ticks read summaries instead of raw data (~20x compression). This keeps context windows bounded while preserving semantic meaning. See [CONTEXT_ENGINEERING.md](CONTEXT_ENGINEERING.md) for the full design.
 
-**User Input** — The system is autonomous but always honors direct user input. Users can inject context ("I'm going through a breakup"), set goals, override decisions, and steer the system's attention. ALTER is a parallel self that acts on your behalf but takes commands from you.
+**User Input** — The system is autonomous but always honors direct user input. Users can inject context ("I'm going through a breakup"), set goals, override decisions, and steer the system's attention. LifeOS is a parallel self that acts on your behalf but takes commands from you.
 
 ---
 
@@ -283,7 +283,7 @@ WhatsApp/Discord/etc → delivers notifications via OpenClaw's channel adapters
 SKILL.md             → declares tools + cron schedule for auto-discovery
 ```
 
-ALTER as an OpenClaw skill gives any OpenClaw instance: autonomous self-reflection, goal-directed behavior, constitution-based decision making, and the ability to notice things the user hasn't mentioned.
+LifeOS as an OpenClaw skill gives any OpenClaw instance: autonomous self-reflection, goal-directed behavior, constitution-based decision making, and the ability to notice things the user hasn't mentioned.
 
 ### Future: Mobile
 
@@ -447,7 +447,7 @@ src/alter/
 ### Phase 4: OpenClaw Plugin
 - SKILL.md manifest with tools and cron definitions
 - OpenClaw adapter (session → think_fn, watcher → channel delivery)
-- ALTER as an installable consciousness layer for OpenClaw
+- LifeOS as an installable consciousness layer for OpenClaw
 
 ### Phase 5: Evolution
 - Domain-specific sub-agents for deeper investigation

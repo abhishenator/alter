@@ -1,21 +1,21 @@
-# ALTER - Adaptive Life Transformation & Evolution Runtime
+# LifeOS — Automate Thinking
 
-A meta-cognitive AI system that pays attention to your life. Not a dashboard that tracks you — a companion that notices, thinks, and speaks up at the right moment with the right context.
+A life operating system that pays attention to your life. Not a dashboard that tracks you — a companion that notices, thinks, and speaks up at the right moment with the right context.
 
-## What Makes ALTER Different
+## What Makes LifeOS Different
 
-Most AI tools wait for you to type a prompt. ALTER doesn't.
+Most AI tools wait for you to type a prompt. LifeOS doesn't.
 
-ALTER maintains a **world model** — a set of predictions about your life (sleep patterns, energy rhythms, goal progress, emotional baseline). When reality doesn't match those predictions, the system **notices**. That gap — the prediction error — is what triggers thought. Not a schedule. Not a timer. A surprise.
+LifeOS maintains a **world model** — a set of predictions about your life (sleep patterns, energy rhythms, goal progress, emotional baseline). When reality doesn't match those predictions, the system **notices**. That gap — the prediction error — is what triggers thought. Not a schedule. Not a timer. A surprise.
 
-A boring day where everything goes as expected? ALTER stays quiet. A week where your sleep declines, your mood drops, and your exercise disappears? ALTER connects the dots across domains and says: *"I've noticed things have been off this week. Work has been intense — want to talk about what's happening?"*
+A boring day where everything goes as expected? LifeOS stays quiet. A week where your sleep declines, your mood drops, and your exercise disappears? LifeOS connects the dots across domains and says: *"I've noticed things have been off this week. Work has been intense — want to talk about what's happening?"*
 
 It doesn't say that because a cron job fired. It says that because it **noticed**.
 
 ## Core Philosophy
 
-- **Approximating the architecture of cognition** — LLMs provide the cognitive substrate (reasoning, logic, knowledge). ALTER provides the architecture around it: attention, prediction, narrative, memory, values. Together, they approximate how a mind works.
-- **A parallel you** — ALTER creates an autonomous version of you that can think, plan, and notice on your behalf. It approximates your starting point and helps you evolve. But it is always yours — you configure it, you command it, you override it.
+- **Approximating the architecture of cognition** — LLMs provide the cognitive substrate (reasoning, logic, knowledge). LifeOS provides the architecture around it: attention, prediction, narrative, memory, values. Together, they approximate how a mind works.
+- **A parallel you** — LifeOS creates an autonomous version of you that can think, plan, and notice on your behalf. It approximates your starting point and helps you evolve. But it is always yours — you configure it, you command it, you override it.
 - **Prediction error, not self-prompting** — the system thinks because something in the world didn't match what it expected, not because a timer fired
 - **Constitution-driven** — all decisions filtered through YOUR ethical/value framework, fully customizable
 - **Narrative identity** — one coherent mind, not a collection of disconnected alerts
@@ -25,7 +25,7 @@ It doesn't say that because a cron job fired. It says that because it **noticed*
 ## How It Works
 
 ```
-WORLD MODEL          What ALTER expects about your life right now
+WORLD MODEL          What LifeOS expects about your life right now
      │                (sleep ~7h, exercise Mon/Wed/Fri, mood stable...)
      ▼
 OBSERVERS            Lightweight checks compare reality to expectations
@@ -109,7 +109,7 @@ alter init --user-id yourname
 
 See [CONSTITUTION_GUIDE.md](CONSTITUTION_GUIDE.md) for full customization.
 
-### Run ALTER
+### Run LifeOS
 
 ```bash
 # Start the web server (consciousness runs in background)
@@ -150,11 +150,11 @@ alter constitution validate <file>   # Validate a custom constitution
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System design and technical architecture
 - [CONSCIOUSNESS.md](CONSCIOUSNESS.md) — The consciousness layer: first principles, prediction error model, how it thinks
-- [CONTEXT_ENGINEERING.md](CONTEXT_ENGINEERING.md) — How ALTER assembles context, manages memory, and controls token budgets
+- [CONTEXT_ENGINEERING.md](CONTEXT_ENGINEERING.md) — How LifeOS assembles context, manages memory, and controls token budgets
 - [CONSTITUTION_GUIDE.md](CONSTITUTION_GUIDE.md) — How to customize your value framework
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Current build plan and engineering decisions
 
-## How ALTER Thinks — An Example
+## How LifeOS Thinks — An Example
 
 ```
 Tuesday, 10:00 AM
@@ -197,7 +197,7 @@ Tuesday, 10:00 AM
 
 ## Project Status
 
-All core phases (C1–C7) are complete. ALTER is a fully functional autonomous consciousness system.
+All core phases (C1–C7) are complete. LifeOS is a fully functional autonomous consciousness system.
 
 - [x] Constitution framework (fully customizable values, overrides, amendments)
 - [x] User model (goals, purpose, personality, daily data)
@@ -219,12 +219,12 @@ See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the detailed build plan
 
 ## Philosophy
 
-ALTER is built on the belief that:
+LifeOS is built on the belief that:
 
 1. **You are autonomous** — the system observes and advises, you decide. It takes commands from you and honors them. It is an extension of your agency, not a replacement.
-2. **LLMs are cognitive infrastructure** — they represent humanity's collective reasoning, knowledge, and wisdom. ALTER doesn't try to make them smarter. It builds the *architecture* — attention, memory, narrative, values — that turns raw cognitive ability into a coherent mind.
+2. **LLMs are cognitive infrastructure** — they represent humanity's collective reasoning, knowledge, and wisdom. LifeOS doesn't try to make them smarter. It builds the *architecture* — attention, memory, narrative, values — that turns raw cognitive ability into a coherent mind.
 3. **Prediction error drives thought** — the system thinks because something surprised it, not because a timer fired
-4. **You configure your own evolution** — ALTER approximates your starting point (values, patterns, goals) and from there helps you grow. Your constitution defines the direction. Your daily inputs steer the course.
+4. **You configure your own evolution** — LifeOS approximates your starting point (values, patterns, goals) and from there helps you grow. Your constitution defines the direction. Your daily inputs steer the course.
 5. **Balance is essential** — success in one domain shouldn't harm others
 6. **Privacy is sacred** — your data stays yours, always
 7. **A companion, not a dashboard** — someone who notices when you're off, remembers what you said last week, connects dots you haven't connected. It helps you plan, handles the mundane, and helps you live more wholly.
@@ -244,4 +244,4 @@ MIT License
 
 ---
 
-**Built for humans seeking growth, purpose, and balance.**
+**Automate thinking. Live deliberately.**

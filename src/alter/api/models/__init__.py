@@ -1,1 +1,1 @@
-"""Pydantic models for ALTER API."""
+"""Pydantic models for LifeOS API."""

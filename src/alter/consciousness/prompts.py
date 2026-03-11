@@ -1,7 +1,7 @@
 """
-Prompt Templates — ALTER's voice.
+Prompt Templates — LifeOS's voice.
 
-Each tick type has a prompt that shapes how ALTER thinks. The output
+Each tick type has a prompt that shapes how LifeOS thinks. The output
 is structured JSON, but the CONTENT should read like a person's own
 inner monologue — first person "I", not third person "they".
 """
@@ -332,7 +332,7 @@ def build_prompt(
         tick_type: The type of tick (daily_review, urgent, etc.)
         context: Assembled context from the state
         user_name: The user's name/id
-        user_context: Optional user-provided question or context (for "Ask ALTER")
+        user_context: Optional user-provided question or context (for "Ask LifeOS")
     """
     parts = []
 
@@ -361,7 +361,7 @@ def build_prompt(
                      f"What opportunities, risks, or insights would be obvious to a "
                      f"brilliant outside observer of my life?\n")
 
-    # 2b. User-provided question or context (Ask ALTER)
+    # 2b. User-provided question or context (Ask LifeOS)
     if user_context:
         parts.append(f"I'm specifically asking myself: {user_context}\n"
                      f"Focus my thinking on this question while drawing on everything "

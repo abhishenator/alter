@@ -1,4 +1,4 @@
-"""Dependency injection for ALTER API."""
+"""Dependency injection for LifeOS API."""
 
 from functools import lru_cache
 from alter.api.service import AlterService

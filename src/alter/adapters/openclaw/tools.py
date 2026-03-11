@@ -1,5 +1,5 @@
 """
-Tool Definitions — What ALTER exposes as an OpenClaw skill.
+Tool Definitions — What LifeOS exposes as an OpenClaw skill.
 
 Each tool is a function that OpenClaw can invoke on behalf of the user.
 Tools receive the adapter instance and return structured results that

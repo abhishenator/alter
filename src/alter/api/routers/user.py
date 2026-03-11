@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.post("/users/init", response_model=UserInitResponse)
 def init_user(body: UserInitRequest, service: AlterService = Depends(get_service)):
-    """Initialize a new ALTER user."""
+    """Initialize a new LifeOS user."""
     if service.user_exists(body.user_id):
         raise HTTPException(status_code=409, detail=f"User '{body.user_id}' already exists")
     result = service.init_user(body.user_id, body.purpose)

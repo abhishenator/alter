@@ -1,7 +1,7 @@
 """
 Consciousness Engine — The orchestrator.
 
-This is where ALTER thinks for the first time. The engine wires together
+This is where LifeOS thinks for the first time. The engine wires together
 all consciousness components into a single loop:
 
     Read state → Assemble context → Build prompt → Call LLM → Parse → Apply → Save
@@ -62,7 +62,7 @@ def _period_label_for_tick(tick_type: str) -> str:
 
 class ConsciousnessEngine:
     """
-    The orchestrator that makes ALTER think.
+    The orchestrator that makes LifeOS think.
 
     Usage:
         engine = ConsciousnessEngine(state, user_model, constitution, think_fn)
@@ -125,7 +125,7 @@ class ConsciousnessEngine:
         Args:
             tick_type: "daily_review", "weekly_reflect", "monthly_deep", "urgent"
             trigger_domain: For urgent ticks, which domain triggered it
-            user_context: Optional user-provided question/context (for Ask ALTER)
+            user_context: Optional user-provided question/context (for Ask LifeOS)
 
         Returns:
             TickResult on success, None on parse failure

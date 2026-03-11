@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}ALTER — Settings{% endblock %}
+{% block title %}LifeOS — Settings{% endblock %}
 
 {% block content %}
 <div class="animate-fade-in space-y-6" x-data="{ tab: 'system' }">
@@ -136,7 +136,7 @@
     <!-- Import Context -->
     <section x-data="importForm()" class="glass p-5">
       <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #8a7b68;">Import Context</h3>
-      <p class="text-xs mb-4" style="color: #8a7b68;">Give ALTER more context — chat exports, memories, notes, journal entries.</p>
+      <p class="text-xs mb-4" style="color: #8a7b68;">Give LifeOS more context — chat exports, memories, notes, journal entries.</p>
 
       <div class="grid grid-cols-2 gap-2 mb-4">
         <button @click="source = 'chatgpt'" class="glass-sm p-2.5 text-center transition-all text-xs"
@@ -214,7 +214,7 @@
     <section>
       <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #8a7b68;">Constitution & Values</h3>
       <p class="text-xs mb-4" style="color: #a69880;">
-        Your principles guide ALTER's reasoning. Edit weights and descriptions to shape how ALTER thinks.
+        Your principles guide LifeOS's reasoning. Edit weights and descriptions to shape how LifeOS thinks.
       </p>
       <div id="constitution-editor-section"
         hx-get="/partials/constitution-editor" hx-trigger="load"

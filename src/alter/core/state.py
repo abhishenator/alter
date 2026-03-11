@@ -1,5 +1,5 @@
 """
-System State Management - Tracks the entire ALTER system state.
+System State Management - Tracks the entire LifeOS system state.
 
 Manages:
 - User model (identity, goals, preferences)
@@ -62,7 +62,7 @@ class Decision:
 
 class SystemState:
     """
-    Central state management for the ALTER system.
+    Central state management for the LifeOS system.
 
     This class maintains the complete state of the system including:
     - User model (who they are, what they want)

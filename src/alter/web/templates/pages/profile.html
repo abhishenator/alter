@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}ALTER — Self{% endblock %}
+{% block title %}LifeOS — Self{% endblock %}
 
 {% block content %}
 <div class="animate-fade-in space-y-6">
@@ -50,7 +50,7 @@
   <!-- Import Context -->
   <section x-data="importForm()" class="glass p-5">
     <h3 class="text-xs font-semibold tracking-widest uppercase mb-4" style="color: #c4b8a6;">Import Context</h3>
-    <p class="text-xs mb-4" style="color: #b8aa96;">Feed ALTER more context — chat exports, memories, notes, journal entries.</p>
+    <p class="text-xs mb-4" style="color: #b8aa96;">Feed LifeOS more context — chat exports, memories, notes, journal entries.</p>
 
     <!-- Source selector -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
@@ -128,7 +128,7 @@
 
   <!-- Imported Memories -->
   <section>
-    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">What ALTER Knows</h3>
+    <h3 class="text-xs font-semibold tracking-widest uppercase mb-3" style="color: #c4b8a6;">What LifeOS Knows</h3>
     <div id="memories-section"
       hx-get="/partials/profile-memories" hx-trigger="load, refreshMemories from:body"
       hx-swap="innerHTML transition:true">

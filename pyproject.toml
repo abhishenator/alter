@@ -1,7 +1,7 @@
 [project]
 name = "alter"
 version = "0.1.0"
-description = "Adaptive Life Transformation & Evolution Runtime - A meta-cognitive AI system for life optimization"
+description = "LifeOS — Life Operating System. Automate thinking."
 authors = [
     {name = "Your Name", email = "you@example.com"}
 ]

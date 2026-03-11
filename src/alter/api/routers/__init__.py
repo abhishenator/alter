@@ -1,1 +1,1 @@
-"""API routers for ALTER."""
+"""API routers for LifeOS."""

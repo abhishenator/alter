@@ -36,7 +36,7 @@
             <p class="text-sm leading-snug" style="color: #3d3225;">{{ goal.description }}</p>
             {% set latest_thought = (goal_children.get(goal.id, {}).get('thoughts', []) or [None])[0] %}
             {% if latest_thought %}
-            <p class="text-[10px] mt-1 text-pulse/60 truncate">ALTER noticed: {{ latest_thought.title }}</p>
+            <p class="text-[10px] mt-1 text-pulse/60 truncate">LifeOS noticed: {{ latest_thought.title }}</p>
             {% endif %}
           </div>
           <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">

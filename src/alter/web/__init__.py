@@ -1,1 +1,1 @@
-"""ALTER Web UI."""
+"""LifeOS Web UI."""

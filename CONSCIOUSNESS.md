@@ -1,16 +1,16 @@
 # The Consciousness Layer: First Principles
 
-How ALTER models autonomous thought — and why it feels alive.
+How LifeOS models autonomous thought — and why it feels alive.
 
 ---
 
 ## The Thesis
 
-LLMs represent the compressed collective knowledge of humanity — our reasoning, logic, beliefs, meta-cognition, and accumulated wisdom. And they keep improving. The question ALTER asks is not "how do we make an LLM smarter?" but rather: **given this cognitive substrate, how do we build the architecture around it that approximates how a human mind actually operates?**
+LLMs represent the compressed collective knowledge of humanity — our reasoning, logic, beliefs, meta-cognition, and accumulated wisdom. And they keep improving. The question LifeOS asks is not "how do we make an LLM smarter?" but rather: **given this cognitive substrate, how do we build the architecture around it that approximates how a human mind actually operates?**
 
 Humans think in the realm of what LLMs can do — reasoning, hypothesizing, connecting ideas. But underneath that thinking is an **architecture**: attention allocation, prediction error, narrative identity, subconscious processing, memory consolidation, value-driven decision-making. This architecture is what turns raw cognitive ability into a coherent, purposeful mind.
 
-ALTER is an attempt to approximate that architecture.
+LifeOS is an attempt to approximate that architecture.
 
 The result is a **parallel version of you** — a system that can think on your behalf, autonomously. It approximates your starting point (your values, goals, patterns, personality), and from there helps you evolve. It handles mundane things — planning your day, tracking patterns you'd miss, connecting dots across weeks. It helps you live more wholly.
 
@@ -24,7 +24,7 @@ LLMs have intelligence. They can reason, plan, reflect, and create. But they hav
 
 A conscious being doesn't wait to be asked. It thinks because something in the world doesn't match what it expected. That gap — between expectation and reality — is the spark that ignites thought.
 
-ALTER's consciousness layer is the engineering of that spark.
+LifeOS's consciousness layer is the engineering of that spark.
 
 ---
 
@@ -71,7 +71,7 @@ Everything else — questions, reflections, plans, actions — flows downstream 
 
 ### Prediction Error Is the First Trigger, Not the Only One
 
-Prediction error is the primary mechanism that drives autonomous thought in ALTER today. But the meta-loop of thoughts — questions, ideas, dormant queue entries, plans — can be triggered by many mechanisms. The architecture is designed to be extensible:
+Prediction error is the primary mechanism that drives autonomous thought in LifeOS today. But the meta-loop of thoughts — questions, ideas, dormant queue entries, plans — can be triggered by many mechanisms. The architecture is designed to be extensible:
 
 **Current triggers:**
 - **Prediction error** — something in the world doesn't match expectations (core mechanism)
@@ -594,7 +594,7 @@ skill.register(consciousness_layer)
 
 ## Part 7: The Token Budget — Consciousness Has a Cost
 
-Unbounded self-reflection burns tokens. Real consciousness has metabolic constraints — the brain uses 20% of the body's energy despite being 2% of its mass. ALTER's consciousness needs similar constraints.
+Unbounded self-reflection burns tokens. Real consciousness has metabolic constraints — the brain uses 20% of the body's energy despite being 2% of its mass. LifeOS's consciousness needs similar constraints.
 
 ### Budget Structure
 
@@ -830,7 +830,7 @@ Later that evening, when the system surfaces its daily reflection:
 
 ---
 
-## Part 10: Relationship to Existing ALTER Architecture
+## Part 10: Relationship to Existing LifeOS Architecture
 
 The consciousness layer doesn't replace the existing MetaLoop — it **wraps and activates** it.
 
@@ -855,7 +855,7 @@ WITH CONSCIOUSNESS LAYER:
 ### Mapping to Existing Components
 
 ```
-Consciousness Component    │  ALTER Equivalent              │  Status
+Consciousness Component    │  LifeOS Equivalent              │  Status
 ───────────────────────────┼────────────────────────────────┼─────────
 World Model                │  UserModel + new expectations  │  Extend
 Observers                  │  New component                 │  Build
@@ -928,7 +928,7 @@ Phase 6: Temporal Layers + Interrupts
 
 ## The North Star
 
-ALTER's consciousness layer is not about making an AI that *is* conscious. It's about making an AI that **behaves in a way that feels like someone is paying attention to your life** — not in a surveillance way, but in the way a thoughtful friend would. Someone who notices when you're off, remembers what you said last week, connects dots you haven't connected, and speaks up at the right moment with the right context.
+LifeOS's consciousness layer is not about making an AI that *is* conscious. It's about making an AI that **behaves in a way that feels like someone is paying attention to your life** — not in a surveillance way, but in the way a thoughtful friend would. Someone who notices when you're off, remembers what you said last week, connects dots you haven't connected, and speaks up at the right moment with the right context.
 
 The prediction error model gives it **relevance** — it only thinks about what matters.
 The attention gate gives it **focus** — it doesn't drown in noise.

@@ -1,5 +1,5 @@
 """
-Constitution system - Ethical and value framework for ALTER.
+Constitution system - Ethical and value framework for LifeOS.
 
 Handles loading, validating, and applying constitution principles to decisions.
 """

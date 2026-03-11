@@ -1,4 +1,4 @@
-/* ALTER UI — Global JS */
+/* LifeOS UI — Global JS */
 
 // ---- Toast notifications ----
 
@@ -178,7 +178,7 @@ async function triggerObserve() {
   }
 }
 
-// ---- Ask ALTER (conversational tick with user context) ----
+// ---- Ask LifeOS (conversational tick with user context) ----
 
 async function askAlter(question) {
   if (!question || !question.trim()) return;
@@ -186,7 +186,7 @@ async function askAlter(question) {
   document.dispatchEvent(new CustomEvent('alter:thinking', { detail: { on: true } }));
 
   showProcessingOverlay(
-    'ALTER is thinking...',
+    'LifeOS is thinking...',
     question.length > 60 ? question.substring(0, 60) + '...' : question
   );
 
@@ -208,14 +208,14 @@ async function askAlter(question) {
       await new Promise(r => setTimeout(r, 800));
 
       const total = (data.insights || 0) + (data.notifications || 0) + (data.discoveries || 0);
-      showToast('ALTER Responded', `${total} thought${total !== 1 ? 's' : ''} generated about your question.`, 'success');
+      showToast('LifeOS Responded', `${total} thought${total !== 1 ? 's' : ''} generated about your question.`, 'success');
 
       htmx.trigger(document.body, 'refreshInbox');
       if (document.getElementById('narrative-section')) {
         htmx.trigger('#narrative-section', 'load');
       }
     } else {
-      showToast('Error', 'ALTER could not process your question.', 'error');
+      showToast('Error', 'LifeOS could not process your question.', 'error');
     }
   } catch(e) {
     showToast('Connection Error', 'Could not reach the server.', 'error');

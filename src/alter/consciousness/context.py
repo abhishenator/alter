@@ -1,7 +1,7 @@
 """
 Context Assembly — Builds the right context for each tick type.
 
-This is WHERE ALTER's intelligence lives. The LLM can only think about
+This is WHERE LifeOS's intelligence lives. The LLM can only think about
 what's in context. Assembling the right information — not too much,
 not too little — determines the quality of every thought.
 

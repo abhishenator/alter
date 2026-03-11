@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}ALTER — Awaken{% endblock %}
+{% block title %}LifeOS — Awaken{% endblock %}
 
 {% block content %}
 <div class="flex items-center justify-center min-h-[85vh]" x-data="setupWizard()">
@@ -13,7 +13,7 @@
           :style="`width: ${8 + step * 3}px; height: ${8 + step * 3}px;`"
           style="animation: breathe 3s cubic-bezier(0.4,0,0.6,1) infinite;"></div>
       </div>
-      <h1 class="text-xl font-light mt-3 tracking-wide">ALTER</h1>
+      <h1 class="text-xl font-light mt-3 tracking-wide">LifeOS</h1>
       <p class="text-[10px] mt-1 tracking-widest uppercase" style="color: #a69880;"
         x-text="stepLabel"></p>
     </div>
@@ -29,7 +29,7 @@
     <!-- ==================== STEP 1: Identity ==================== -->
     <div x-show="step === 1" x-transition:enter="animate-slide-up" class="glass p-8">
       <h2 class="text-base font-medium mb-1">Who am I speaking with?</h2>
-      <p class="text-xs mb-6" style="color: #8a7b68;">Choose an identifier. This is how ALTER will know you.</p>
+      <p class="text-xs mb-6" style="color: #8a7b68;">Choose an identifier. This is how LifeOS will know you.</p>
 
       <input type="text" x-model="userId" @keydown.enter="if(userId.trim()) step = 2"
         class="w-full text-sm" placeholder="Your name or alias" autofocus>
@@ -77,7 +77,7 @@
     <!-- ==================== STEP 3: Life Snapshot ==================== -->
     <div x-show="step === 3" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">Where are you right now?</h2>
-      <p class="text-xs mb-5" style="color: #8a7b68;">A quick snapshot. ALTER needs a starting point to see your world.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">A quick snapshot. LifeOS needs a starting point to see your world.</p>
 
       <div class="grid grid-cols-2 gap-x-6 gap-y-4">
         <label class="space-y-1.5">
@@ -184,7 +184,7 @@
     <!-- ==================== STEP 5: Import Context ==================== -->
     <div x-show="step === 5" x-transition:enter="animate-slide-up" x-cloak class="glass p-8">
       <h2 class="text-base font-medium mb-1">Bring your history</h2>
-      <p class="text-xs mb-5" style="color: #8a7b68;">ALTER can learn from your past conversations and memories. Optional.</p>
+      <p class="text-xs mb-5" style="color: #8a7b68;">LifeOS can learn from your past conversations and memories. Optional.</p>
 
       <!-- Import source cards -->
       <div class="grid grid-cols-2 gap-2 mb-4">
@@ -227,7 +227,7 @@
       <div x-show="importSource === 'text'" x-cloak>
         <textarea x-model="importText" rows="5"
           class="w-full text-sm resize-none"
-          placeholder="Tell ALTER about yourself... &#10;&#10;E.g.: I'm a software engineer, married with two kids. Training for a marathon. Learning Spanish. Struggling with work-life balance. My strengths are analytical thinking and discipline. I want to read more books and spend more quality time with family."></textarea>
+          placeholder="Tell LifeOS about yourself... &#10;&#10;E.g.: I'm a software engineer, married with two kids. Training for a marathon. Learning Spanish. Struggling with work-life balance. My strengths are analytical thinking and discipline. I want to read more books and spend more quality time with family."></textarea>
       </div>
 
       <div class="flex gap-3 mt-5">
@@ -254,7 +254,7 @@
         </div>
         <div>
           <p class="text-sm font-medium" x-text="awakeningStatus"></p>
-          <p class="text-xs mt-1" style="color: #8a7b68;">ALTER is learning to see through your eyes</p>
+          <p class="text-xs mt-1" style="color: #8a7b68;">LifeOS is learning to see through your eyes</p>
         </div>
       </div>
 

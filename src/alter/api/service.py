@@ -1,5 +1,5 @@
 """
-Service layer bridging the API to ALTER core logic.
+Service layer bridging the API to LifeOS core logic.
 
 Centralizes user/state loading, saving, and all business operations.
 """
@@ -16,7 +16,7 @@ from alter.core.constitution import Constitution
 
 
 class AlterService:
-    """Service layer for ALTER operations."""
+    """Service layer for LifeOS operations."""
 
     def __init__(self, data_dir: str = "data/user_data"):
         self.data_dir = Path(data_dir)

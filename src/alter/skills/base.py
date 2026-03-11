@@ -58,7 +58,7 @@ class SkillInfo:
 
 class Skill(ABC):
     """
-    Base class for all ALTER skills.
+    Base class for all LifeOS skills.
 
     A skill collects data from an external source and feeds it into
     the consciousness engine via UserModel.daily_data. It also declares

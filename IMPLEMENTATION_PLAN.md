@@ -1,4 +1,4 @@
-# ALTER Implementation Plan — Consciousness Layer
+# LifeOS Implementation Plan — Consciousness Layer
 
 *Living document. Updated as thinking evolves.*
 
@@ -453,7 +453,7 @@ Each tick type has a prompt template that structures the LLM's reasoning. The co
 ### Daily Review Prompt (example)
 
 ```
-You are ALTER's consciousness, doing your daily review for {user_name}.
+You are LifeOS's consciousness, doing your daily review for {user_name}.
 
 ## Current Understanding (World Model)
 {world_model_all_domains}
@@ -661,7 +661,7 @@ src/alter/adapters/
 - `adapters/openclaw/SKILL.md` — skill manifest with tools + cron
 - `adapters/openclaw/adapter.py` — maps OpenClaw session → think_fn
 - `adapters/openclaw/tools.py` — tool definitions
-- **Result: ALTER is an installable OpenClaw plugin**
+- **Result: LifeOS is an installable OpenClaw plugin**
 
 ### Phase C7: Skills Expansion
 - Each skill = new sense organ
@@ -673,8 +673,8 @@ src/alter/adapters/
 
 ## Design Principles
 
-1. **Approximating the architecture of cognition** — LLMs are the cognitive substrate. ALTER is the meta-architecture: attention, prediction, memory, narrative, values. Together they approximate how a mind works.
-2. **A parallel you** — ALTER creates an autonomous version of the user that thinks on their behalf, handles mundane tasks, and helps them evolve. The user configures it, commands it, overrides it. Always their agent.
+1. **Approximating the architecture of cognition** — LLMs are the cognitive substrate. LifeOS is the meta-architecture: attention, prediction, memory, narrative, values. Together they approximate how a mind works.
+2. **A parallel you** — LifeOS creates an autonomous version of the user that thinks on their behalf, handles mundane tasks, and helps them evolve. The user configures it, commands it, overrides it. Always their agent.
 3. **Prediction error as primary trigger, but extensible** — the system thinks because something surprised it, not because a timer fired. But the trigger mechanism is extensible: user commands, dormant question readiness, goal deadlines, external events, and cascading thought can all invoke the meta-loop with different goals and prompts.
 4. **Hierarchical memory** — raw observations → daily summaries → weekly summaries → monthly summaries. Higher ticks read compressed context. ~20x compression. See CONTEXT_ENGINEERING.md.
 5. **Snapshot + Watch** — normal cross-loop context via time-ranged state reads; urgent interrupts via watch events

@@ -1,5 +1,5 @@
 """
-OpenClaw Adapter — Maps an OpenClaw session to ALTER's consciousness engine.
+OpenClaw Adapter — Maps an OpenClaw session to LifeOS's consciousness engine.
 
 Unlike StandaloneAdapter, OpenClaw provides:
 - LLM via session.chat() — no need for langchain
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 class OpenClawSession(Protocol):
     """Protocol for the OpenClaw session object.
 
-    OpenClaw is an external package — we define a Protocol so ALTER
+    OpenClaw is an external package — we define a Protocol so LifeOS
     doesn't depend on it at import time. Any object with these methods
     will work.
     """
@@ -48,7 +48,7 @@ class OpenClawSession(Protocol):
 
 class OpenClawAdapter:
     """
-    ALTER as an OpenClaw skill.
+    LifeOS as an OpenClaw skill.
 
     Created once per OpenClaw session. OpenClaw tools (tools.py) call
     methods on this adapter, which delegates to ConsciousnessEngine.
