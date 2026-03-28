@@ -67,8 +67,8 @@
 
     <!-- Automatic Reviews -->
     <section x-data="thoughtLoops()" x-init="init()" class="glass p-5">
-      <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #8a7b68;">Automatic Reviews</h3>
-      <p class="text-xs mb-4" style="color: #a69880;">Choose which reviews run automatically and when.</p>
+      <h3 class="text-xs font-semibold tracking-widest uppercase mb-2" style="color: #8a7b68;">Scheduled Reviews</h3>
+      <p class="text-xs mb-4" style="color: #a69880;">LifeOS runs these reviews on a schedule to generate insights. Toggle to enable/disable.</p>
       <div class="space-y-3">
         <template x-for="loop in loops" :key="loop.id">
           <div class="flex items-start gap-3 px-3 py-3 rounded-lg transition-all"

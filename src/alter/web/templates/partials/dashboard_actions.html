@@ -1,23 +1,39 @@
-{# Recent activity log for Dashboard #}
+{# Review history for Dashboard #}
 
 {% if activity %}
 <div class="glass-sm p-4 space-y-2">
   {% for item in activity[:15] %}
+  {% set etype = item.get('event_type', 'event') %}
+  {% set event_labels = {
+    'daily_review': 'Daily Review',
+    'weekly_reflect': 'Weekly Review',
+    'monthly_deep': 'Monthly Review',
+    'goal_analysis': 'Goal Analysis',
+    'discovery': 'Pattern Search',
+    'observe': 'Quick Scan',
+    'urgent': 'On-Demand Analysis',
+  } %}
   <div class="flex items-start gap-2 py-1">
     <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 bg-pulse/30"></span>
-    <div class="flex-1">
-      <p class="text-xs" style="color: #7a6c58;">
-        {{ item.get('summary', item.get('event_type', 'event')) }}
+    <div class="flex-1 min-w-0">
+      <p class="text-xs truncate" style="color: #7a6c58;">
+        {{ item.get('summary', event_labels.get(etype, etype)) }}
       </p>
       {% if item.get('timestamp') %}
       <p class="text-[10px]" style="color: #c4b8a6;">{{ item.timestamp }}</p>
       {% endif %}
     </div>
+    {% if etype in event_labels %}
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-stone-100/60 flex-shrink-0" style="color: #c4b8a6;">
+      {{ event_labels[etype] }}
+    </span>
+    {% endif %}
   </div>
   {% endfor %}
 </div>
 {% else %}
-<div class="glass-sm p-4 text-center">
-  <p class="text-xs" style="color: #a69880;">No recent activity.</p>
+<div class="glass-sm p-4 text-center space-y-1">
+  <p class="text-xs" style="color: #a69880;">No review history yet.</p>
+  <p class="text-[10px]" style="color: #c4b8a6;">Reviews will appear here as LifeOS analyzes your data.</p>
 </div>
 {% endif %}

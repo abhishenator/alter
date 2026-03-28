@@ -4,27 +4,39 @@
 {% block content %}
 <div class="animate-fade-in space-y-5">
 
-  <!-- Stat Chips -->
-  <div class="flex flex-wrap gap-3">
-    <div class="glass-sm px-4 py-2 flex items-center gap-2">
-      <span class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Pending</span>
-      <span class="text-sm font-medium text-pulse" x-text="$store.alter.pendingCount || 0"></span>
+  <!-- Header with status chips -->
+  <div class="flex flex-wrap items-center gap-3">
+    <div>
+      <h1 class="text-lg font-semibold" style="color: #2c2418;">Dashboard</h1>
+      <p class="text-[10px] mt-0.5" style="color: #a69880;">Your inbox, habits, and goals at a glance</p>
+    </div>
+    <div class="flex items-center gap-2 ml-auto">
+      <div class="glass-sm px-3 py-1.5 flex items-center gap-2">
+        <span class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Inbox</span>
+        <span class="text-sm font-medium text-pulse" x-text="$store.alter.pendingCount || 0"></span>
+      </div>
+      {% if system_activity.review_count_today > 0 %}
+      <div class="glass-sm px-3 py-1.5 flex items-center gap-2">
+        <span class="text-[10px] uppercase tracking-wider" style="color: #a69880;">Reviews Today</span>
+        <span class="text-sm font-medium" style="color: #5a4d3c;">{{ system_activity.review_count_today }}</span>
+      </div>
+      {% endif %}
     </div>
   </div>
 
   <!-- 2-Column Grid -->
   <div class="md:grid md:grid-cols-5 lg:grid-cols-3 md:gap-5">
 
-    <!-- Left: Inbox + Habits -->
+    <!-- Left: Insights + Habits -->
     <div class="md:col-span-3 lg:col-span-2 space-y-5">
 
-      <!-- Inbox / Thought Stream -->
+      <!-- Insights (from reviews) -->
       <div id="inbox-section"
         hx-get="/partials/inbox" hx-trigger="load, refreshInbox from:body"
         hx-swap="innerHTML transition:true">
       </div>
 
-      <!-- Habits -->
+      <!-- Daily Habits -->
       <div id="habits-section"
         hx-get="/partials/habits" hx-trigger="load, refreshHabits from:body"
         hx-swap="innerHTML transition:true">
@@ -35,7 +47,7 @@
     <!-- Right: Goals + Notes -->
     <div class="md:col-span-2 lg:col-span-1 md:sticky md:top-6 space-y-5 mt-5 md:mt-0 self-start">
 
-      <!-- Compact Goals -->
+      <!-- Active Goals -->
       <div id="dashboard-goals-section"
         hx-get="/partials/dashboard-goals" hx-trigger="load, refresh from:#goal-tree"
         hx-swap="innerHTML transition:true">
@@ -54,7 +66,8 @@
           <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
-          <span class="text-xs tracking-wider uppercase">Recent Activity</span>
+          <span class="text-xs tracking-wider uppercase">Review History</span>
+          <span class="text-[10px] ml-1" style="color: #c4b8a6;">What LifeOS analyzed recently</span>
         </summary>
         <div id="dashboard-activity" class="mt-2"
           hx-get="/partials/dashboard-actions" hx-trigger="revealed"

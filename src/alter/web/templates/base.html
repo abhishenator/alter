@@ -74,6 +74,7 @@
         notifications: [],
         narrative: '',
         pendingCount: 0,
+        lastReviewLabel: '',
 
         async refreshStatus() {
           try {
@@ -83,6 +84,15 @@
               this.consciousnessActive = data.running || false;
               this.narrative = data.narrative || '';
               this.pendingCount = data.pending_inbox_count || data.inbox_pending || 0;
+
+              // Compute last review label from activity
+              if (data.last_activity_ts) {
+                const delta = (Date.now() - new Date(data.last_activity_ts).getTime()) / 1000;
+                if (delta < 60) this.lastReviewLabel = 'Just now';
+                else if (delta < 3600) this.lastReviewLabel = Math.floor(delta / 60) + 'm ago';
+                else if (delta < 86400) this.lastReviewLabel = Math.floor(delta / 3600) + 'h ago';
+                else this.lastReviewLabel = new Date(data.last_activity_ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              }
             }
           } catch(e) {}
         },

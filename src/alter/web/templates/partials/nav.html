@@ -58,6 +58,20 @@
     </a>
   </nav>
 
+  <!-- System Status -->
+  <div class="px-5 mb-3">
+    <div class="flex items-center gap-2 px-1 py-1.5">
+      <div class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        :class="$store.alter.consciousnessActive ? 'bg-emerald-400 animate-breathe' : 'bg-stone-300/50'"
+        :style="$store.alter.consciousnessActive ? 'animation-duration: 3s;' : ''"></div>
+      <span class="text-[10px]"
+        :style="$store.alter.consciousnessActive ? 'color: #2a9d6e;' : 'color: #c4b8a6;'"
+        x-text="$store.alter.consciousnessActive ? 'Monitoring' : 'Idle'"></span>
+      <span class="text-[10px] ml-auto" style="color: #c4b8a6;"
+        x-text="$store.alter.lastReviewLabel || ''"></span>
+    </div>
+  </div>
+
   <!-- Ask LifeOS (bottom of sidebar) -->
   <div class="px-4 pb-6 space-y-2" x-data="{ question: '', asking: false }"
     @alter:thinking.document="asking = $event.detail.on">

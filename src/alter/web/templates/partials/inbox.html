@@ -62,12 +62,12 @@
   <div class="px-1">
     <div class="flex items-center gap-2">
       <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: #8a7b68;">
-        Thought Stream
+        Insights
       </h3>
       <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pulse/15 text-pulse">{{ items | length }}</span>
     </div>
     <p class="text-[11px] mt-1" style="color: #a69880;">
-      Save what resonates, extract into goals or habits, skip the rest.
+      Generated from your reviews. Save what resonates, turn into goals or habits, or skip.
     </p>
   </div>
 
@@ -139,9 +139,12 @@
   {% endfor %}
 </section>
 {% else %}
-<section class="glass-sm p-5 text-center">
-  <p class="text-xs" style="color: #a69880;">
-    Your thought stream is empty. Run a review to generate insights.
+<section class="glass-sm p-5 text-center space-y-2">
+  <p class="text-sm" style="color: #8a7b68;">
+    No insights yet.
+  </p>
+  <p class="text-[10px]" style="color: #c4b8a6;">
+    Go to <a href="/" class="text-pulse/60 hover:text-pulse">Today</a> and run an analysis to generate insights about your life.
   </p>
 </section>
 {% endif %}

@@ -54,9 +54,12 @@
   </div>
   {% endif %}
 
-  {# Narrative #}
+  {# Narrative — synthesized from reviews #}
   {% if narrative %}
-  <p class="text-sm leading-relaxed pt-1 border-t border-stone-200/30" style="color: #5a4d3c;">{{ narrative }}</p>
+  <div class="pt-1 border-t border-stone-200/30">
+    <p class="text-[10px] uppercase tracking-widest font-semibold mb-1.5" style="color: #a69880;">Latest Narrative</p>
+    <p class="text-sm leading-relaxed" style="color: #5a4d3c;">{{ narrative }}</p>
+  </div>
   {% endif %}
 </div>
 

@@ -1,14 +1,15 @@
-{# Curated top-5 action items from inbox — simplified version without filter bars #}
+{# Curated top-5 action items from inbox #}
 
 {% if items %}
 <section class="space-y-3">
   <div class="px-1">
     <div class="flex items-center gap-2">
       <h3 class="text-xs font-semibold tracking-widest uppercase" style="color: #8a7b68;">
-        Needs Your Attention
+        Suggestions for You
       </h3>
       <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pulse/15 text-pulse">{{ items | length }}{% if remaining_count > 0 %}+{{ remaining_count }}{% endif %}</span>
     </div>
+    <p class="text-[10px] mt-0.5" style="color: #c4b8a6;">Generated from your reviews. Save what resonates, skip the rest.</p>
   </div>
 
   {% for item in items %}
@@ -20,18 +21,21 @@
   {# View all link #}
   {% if remaining_count > 0 %}
   <div class="text-center py-2">
-    <button hx-get="/partials/inbox" hx-target="#actions-section" hx-swap="innerHTML transition:true"
+    <a href="/dashboard"
       class="text-xs text-pulse/60 hover:text-pulse transition-all">
-      View all {{ items | length + remaining_count }} thoughts
-    </button>
+      View all {{ items | length + remaining_count }} insights on Dashboard
+    </a>
   </div>
   {% endif %}
 </section>
 
 {% else %}
-<section class="glass-sm p-5 text-center">
-  <p class="text-xs" style="color: #a69880;">
-    No pending thoughts. Run a review to generate insights.
+<section class="glass-sm p-5 text-center space-y-2">
+  <p class="text-sm" style="color: #8a7b68;">
+    No suggestions yet.
+  </p>
+  <p class="text-[10px]" style="color: #c4b8a6;">
+    Run an analysis above to generate insights about your life.
   </p>
 </section>
 {% endif %}

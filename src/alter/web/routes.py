@@ -47,6 +47,63 @@ def _time_greeting() -> str:
     return "Good night"
 
 
+def _get_system_activity(request: Request) -> dict:
+    """Get system activity info — last review time, review count, status."""
+    adapter = _get_adapter(request)
+    info = {
+        "active": _consciousness_active(request),
+        "last_review_time": None,
+        "last_review_label": "No reviews yet",
+        "review_count_today": 0,
+        "next_scheduled": None,
+    }
+
+    if not adapter:
+        return info
+
+    # Get last review from activity log
+    try:
+        activity = adapter.get_activity(limit=50)
+        now = datetime.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        for item in activity:
+            if not isinstance(item, dict):
+                continue
+            ts_str = item.get("timestamp") or item.get("ts")
+            if not ts_str:
+                continue
+            try:
+                ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00").replace("+00:00", ""))
+            except (ValueError, AttributeError):
+                continue
+
+            # Count today's reviews
+            if ts >= today_start:
+                info["review_count_today"] += 1
+
+            # Track most recent
+            if info["last_review_time"] is None or ts > info["last_review_time"]:
+                info["last_review_time"] = ts
+
+        if info["last_review_time"]:
+            delta = now - info["last_review_time"]
+            if delta.total_seconds() < 60:
+                info["last_review_label"] = "Just now"
+            elif delta.total_seconds() < 3600:
+                mins = int(delta.total_seconds() // 60)
+                info["last_review_label"] = f"{mins}m ago"
+            elif delta.total_seconds() < 86400:
+                hours = int(delta.total_seconds() // 3600)
+                info["last_review_label"] = f"{hours}h ago"
+            else:
+                info["last_review_label"] = info["last_review_time"].strftime("%b %d")
+    except Exception:
+        pass
+
+    return info
+
+
 # ─── Pages ───
 
 
@@ -92,12 +149,15 @@ def today_page(
         except Exception:
             pass
 
+    system_activity = _get_system_activity(request)
+
     return templates.TemplateResponse("pages/today.html", {
         "request": request, "user_id": user_id, "page": "today",
         "consciousness_active": _consciousness_active(request),
         "today_logged": today_logged,
         "today_data": today_data,
         "active_goal_count": active_goal_count,
+        "system_activity": system_activity,
     })
 
 
@@ -135,9 +195,12 @@ def dashboard_page(request: Request, service: AlterService = Depends(get_service
     user_id = _get_user_id(request)
     if not service.user_exists(user_id):
         return RedirectResponse(url="/setup", status_code=302)
+    system_activity = _get_system_activity(request)
+
     return templates.TemplateResponse("pages/dashboard.html", {
         "request": request, "user_id": user_id, "page": "dashboard",
         "consciousness_active": _consciousness_active(request),
+        "system_activity": system_activity,
     })
 
 
